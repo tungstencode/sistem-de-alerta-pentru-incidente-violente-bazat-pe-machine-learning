@@ -4,14 +4,19 @@
     "description": "ai-surveillance-system-bachelor-degree",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "server": "cd backend && npm start",
-        "client": "cd frontend && npm start",
+        "backend": "cd backend && npm start",
+        "frontend": "cd frontend && npm start",
         "start": "concurrently \"npm run backend\" \"npm run frontend\""
     },
     "author": "",
     "license": "ISC",
     "homepage": "https://bitbucket.org/parteniealex/ai-surveillance-system-bachelor-degree",
     "dependencies": {
-        "concurrently": "^5.1.0"
+        "cra-template-quickstart-redux": "^0.4.0",
+        "create-react-app": "^3.3.1"
+    },
+    "devDependencies": {
+        "concurrently": "^5.1.0",
+        "nodemon": "^2.0.2"
     }
 }

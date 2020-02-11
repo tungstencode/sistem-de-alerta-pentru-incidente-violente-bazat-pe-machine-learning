@@ -1,4 +1,4 @@
-# AI SURVEILLANCE SYSTEM
+# AI SURVEILLANCE SYSTEM BACHELOR DEGREE
 
 ## Requirements to run the app
 * Nodemon: npm install -g nodemon
