@@ -6,4 +6,4 @@
 	* "cd backend" and "npm install"
 	* "cd ../frontend" and "npm install"
 * Start app
-	* npm start or yarn start
+	* npm start or yarn start in root directory
