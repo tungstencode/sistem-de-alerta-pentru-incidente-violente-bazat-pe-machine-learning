@@ -1,0 +1,17 @@
+{
+    "name": "ai-surveillance-system-bachelor-degree",
+    "version": "1.0.0",
+    "description": "ai-surveillance-system-bachelor-degree",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "server": "cd backend && npm start",
+        "client": "cd frontend && npm start",
+        "start": "concurrently \"npm run backend\" \"npm run frontend\""
+    },
+    "author": "",
+    "license": "ISC",
+    "homepage": "https://bitbucket.org/parteniealex/ai-surveillance-system-bachelor-degree",
+    "dependencies": {
+        "concurrently": "^5.1.0"
+    }
+}
