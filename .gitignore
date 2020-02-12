@@ -27,3 +27,4 @@ node_modules
 
 # track these files, if they exist
 !.gitignore
+ai-surveillance-system-bachelor-degree.code-workspace
