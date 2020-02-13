@@ -13,22 +13,24 @@ const useStyles = makeStyles(theme => ({
   },
   link: {
     textDecoration: 'none',
-    color: theme.palette.text.light,
+    color: theme.palette.primary.inactive,
+    backgroundColor: theme.palette.primary.inactive,
+    hover: theme.palette.primary.main,
   },
   activeLink: {
-    backgroundColor: theme.palette.primary.dark,
+    backgroundColor: theme.palette.primary.main,
   },
 }));
 
 function NavItem({path, title, Icon, exact = false, ...rest}) {
   const classes = useStyles();
-
   return (
     <ListItem
       button
       component={NavLink}
       exact={exact}
       to={path}
+      // hoverClassName={classes.activeLink}
       className={classes.link}
       activeClassName={classes.activeLink}
       {...rest}>
@@ -37,7 +39,7 @@ function NavItem({path, title, Icon, exact = false, ...rest}) {
           <Icon className={classes.icon} />
         </ListItemIcon>
       )}
-      <ListItemText primary={title} />
+      {/* <ListItemText primary={title} /> */}
     </ListItem>
   );
 }

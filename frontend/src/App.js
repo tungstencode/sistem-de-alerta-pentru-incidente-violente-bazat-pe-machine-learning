@@ -16,9 +16,10 @@ import Cameras from './screens/Cameras';
 const theme = createMuiTheme({
   palette: {
     primary: {
-      light: '#54a75c',
-      main: '#2a9134',
-      dark: '#1d6524',
+      light: '#7274e4',
+      main: '#6164e1',
+      dark: '#4749dc',
+      inactive: '#273e4a',
     },
     secondary: {
       light: '#3b533e',
@@ -26,18 +27,18 @@ const theme = createMuiTheme({
       dark: '#071c09',
     },
     background: {
-      default: '#f7fdf8',
+      default: '#1b2b33',
     },
     text: {
-      primary: '#061407',
-      light: '#f3fcf4',
+      primary: '#070722',
+      light: '#f2f2fd',
     },
     typography: {
-      color: '#f3fcf4',
+      color: '#f2f2fd',
     },
   },
 });
-const isAuthenticated = true;
+// const isAuthenticated = true;
 
 const App = () => (
   <ThemeProvider theme={theme}>

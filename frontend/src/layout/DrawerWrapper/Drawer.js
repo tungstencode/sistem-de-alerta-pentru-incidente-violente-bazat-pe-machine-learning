@@ -23,6 +23,7 @@ const useStyles = makeStyles(theme => ({
   drawer: {
     width: drawerWidth,
     flexShrink: 0,
+
   },
   drawerPaper: {
     width: drawerWidth,
@@ -30,6 +31,7 @@ const useStyles = makeStyles(theme => ({
   content: {
     flexGrow: 1,
     padding: theme.spacing(3),
+    color: theme.palette.text.light,
   },
   toolbar: theme.mixins.toolbar,
 }));
