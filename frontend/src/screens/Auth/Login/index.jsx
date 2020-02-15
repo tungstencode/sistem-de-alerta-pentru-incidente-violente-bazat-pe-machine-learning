@@ -41,26 +41,27 @@ class Login extends React.Component {
       if (response.status === 202) {
         // this dissapears immediately, I think we need to use content-flash with passport to display it on the page we redirect to after login
         // whatever page that may be
-        // this.setState({
-        //   variant: 'success',
-        //   message: `${response.status} ${response.statusText}`,
-        //   open: true,
-        // });
+        this.setState({
+          variant: 'success',
+          message: `${response.statusText}`,
+          // open: true,
+        });
         const {handleLoginSubmit} = this.props;
 
         handleLoginSubmit();
       }
     } catch (error) {
-      // this.setState({
-      //   variant: 'error',
-      //   message: `${error.response.status} ${error.response.statusText}`,
-      //   open: true,
-      // });
+      this.setState({
+        variant: 'error',
+        message: `${error.response.statusText}`,
+        // open: true,
+      });
     }
   };
 
   render() {
     const {classes} = this.props;
+    let isSubmitting;
 
     return (
       <Formik
@@ -76,8 +77,9 @@ class Login extends React.Component {
           }
           return errors;
         }}
-        onSubmit={(values, {setSubmitting}) => {
-          this.handleSubmit(values);
+        onSubmit={async (values, {setSubmitting}) => {
+          await this.handleSubmit(values);
+          isSubmitting = false;
         }}>
         {({
           values,
@@ -85,7 +87,6 @@ class Login extends React.Component {
           handleChange,
           handleBlur,
           handleSubmit,
-          isSubmitting,
           /* and other goodies */
         }) => (
           <Grid
@@ -169,7 +170,9 @@ class Login extends React.Component {
                 </div>
               </Paper>
             </Grid>
-            {errors.email ? CustomAlert('warning', errors.email) : true}
+            {this.state
+              ? CustomAlert(this.state.variant, this.state.message)
+              : true}
           </Grid>
         )}
       </Formik>
