@@ -8,7 +8,6 @@ import {
   Redirect,
 } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import {Button} from '@material-ui/core';
 import DrawerWrapper from './layout/DrawerWrapper';
 import Dashboard from './screens/Dashboard';
 import Cameras from './screens/Cameras';
