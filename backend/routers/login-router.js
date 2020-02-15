@@ -13,32 +13,32 @@ router.post("/login", passport.authenticate("local"), (req, res) => {
     res.cookie.expires = false;
     req.session.cookie.expires = false;
   }
-  res.status(202).json({ msg: "ok" });
+  res.status(202).json({ message: "ok" });
 });
 
 router.post("/signup", async (req, res) => {
   try {
     if (!req.body.username) {
-      res.status(406).json({ msg: "missing username" });
+      res.status(406).json({ message: "missing username" });
     } else if (!req.body.email) {
-      res.status(406).json({ msg: "missing email" });
+      res.status(406).json({ message: "missing email" });
     } else if (!req.body.password) {
-      res.status(406).json({ msg: "missing password" });
+      res.status(406).json({ message: "missing password" });
     } /* else if (!req.body.type) {
-      res.status(406).json({ msg: "missing user type" });
+      res.status(406).json({ message: "missing user type" });
     }*/ else {
       await User.create(req.body)
         .then(() => {
-          res.status(201).json({ msg: "user created" });
+          res.status(201).json({ message: "user created" });
         })
         .catch(err => {
-          res.status(409).json({ msg: err }); // just for debugging
+          res.status(409).json({ message: err }); // just for debugging
           console.error(err);
         });
     }
   } catch (err) {
     console.warn(err);
-    res.status(500).json({ msg: "server error" });
+    res.status(500).json({ message: "server error" });
   }
 });
 // Route for logging user out

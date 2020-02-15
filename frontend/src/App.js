@@ -12,6 +12,8 @@ import {Button} from '@material-ui/core';
 import DrawerWrapper from './layout/DrawerWrapper';
 import Dashboard from './screens/Dashboard';
 import Cameras from './screens/Cameras';
+import Welcome from './screens/Welcome';
+import Auth from './screens/Auth';
 
 const theme = createMuiTheme({
   palette: {
@@ -40,32 +42,111 @@ const theme = createMuiTheme({
 });
 // const isAuthenticated = true;
 
-const App = () => (
-  <ThemeProvider theme={theme}>
-    <CssBaseline />
-    <Router>
-      <DrawerWrapper>
-        <Switch>
-          <Route
-            exact
-            path="/"
-            render={routerProps => (
-              <Redirect {...routerProps} to="/dashboard" />
-            )}
-          />
-          <Route
-            path="/dashboard"
-            render={routerProps => <Dashboard {...routerProps} />}
-          />
-          <Route
-            path="/cameras"
-            render={routerProps => <Cameras {...routerProps} path="/cameras" />}
-          />
-          {/* <Route path="*" exact component={The404} /> */}
-        </Switch>
-      </DrawerWrapper>
-    </Router>
-  </ThemeProvider>
-);
+export default class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLoading: true,
+      isAuthenticated: false,
+    };
 
-export default App;
+    // if for any reason a user becomes logged out redirect him to the Home route: "/"
+    axios.interceptors.response.use(
+      response => response,
+      error => {
+        if (error.response) {
+          const {status, data} = error.response;
+
+          switch (status) {
+            case 401:
+              this.setState({isAuthenticated: false});
+              break;
+            case 403:
+              if (data.message === 'no access') {
+                this.setState({isAuthenticated: false});
+              }
+              break;
+            default:
+              break;
+          }
+        }
+        return Promise.reject(error);
+      }
+    );
+  }
+
+  async componentDidMount() {
+    // this.load();
+  }
+
+  load = async () => {
+    try {
+      this.setState({
+        isLoading: false,
+        isAuthenticated: true,
+      });
+    } catch (error) {
+      this.setState({isLoading: false});
+
+      console.error(error);
+    }
+  };
+
+  render() {
+    const {isAuthenticated = false, isLoading = true} = this.state;
+    console.log(isAuthenticated);
+    return (
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Router>
+          {isAuthenticated ? (
+            <DrawerWrapper>
+              <Switch>
+                <Route
+                  exact
+                  path="/"
+                  render={routerProps => (
+                    <Redirect {...routerProps} to="/dashboard" />
+                  )}
+                />
+                <Route
+                  path="/dashboard"
+                  render={routerProps => <Dashboard {...routerProps} />}
+                />
+                <Route
+                  path="/cameras"
+                  render={routerProps => (
+                    <Cameras {...routerProps} path="/cameras" />
+                  )}
+                />
+                {/* <Route path="*" exact component={The404} /> */}
+              </Switch>
+            </DrawerWrapper>
+          ) : (
+            <Switch>
+              <Route
+                path="/register"
+                render={routerProps => <Auth {...routerProps} />}
+              />
+              <Route
+                path="/login"
+                render={routerProps => (
+                  <Auth {...routerProps} onSucces={this.load} />
+                )}
+              />
+              <Route
+                path="/"
+                render={routerProps => (
+                  <>
+                    <Redirect to="/" />
+                    <Welcome {...routerProps} />
+                  </>
+                )}
+              />
+            </Switch>
+          )}
+        </Router>
+      </ThemeProvider>
+    );
+  }
+}

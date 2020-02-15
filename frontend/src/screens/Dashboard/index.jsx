@@ -21,11 +21,3 @@ export default function Dashboard(props) {
 
   return <div>dash</div>;
 }
-
-Dashboard.propTypes = {
-  data: PropTypes.shape({
-    completedCount: PropTypes.number,
-    toBeGradedCount: PropTypes.number,
-    projects: PropTypes.arrayOf(PropTypes.object),
-  }).isRequired,
-};
