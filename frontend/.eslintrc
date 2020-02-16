@@ -31,7 +31,6 @@
     // No delete operator.
     "fp/no-delete": "warn",
     // Warning when Object.assign(a, b) used, since it mutates first argument. Object.assign({}, a, b) is ok.
-    "fp/no-mutating-assign": "warn",
     // Warning when mutating method (pop, push, reverse, shift, sort, splice, unshift, etc) is used. Ramda and lodash/fp are allowed (_.pop, R.push)
     "fp/no-mutating-methods": [
       "warn",

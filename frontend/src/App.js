@@ -75,7 +75,7 @@ export default class App extends React.Component {
   }
 
   async componentDidMount() {
-    // this.load();
+    this.load();
   }
 
   load = async () => {
@@ -93,7 +93,6 @@ export default class App extends React.Component {
 
   render() {
     const {isAuthenticated = false, isLoading = true} = this.state;
-    console.log(isAuthenticated);
     return (
       <ThemeProvider theme={theme}>
         <CssBaseline />

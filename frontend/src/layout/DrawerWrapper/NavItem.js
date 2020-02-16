@@ -2,9 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {makeStyles} from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
 import {NavLink} from 'react-router-dom';
+import {AwesomeButton} from 'react-awesome-button';
+import '../../styles/awesomeStyle.css';
 
 const useStyles = makeStyles(theme => ({
   icon: {
@@ -25,21 +25,15 @@ const useStyles = makeStyles(theme => ({
 function NavItem({path, title, Icon, exact = false, ...rest}) {
   const classes = useStyles();
   return (
-    <ListItem
-      button
-      component={NavLink}
-      exact={exact}
-      to={path}
-      // hoverClassName={classes.activeLink}
-      className={classes.link}
-      activeClassName={classes.activeLink}
-      {...rest}>
-      {Icon && (
-        <ListItemIcon>
-          <Icon className={classes.icon} />
-        </ListItemIcon>
-      )}
-      {/* <ListItemText primary={title} /> */}
+    <ListItem>
+      <AwesomeButton
+        size="medium"
+        element={NavLink}
+        exact={exact}
+        to={path}
+        ripple>
+        <Icon style={{fontSize: 40}} />
+      </AwesomeButton>
     </ListItem>
   );
 }
