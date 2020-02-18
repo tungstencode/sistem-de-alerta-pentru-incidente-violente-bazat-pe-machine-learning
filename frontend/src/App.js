@@ -75,7 +75,7 @@ export default class App extends React.Component {
   }
 
   async componentDidMount() {
-    this.load();
+    // this.load();
   }
 
   load = async () => {
