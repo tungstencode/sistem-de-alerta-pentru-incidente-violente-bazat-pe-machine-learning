@@ -16,6 +16,7 @@ import Auth from './screens/Auth';
 
 const theme = createMuiTheme({
   palette: {
+    type: 'dark',
     primary: {
       light: '#7274e4',
       main: '#6164e1',
@@ -29,6 +30,7 @@ const theme = createMuiTheme({
     },
     background: {
       default: '#1b2b33',
+      paper: '#1b2b33',
     },
     text: {
       primary: '#070722',
@@ -75,7 +77,7 @@ export default class App extends React.Component {
   }
 
   async componentDidMount() {
-    // this.load();
+    this.load();
   }
 
   load = async () => {

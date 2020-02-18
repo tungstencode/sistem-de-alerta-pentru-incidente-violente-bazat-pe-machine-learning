@@ -25,11 +25,11 @@
     --loading-transition-speed: 6s;
     --loading-transition-end-speed: 0.3s;
     --transform-speed: 0.15s;
-    --button-primary-color: #1E88E5;
-    --button-primary-color-dark: #1360a4;
-    --button-primary-color-light: white;
-    --button-primary-color-hover: #187bd1;
-    --button-primary-color-active: #166dba;
+    --button-primary-color: #6164e1;
+    --button-primary-color-dark: #4749dc;
+    --button-primary-color-light: #7274e4;
+    --button-primary-color-hover: #4749dc;
+    --button-primary-color-active: #4749dc;
     --button-primary-border: none;
     --button-secondary-color: #f2f6f9;
     --button-secondary-color-dark: #1360a4;

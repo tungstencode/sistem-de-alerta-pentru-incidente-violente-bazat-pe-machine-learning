@@ -12,26 +12,78 @@ const useStyles = makeStyles(theme => ({
     marginLeft: theme.spacing(1),
   },
   link: {
-    textDecoration: 'none',
-    color: theme.palette.primary.inactive,
-    backgroundColor: theme.palette.primary.inactive,
-    hover: theme.palette.primary.main,
+    backgroundColor: 'black',
+    // firstChild:
   },
   activeLink: {
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: 'white',
   },
 }));
+
+// 'aws-btn--middle',
 
 function NavItem({path, title, Icon, exact = false, ...rest}) {
   const classes = useStyles();
   return (
-    <ListItem>
+    // <ListItem
+    //   button
+    //   component={NavLink}
+    //   className={classes.link}
+    //   activeClassName={classes.activeLink}
+    //   exact={exact}
+    //   to={path}>
+    //   <Icon style={{fontSize: 40}} />
+    // </ListItem>
+
+    // <ListItem
+    //   button
+    //   component={AwesomeButton}
+    //   element={NavLink}
+    //   className={classes.link}
+    //   activeClassName={classes.activeLink}
+    //   exact={exact}
+    //   to={path}>
+    //   {/* <AwesomeButton
+    //     size="medium"
+    //     element={NavLink}
+
+    //     ripple> */}
+    //   <Icon style={{fontSize: 40}} />
+    //   {/* </AwesomeButton> */}
+    // </ListItem>
+
+    // <AwesomeButton
+    //   size="medium"
+    //   element={NavLink}
+    //   component={ListItem}
+    //   exact={exact}
+    //   to={path}
+    //   ripple
+    //   className={classes.link}
+    //   activeClassName={classes.activeLink}
+    //   {...rest}>
+    //   <Icon style={{fontSize: 40}} />
+    // </AwesomeButton>
+
+    <ListItem
+      // className={classes.link}
+      // activeClassName={classes.activeLink}
+      // activeClassName={classes.activeLink}
+      // button
+      exact={exact}
+      to={path}
+      component={NavLink}>
       <AwesomeButton
         size="medium"
+        // light
+        activeClassName={classes.activeLink}
         element={NavLink}
         exact={exact}
         to={path}
-        ripple>
+        // className="active"
+        // activeClassName={classes.activeLink}
+        // ripple
+        {...rest}>
         <Icon style={{fontSize: 40}} />
       </AwesomeButton>
     </ListItem>
