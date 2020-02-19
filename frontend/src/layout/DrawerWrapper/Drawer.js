@@ -1,6 +1,6 @@
 import React from 'react';
 import {makeStyles} from '@material-ui/core/styles';
-import {Grid} from '@material-ui/core';
+import {Grid, Container} from '@material-ui/core';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -12,6 +12,8 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import VideocamOutlined from '@material-ui/icons/VideocamOutlined';
 import DashboardOutlined from '@material-ui/icons/DashboardOutlined';
+import Timeline from '@material-ui/icons/Timeline';
+import Settings from '@material-ui/icons/Settings';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import NavItem from './NavItem';
 
@@ -37,6 +39,12 @@ const useStyles = makeStyles(theme => ({
     color: theme.palette.text.light,
   },
   toolbar: theme.mixins.toolbar,
+  container: {
+    padding: theme.spacing(3, 2),
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+  },
 }));
 
 // eslint-disable-next-line react/prop-types
@@ -112,22 +120,28 @@ export default function DrawerWrapper({children}) {
         }}>
         <div className={classes.toolbar} />
 
-        <List>
-          <List>
-            <NavItem
-              exact
-              path="/dashboard"
-              title="Dashboard"
-              Icon={DashboardOutlined}
-            />
-            <NavItem
-              exact
-              path="/cameras"
-              title="Cameras"
-              Icon={VideocamOutlined}
-            />
-          </List>
-        </List>
+        <Container className={classes.container} disableGutters>
+          <NavItem
+            exact
+            path="/cameras"
+            title="Cameras"
+            Icon={VideocamOutlined}
+          />
+          <NavItem
+            exact
+            path="/dashboard"
+            title="Dashboard"
+            Icon={DashboardOutlined}
+          />
+          <NavItem exact path="/graph" title="Graph" Icon={Timeline} />
+          <NavItem
+            bottom
+            exact
+            path="/settings"
+            title="Settings"
+            Icon={Settings}
+          />
+        </Container>
       </Drawer>
       <main className={classes.content}>
         <div className={classes.toolbar} />

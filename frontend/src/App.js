@@ -13,6 +13,8 @@ import Dashboard from './screens/Dashboard';
 import Cameras from './screens/Cameras';
 import Welcome from './screens/Welcome';
 import Auth from './screens/Auth';
+import Graph from './screens/Graph';
+import Settings from './screens/Settings';
 
 const theme = createMuiTheme({
   palette: {
@@ -51,7 +53,6 @@ export default class App extends React.Component {
       isAuthenticated: false,
     };
 
-    // if for any reason a user becomes logged out redirect him to the Home route: "/"
     axios.interceptors.response.use(
       response => response,
       error => {
@@ -110,13 +111,25 @@ export default class App extends React.Component {
                   )}
                 />
                 <Route
+                  path="/cameras"
+                  render={routerProps => (
+                    <Cameras {...routerProps} path="/cameras" />
+                  )}
+                />
+                <Route
                   path="/dashboard"
                   render={routerProps => <Dashboard {...routerProps} />}
                 />
                 <Route
-                  path="/cameras"
+                  path="/graph"
                   render={routerProps => (
-                    <Cameras {...routerProps} path="/cameras" />
+                    <Graph {...routerProps} path="/graph" />
+                  )}
+                />
+                <Route
+                  path="/settings"
+                  render={routerProps => (
+                    <Settings {...routerProps} path="/settings" />
                   )}
                 />
                 {/* <Route path="*" exact component={The404} /> */}

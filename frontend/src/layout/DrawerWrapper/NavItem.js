@@ -5,6 +5,7 @@ import ListItem from '@material-ui/core/ListItem';
 import {NavLink} from 'react-router-dom';
 import {AwesomeButton} from 'react-awesome-button';
 import '../../styles/awesomeStyle.css';
+// import AwesomeButtonStyles from '../../styles/awesomeStyle.css';
 
 const useStyles = makeStyles(theme => ({
   icon: {
@@ -12,81 +13,39 @@ const useStyles = makeStyles(theme => ({
     marginLeft: theme.spacing(1),
   },
   link: {
-    backgroundColor: 'black',
-    // firstChild:
+    margin: theme.spacing(1, 0),
   },
-  activeLink: {
-    backgroundColor: 'white',
+  bottomLink: {
+    margin: theme.spacing(1, 0),
+    position: 'absolute',
+    bottom: 0,
   },
 }));
 
-// 'aws-btn--middle',
-
-function NavItem({path, title, Icon, exact = false, ...rest}) {
+function NavItem({path, title, Icon, exact = false, bottom = false, ...rest}) {
   const classes = useStyles();
-  return (
-    // <ListItem
-    //   button
-    //   component={NavLink}
-    //   className={classes.link}
-    //   activeClassName={classes.activeLink}
-    //   exact={exact}
-    //   to={path}>
-    //   <Icon style={{fontSize: 40}} />
-    // </ListItem>
-
-    // <ListItem
-    //   button
-    //   component={AwesomeButton}
-    //   element={NavLink}
-    //   className={classes.link}
-    //   activeClassName={classes.activeLink}
-    //   exact={exact}
-    //   to={path}>
-    //   {/* <AwesomeButton
-    //     size="medium"
-    //     element={NavLink}
-
-    //     ripple> */}
-    //   <Icon style={{fontSize: 40}} />
-    //   {/* </AwesomeButton> */}
-    // </ListItem>
-
-    // <AwesomeButton
-    //   size="medium"
-    //   element={NavLink}
-    //   component={ListItem}
-    //   exact={exact}
-    //   to={path}
-    //   ripple
-    //   className={classes.link}
-    //   activeClassName={classes.activeLink}
-    //   {...rest}>
-    //   <Icon style={{fontSize: 40}} />
-    // </AwesomeButton>
-
-    <ListItem
-      // className={classes.link}
-      // activeClassName={classes.activeLink}
-      // activeClassName={classes.activeLink}
-      // button
+  return bottom ? (
+    <AwesomeButton
+      size="medium"
+      element={NavLink}
       exact={exact}
       to={path}
-      component={NavLink}>
-      <AwesomeButton
-        size="medium"
-        // light
-        activeClassName={classes.activeLink}
-        element={NavLink}
-        exact={exact}
-        to={path}
-        // className="active"
-        // activeClassName={classes.activeLink}
-        // ripple
-        {...rest}>
-        <Icon style={{fontSize: 40}} />
-      </AwesomeButton>
-    </ListItem>
+      className={classes.bottomLink}
+      ripple
+      {...rest}>
+      <Icon style={{fontSize: 40}} />
+    </AwesomeButton>
+  ) : (
+    <AwesomeButton
+      size="medium"
+      element={NavLink}
+      exact={exact}
+      to={path}
+      className={classes.link}
+      ripple
+      {...rest}>
+      <Icon style={{fontSize: 40}} />
+    </AwesomeButton>
   );
 }
 
@@ -95,6 +54,9 @@ NavItem.propTypes = {
   title: PropTypes.string.isRequired,
   // eslint-disable-next-line react/require-default-props
   exact: PropTypes.bool,
+
+  // eslint-disable-next-line react/require-default-props
+  bottom: PropTypes.bool,
   // eslint-disable-next-line react/require-default-props
   Icon: PropTypes.node,
 };

@@ -4,6 +4,12 @@ body {
   font-family: sans-serif;
 }
 
-.active {
-  background-color: darkgrey !important;
+.active span {
+  background-color: #4749dc !important;
+  -webkit-transform: translate3d(
+    0,
+    calc(1px * var(--button-hover-pressure)),
+    0
+  );
+  transform: translate3d(0, calc(1px * var(--button-hover-pressure)), 0);
 }
