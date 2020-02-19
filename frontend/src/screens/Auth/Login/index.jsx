@@ -19,8 +19,10 @@ const styles = theme => ({
   margin: {
     margin: theme.spacing.unit * 2,
   },
-  padding: {
+  paper: {
     padding: theme.spacing.unit,
+    color: theme.palette.text.light,
+    // backgroundColor: theme.palette.text.light,
   },
 });
 
@@ -65,7 +67,7 @@ class Login extends React.Component {
 
     return (
       <Formik
-        initialValues={{email: '', password: ''}}
+        initialValues={{email: '', password: '', remember: false}}
         validate={values => {
           const errors = {};
           if (!values.email) {
@@ -97,7 +99,7 @@ class Login extends React.Component {
             justify="center"
             style={{minHeight: '100vh'}}>
             <Grid item xs={3}>
-              <Paper className={classes.padding}>
+              <Paper className={classes.paper}>
                 <div className={classes.margin}>
                   <form onSubmit={handleSubmit}>
                     <Grid container spacing={8} alignItems="flex-end">
@@ -138,6 +140,8 @@ class Login extends React.Component {
                     <Grid container alignItems="center" justify="space-between">
                       <Grid item>
                         <FormControlLabel
+                          name="remember"
+                          onChange={handleChange}
                           control={<Checkbox color="primary" />}
                           label="Remember me"
                         />

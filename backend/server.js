@@ -31,7 +31,7 @@ app.use(
     cookie: {
       httpOnly: true,
     },
-  }),
+  })
 );
 
 app.use(passport.initialize());
@@ -41,7 +41,9 @@ app.use(passport.session());
 const loginRouter = require("./routers/login-router");
 
 app.use("/", loginRouter);
-app.get("/hello", (req, res) => res.send("Hello World!"));
+app.get("/hello", (req, res) => {
+  res.send("Hello");
+});
 
 app.use(isAuthenticated);
 

@@ -45,7 +45,7 @@ router.post("/signup", async (req, res) => {
 router.get("/logout", (req, res) => {
   res.cookie.expires = false;
   req.session.cookie.expires = false;
-
+  res.clearCookie("key");
   req.logout();
   res.redirect("/");
 });

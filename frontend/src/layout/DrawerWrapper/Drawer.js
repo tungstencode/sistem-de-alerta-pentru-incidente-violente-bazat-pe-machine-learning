@@ -1,4 +1,5 @@
 import React from 'react';
+import Axios from 'axios';
 import {makeStyles} from '@material-ui/core/styles';
 import {Grid, Container} from '@material-ui/core';
 import Drawer from '@material-ui/core/Drawer';
@@ -32,6 +33,7 @@ const useStyles = makeStyles(theme => ({
   },
   drawerPaper: {
     width: drawerWidth,
+    backgroundColor: theme.palette.background.default,
   },
   content: {
     flexGrow: 1,
@@ -45,44 +47,44 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     justifyContent: 'center',
   },
+  menuItem: {
+    color: theme.palette.text.light,
+  },
 }));
 
 // eslint-disable-next-line react/prop-types
 export default function DrawerWrapper({children}) {
   const classes = useStyles();
+
+  const [auth, setAuth] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
 
-  const isMenuOpen = Boolean(anchorEl);
-  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const handleChange = event => {
+    setAuth(event.target.checked);
+  };
 
-  const handleProfileMenuOpen = event => {
+  const handleMenu = event => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleMobileMenuClose = () => {
-    setMobileMoreAnchorEl(null);
-  };
-
-  const handleMenuClose = () => {
+  const handleClose = () => {
     setAnchorEl(null);
-    handleMobileMenuClose();
   };
 
-  const menuId = 'primary-search-account-menu';
-  const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{vertical: 'top', horizontal: 'right'}}
-      id={menuId}
-      keepMounted
-      transformOrigin={{vertical: 'top', horizontal: 'right'}}
-      open={isMenuOpen}
-      onClose={handleMenuClose}>
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-    </Menu>
-  );
+  const handleLogOut = () => {
+    handleClose();
+    Axios.get('/logout').then(res => {
+      window.location.reload(false);
+    });
+  };
+
+  const handleProfile = () => {
+    Axios.get('/user_data').then(res => {
+      handleClose();
+      console.log(res.data);
+    });
+  };
 
   return (
     <div className={classes.root}>
@@ -92,24 +94,43 @@ export default function DrawerWrapper({children}) {
           <Grid item xs={6}>
             <Toolbar>
               <Typography variant="h6" noWrap>
-                AI SURVEILLANCE SYSTEM
+                Sistem de alertă pentru incidente violente bazat pe
+                MachineLearning
               </Typography>
             </Toolbar>
           </Grid>
 
-          <Grid item xs={6} alignItems="center">
-            <Toolbar>
-              <IconButton
-                edge="end"
-                aria-label="account of current user"
-                aria-controls={menuId}
-                aria-haspopup="true"
-                onClick={handleProfileMenuOpen}
-                color="inherit">
-                <AccountCircle />
-              </IconButton>
-            </Toolbar>
-          </Grid>
+          <Toolbar>
+            <IconButton
+              aria-label="account of current user"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={handleMenu}
+              color="inherit">
+              <AccountCircle />
+            </IconButton>
+            <Menu
+              id="menu-appbar"
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={open}
+              onClose={handleClose}>
+              <MenuItem className={classes.menuItem} onClick={handleProfile}>
+                Profile
+              </MenuItem>
+              <MenuItem className={classes.menuItem} onClick={handleLogOut}>
+                Log out
+              </MenuItem>
+            </Menu>
+          </Toolbar>
         </Grid>
       </AppBar>
       <Drawer

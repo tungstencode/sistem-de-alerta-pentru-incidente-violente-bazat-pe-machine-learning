@@ -32,11 +32,11 @@ const theme = createMuiTheme({
     },
     background: {
       default: '#1b2b33',
-      paper: '#1b2b33',
+      paper: '#253b46',
     },
     text: {
-      primary: '#070722',
-      light: '#f2f2fd',
+      primary: '#f2f2fd',
+      dark: '#070722',
     },
     typography: {
       color: '#f2f2fd',
@@ -54,10 +54,14 @@ export default class App extends React.Component {
     };
 
     axios.interceptors.response.use(
-      response => response,
+      response => {
+        console.log(response);
+        return response;
+      },
       error => {
         if (error.response) {
           const {status, data} = error.response;
+          console.log(error.response);
 
           switch (status) {
             case 401:
@@ -65,6 +69,7 @@ export default class App extends React.Component {
               break;
             case 403:
               if (data.message === 'no access') {
+                console.log('no access');
                 this.setState({isAuthenticated: false});
               }
               break;
@@ -78,11 +83,14 @@ export default class App extends React.Component {
   }
 
   async componentDidMount() {
-    this.load();
+    this.checkLoggedIn();
   }
 
-  load = async () => {
+  checkLoggedIn = async () => {
     try {
+      const {data = {}} = await axios.get('/user_data');
+      console.log(data);
+
       this.setState({
         isLoading: false,
         isAuthenticated: true,
@@ -144,7 +152,7 @@ export default class App extends React.Component {
               <Route
                 path="/login"
                 render={routerProps => (
-                  <Auth {...routerProps} onSucces={this.load} />
+                  <Auth {...routerProps} onSucces={this.checkLoggedIn} />
                 )}
               />
               <Route
