@@ -28,7 +28,7 @@ class Video(Resource):
     #     return {todo_id: todos[todo_id]}
 
 
-api.add_resource(Video, '/camera/<camera_id>')
+api.add_resource(Video, '/cameras/<camera_id>')
 
 
 def generate(url):

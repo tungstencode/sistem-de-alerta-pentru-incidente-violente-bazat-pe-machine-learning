@@ -43,7 +43,7 @@ const cameraRouter = require("./routers/camera-router");
 
 app.use("/", loginRouter);
 app.use(isAuthenticated);
-app.use("/camera", cameraRouter);
+app.use("/cameras", cameraRouter);
 
 
 

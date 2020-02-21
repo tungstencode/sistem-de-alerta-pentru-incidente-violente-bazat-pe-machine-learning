@@ -1,19 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {makeStyles} from '@material-ui/core/styles';
+import Box from '@material-ui/core/Box';
+import Paper from '@material-ui/core/Paper';
 
 const useStyles = makeStyles(theme => ({
-  icon: {
-    color: 'black',
-    marginLeft: theme.spacing(1),
-  },
-  link: {
-    margin: theme.spacing(1, 0),
-  },
-  bottomLink: {
-    margin: theme.spacing(1, 0),
-    position: 'absolute',
-    bottom: 0,
+  paper: {
+    padding: theme.spacing(2, 2),
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
   },
 }));
 
@@ -28,7 +23,15 @@ function CameraWrapper({
   const classes = useStyles();
   return (
     <div>
-      <img width="500" alt={title} src={`http://localhost:5000/camera/${id}`} />
+      <Box>
+        <Paper className={classes.paper}>
+          <img
+            width="500"
+            alt={title}
+            src={`http://localhost:5000/cameras/${id}`}
+          />
+        </Paper>
+      </Box>
     </div>
   );
 }
