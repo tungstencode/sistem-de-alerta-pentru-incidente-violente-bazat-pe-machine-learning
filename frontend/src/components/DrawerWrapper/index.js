@@ -6,7 +6,6 @@ import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import IconButton from '@material-ui/core/IconButton';
@@ -16,7 +15,7 @@ import DashboardOutlined from '@material-ui/icons/DashboardOutlined';
 import Timeline from '@material-ui/icons/Timeline';
 import Settings from '@material-ui/icons/Settings';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import NavItem from './NavItem';
+import NavItem from '../NavItem/NavItem';
 
 const drawerWidth = 110;
 

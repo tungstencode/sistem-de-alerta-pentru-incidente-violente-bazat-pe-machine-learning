@@ -8,7 +8,7 @@ import {
   Redirect,
 } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import DrawerWrapper from './layout/DrawerWrapper';
+import DrawerWrapper from './components/DrawerWrapper';
 import Dashboard from './screens/Dashboard';
 import Cameras from './screens/Cameras';
 import Welcome from './screens/Welcome';
@@ -43,7 +43,6 @@ const theme = createMuiTheme({
     },
   },
 });
-// const isAuthenticated = true;
 
 export default class App extends React.Component {
   constructor(props) {

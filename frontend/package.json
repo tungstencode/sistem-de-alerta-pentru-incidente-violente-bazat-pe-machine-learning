@@ -59,5 +59,10 @@
       "enzyme-to-json/serializer"
     ]
   },
-  "proxy": "https://localhost:3001"
+  "proxy": "https://localhost:3001",
+  "bit": {
+    "env": {},
+    "componentsDefaultDirectory": "components/{name}",
+    "packageManager": "npm"
+  }
 }

@@ -18,20 +18,20 @@ router.post("/login", passport.authenticate("local"), (req, res) => {
 
 router.post("/signup", async (req, res) => {
   try {
-    if (!req.body.username) {
-      res.status(406).json({ message: "missing username" });
+    if (!req.body.cnp) {
+      res.status(406).json({ message: "missing cnp" });
     } else if (!req.body.email) {
       res.status(406).json({ message: "missing email" });
     } else if (!req.body.password) {
       res.status(406).json({ message: "missing password" });
-    } /* else if (!req.body.type) {
-      res.status(406).json({ message: "missing user type" });
-    }*/ else {
+    } else if (!req.body.name) {
+      res.status(406).json({ message: "missing name" });
+    } else {
       await User.create(req.body)
         .then(() => {
           res.status(201).json({ message: "user created" });
         })
-        .catch(err => {
+        .catch((err) => {
           res.status(409).json({ message: err }); // just for debugging
           console.error(err);
         });
@@ -56,7 +56,7 @@ router.get("/user_data", isAuthenticated, (req, res) => {
     res.json({});
   } else {
     res.json({
-      username: req.user.username,
+      name: req.user.username,
       email: req.user.email,
       id: req.user.id,
     });

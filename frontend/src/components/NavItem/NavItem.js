@@ -1,11 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {makeStyles} from '@material-ui/core/styles';
-import ListItem from '@material-ui/core/ListItem';
 import {NavLink} from 'react-router-dom';
 import {AwesomeButton} from 'react-awesome-button';
-import '../../styles/awesomeStyle.css';
-// import AwesomeButtonStyles from '../../styles/awesomeStyle.css';
+import './awesomeStyle.css';
 
 const useStyles = makeStyles(theme => ({
   icon: {
