@@ -94,8 +94,8 @@ export default function DrawerWrapper({children}) {
           <Grid item xs={6}>
             <Toolbar>
               <Typography variant="h6" noWrap>
-                Sistem de alertă pentru incidente violente bazat pe
-                MachineLearning
+                SISTEM DE ALERTĂ PENTRU INCIDENTE VIOLENTE BAZAT PE MACHINE
+                LEARNING
               </Typography>
             </Toolbar>
           </Grid>
