@@ -31,7 +31,7 @@ app.use(
     cookie: {
       httpOnly: true,
     },
-  })
+  }),
 );
 
 app.use(passport.initialize());
@@ -44,8 +44,6 @@ const cameraRouter = require("./routers/camera-router");
 app.use("/", loginRouter);
 app.use(isAuthenticated);
 app.use("/cameras", cameraRouter);
-
-
 
 app.get("/create", async (req, res) => {
   try {

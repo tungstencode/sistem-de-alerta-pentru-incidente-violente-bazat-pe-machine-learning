@@ -1,51 +1,48 @@
-module.exports = (sequelize, type) => sequelize.define("Camera", {
-  id: {
-    type: type.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
-  name: {
-    type: type.STRING,
-    allowNull: true,
-    validate: {
-      notEmpty: true,
+module.exports = (sequelize, type) =>
+  sequelize.define("Camera", {
+    id: {
+      type: type.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
-  },
-  location: {
-    type: type.STRING,
-    allowNull: false,
-    validate: {
-      notEmpty: true,
+    name: {
+      type: type.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
     },
-  },
-  url: {
-    type: type.STRING,
-    allowNull: true,
-    validate: {
-      notEmpty: true,
+    location: {
+      type: type.STRING,
+      allowNull: true,
+      validate: {
+        notEmpty: false,
+      },
     },
-  },
-  username: {
-    type: type.STRING,
-    allowNull: true,
-    validate: {
-      notEmpty: false,
+    url: {
+      type: type.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
     },
-  },
-  password: {
-    type: type.STRING,
-    allowNull: true,
-    validate: {
-      notEmpty: false,
+    username: {
+      type: type.STRING,
+      allowNull: true,
+      validate: {},
     },
-  },
-  // status: {
-  //   type: type.STRING,
-  //   allowNull: false,
-  //   validate: {
-  //     notEmpty: true,
-  //     isIn: [["ON", "OFF", "MENTENANCE"]],
-  //   },
-  //   defaultValue: "ON",
-  // },
-});
+    password: {
+      type: type.STRING,
+      allowNull: true,
+      validate: {},
+    },
+    // status: {
+    //   type: type.STRING,
+    //   allowNull: false,
+    //   validate: {
+    //     notEmpty: true,
+    //     isIn: [["ON", "OFF", "MENTENANCE"]],
+    //   },
+    //   defaultValue: "ON",
+    // },
+  });

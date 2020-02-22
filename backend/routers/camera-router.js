@@ -1,6 +1,8 @@
 const express = require("express");
-const Sequelize = require("sequelize");
 const { Camera, User } = require("../config/sequelize");
+const urlRegex = require("../config/url-regex");
+
+const regex = new RegExp(urlRegex);
 
 const router = express.Router();
 
@@ -23,6 +25,27 @@ router.get("/assigned", async (req, res) => {
     res.status(200).json(cameras);
   } catch (error) {
     console.warn(error);
+    res.status(500).json({ message: "server error" });
+  }
+});
+
+router.post("/assigned", async (req, res) => {
+  try {
+    const camera = req.body;
+    if (!camera) {
+      res.status(406).json({ message: "missing body" });
+    } else if (!camera.url && regex.test(camera.url)) {
+      res.status(406).json({ message: "missing url" });
+    } else if (!camera.name) {
+      res.status(406).json({ message: "missing name" });
+    } else {
+      const newCamera = await Camera.create(camera);
+      const user = await User.findByPk(req.user.cnp);
+      await user.addCamera(newCamera);
+      res.status(201).json({ message: "created" });
+    }
+  } catch (e) {
+    console.warn(e);
     res.status(500).json({ message: "server error" });
   }
 });

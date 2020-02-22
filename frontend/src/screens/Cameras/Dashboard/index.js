@@ -25,6 +25,7 @@ import AddIcon from '@material-ui/icons/Add';
 
 import {makeStyles} from '@material-ui/core/styles';
 import CameraWrapper from '../../../components/CameraWrapper';
+import AddCameraDialog from '../../../components/AddCameraDialog';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -33,7 +34,7 @@ const useStyles = makeStyles(theme => ({
   },
   formControl: {
     margin: theme.spacing(1),
-    minWidth: 120,
+    minWidth: 240,
   },
   root: {
     flexGrow: 1,
@@ -50,25 +51,15 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function Cameras(props) {
-  const [cameras, setCameras] = useState();
-  const [allCameras, setAllCameras] = useState(0);
-
+export default function Cameras() {
   const classes = useStyles();
+  const [cameras, setCameras] = useState();
+
   const [open, setOpen] = React.useState(false);
-  const [cameraName, setCameraName] = React.useState('');
 
-  const handleChange = event => {
-    setCameraName(Number(event.target.value) || '');
+  const handleOpen = () => {
+    setOpen(true);
   };
-
-  const handleClickOpen = () => {
-    axios.get('/cameras').then(({data}) => {
-      setAllCameras(data);
-      setOpen(true);
-    });
-  };
-
   const handleClose = () => {
     setOpen(false);
   };
@@ -95,62 +86,12 @@ export default function Cameras(props) {
         )}
       </Grid>
 
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">Add Camera</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Select a camera from the list or add a new one
-          </DialogContentText>
+      <AddCameraDialog open={open} onClose={handleClose} />
 
-          <form className={classes.container}>
-            <FormControl className={classes.formControl}>
-              <InputLabel id="add-camera">Camera List</InputLabel>
-              <Select
-                labelId="add-camera"
-                id="select-camera"
-                value={cameraName}
-                onChange={handleChange}
-                input={<Input />}>
-                <MenuItem value="">
-                  <em>None</em>
-                </MenuItem>
-                {allCameras
-                  ? allCameras.map((camera, i) => {
-                      return <MenuItem value={i}>{camera.name}</MenuItem>;
-                    })
-                  : true}
-                {/* <MenuItem value={10}>Ten</MenuItem>
-                <MenuItem value={20}>Twenty</MenuItem>
-                <MenuItem value={30}>Thirty</MenuItem> */}
-              </Select>
-            </FormControl>
-          </form>
-
-          <TextField
-            autoFocus
-            margin="dense"
-            id="ip"
-            label="IP"
-            type="text"
-            fullWidth
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleClose} color="primary">
-            Add
-          </Button>
-        </DialogActions>
-      </Dialog>
       <Fab
         className={classes.fab}
         color="primary"
-        onClick={handleClickOpen}
+        onClick={handleOpen}
         aria-label="add">
         <AddIcon />
       </Fab>

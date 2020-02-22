@@ -29,27 +29,31 @@ Camera.belongsToMany(User, { through: "UserCamera", foreignKey: "id" });
 User.hasOne(Setting);
 Setting.belongsTo(User);
 
-sequelize.sync({ force: false }).then(async () => {
+const force = false;
+
+sequelize.sync({ force }).then(async () => {
   // eslint-disable-next-line no-console
   console.log("Database sync completed!");
 
   // dev only
-  // let user = await User.create({
-  //   cnp: "1981029394446",
-  //   name: "lesin",
-  //   email: "lesin@yahoo.com",
-  //   password: "lesin",
-  // });
-  // const settings = await Setting.create();
-  // const camera = await Camera.create({
-  //   name: "test",
-  //   url: "rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov",
-  //   location: "30,20",
-  // });
+  if (force) {
+    const user = await User.create({
+      cnp: "1981029394446",
+      name: "lesin",
+      email: "lesin@yahoo.com",
+      password: "lesin",
+    });
+    const settings = await Setting.create();
+    const camera = await Camera.create({
+      name: "test",
+      url: "rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov",
+      location: "30,20",
+    });
 
-  // user.addCamera(camera);
-  // // await user.setSettings(settings);
-  // await user.setSetting(settings);
+    user.addCamera(camera);
+    // await user.setSettings(settings);
+    await user.setSetting(settings);
+  }
 });
 
 module.exports = {

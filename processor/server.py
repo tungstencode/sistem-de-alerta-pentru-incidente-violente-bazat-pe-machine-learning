@@ -19,6 +19,7 @@ api = Api(app)
 
 class Video(Resource):
     def get(self, camera_id):
+        session = Session(engine)
         camera = session.query(cameras).filter(cameras.id == camera_id).one()
         return Response(generate(camera.url),
                         mimetype="multipart/x-mixed-replace; boundary=frame")
@@ -56,5 +57,4 @@ if __name__ == '__main__':
     Base = automap_base()
     Base.prepare(engine, reflect=True)
     cameras = Base.classes.Cameras
-    session = Session(engine)
     app.run(debug=True)
