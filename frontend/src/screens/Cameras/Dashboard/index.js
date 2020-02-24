@@ -69,7 +69,7 @@ export default function Cameras() {
       <Grid container direction="row" justify="space-between">
         {cameras ? (
           cameras.map(camera => (
-            <CameraWrapper key={camera.id} id={camera.id} name={camera.name} />
+            <CameraWrapper key={camera.id} camera={camera} processing={false} />
           ))
         ) : (
           <Box>
