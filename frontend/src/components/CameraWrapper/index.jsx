@@ -12,14 +12,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function CameraWrapper({
-  id,
-  title,
-  Icon,
-  exact = false,
-  bottom = false,
-  ...rest
-}) {
+function CameraWrapper({id, name, ...rest}) {
   const classes = useStyles();
   return (
     <div>
@@ -27,7 +20,7 @@ function CameraWrapper({
         <Paper className={classes.paper}>
           <img
             width="500"
-            alt={title}
+            alt={name}
             src={`http://localhost:5000/cameras/${id}`}
           />
         </Paper>
@@ -37,15 +30,13 @@ function CameraWrapper({
 }
 
 CameraWrapper.propTypes = {
-  id: PropTypes.string.isRequired,
-  title: PropTypes.string.isRequired,
-  // eslint-disable-next-line react/require-default-props
-  exact: PropTypes.bool,
+  id: PropTypes.number,
+  name: PropTypes.string,
+};
 
-  // eslint-disable-next-line react/require-default-props
-  bottom: PropTypes.bool,
-  // eslint-disable-next-line react/require-default-props
-  Icon: PropTypes.node,
+CameraWrapper.defaultProps = {
+  id: 0,
+  name: '',
 };
 
 export default CameraWrapper;

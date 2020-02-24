@@ -1,8 +1,7 @@
-/* eslint-disable react/prop-types */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
 import TextField from '@material-ui/core/TextField';
@@ -13,10 +12,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import InputLabel from '@material-ui/core/InputLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import NativeSelect from '@material-ui/core/NativeSelect';
 
 import {makeStyles} from '@material-ui/core/styles';
 
@@ -46,69 +43,70 @@ const useStyles = makeStyles(theme => ({
 
 export default function AddCameraDialog(props) {
   const classes = useStyles();
-  // eslint-disable-next-line prefer-const
-  // eslint-disable-next-line fp/no-mutation
-  // eslint-disable-next-line react/prop-types
-  // open = props.open;
-
   const handleClose = props.onClose;
-  const [cameraId, setCameraId] = React.useState('');
-  const [allCameras, setAllCameras] = useState();
+  const handleAddParent = props.onAdd;
+  const [cameraId, setCameraId] = React.useState(0);
+  const [unassignedCameras, setUnassignedCameras] = useState([]);
   const [url, setUrl] = React.useState('');
   const [name, setName] = React.useState('');
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
 
   useEffect(() => {
-    axios.get('/cameras').then(({data}) => {
-      setAllCameras(data);
+    axios.get('/cameras/unassigned').then(({data}) => {
+      setUnassignedCameras(data);
     });
   }, []);
 
+  const updateList = () => {
+    axios.get('/cameras/unassigned').then(({data}) => {
+      setUnassignedCameras(data);
+    });
+  };
+
   const handleAdd = () => {
-    handleClose();
     if (cameraId) {
-      console.log(cameraId);
-    } else {
-      console.log('new camera');
-      axios
-        .post('/cameras/assigned', {url, name, username, password})
-        .then(({data}) => {
-          // setAllCameras(data);
-          console.log(data);
+      axios.put('/cameras/assigned', {id: cameraId}).then(({data}) => {
+        handleAddParent();
+        handleClose();
+        axios.get('/cameras/unassigned').then(({dataUn}) => {
+          setUnassignedCameras(dataUn);
         });
+      });
+    } else {
+      const newCamera = {url, name, username, password};
+      axios.post('/cameras/assigned', newCamera).then(({data}) => {
+        handleAddParent();
+        handleClose();
+        axios.get('/cameras/unassigned').then(({dataUn}) => {
+          setUnassignedCameras(dataUn);
+        });
+      });
     }
   };
 
   const handleCameraChange = event => {
-    console.log(event.target.value);
     setCameraId(Number(event.target.value) || '');
   };
 
   const handleIpChange = event => {
-    console.log(event.target.value);
     setUrl(event.target.value || '');
   };
 
   const handleUsernameChange = event => {
-    console.log(event.target.value);
     setUsername(event.target.value || '');
   };
   const handlePasswordChange = event => {
-    console.log(event.target.value);
     setPassword(event.target.value || '');
   };
 
   const handleNameChange = event => {
-    console.log(event.target.value);
     setName(event.target.value || '');
   };
 
   return (
     <Dialog
-      // eslint-disable-next-line react/prop-types
       open={props.open}
-      // eslint-disable-next-line react/prop-types
       onClose={handleClose}
       aria-labelledby="form-dialog-title">
       <DialogTitle id="form-dialog-title">Add Camera</DialogTitle>
@@ -124,13 +122,16 @@ export default function AddCameraDialog(props) {
               labelId="add-camera"
               id="select-camera"
               value={cameraId}
+              onFocus={updateList}
               onChange={handleCameraChange}
               input={<Input />}>
-              <MenuItem value={0}>New</MenuItem>
-              {allCameras
-                ? allCameras.map((camera, i) => {
-                    return <MenuItem value={camera.id}>{camera.name}</MenuItem>;
-                  })
+              <MenuItem value={0}>Other</MenuItem>
+              {unassignedCameras
+                ? unassignedCameras.map((camera, i) => (
+                    <MenuItem key={camera.id} value={camera.id}>
+                      {camera.name}
+                    </MenuItem>
+                  ))
                 : true}
             </Select>
           </FormControl>
@@ -187,3 +188,15 @@ export default function AddCameraDialog(props) {
     </Dialog>
   );
 }
+
+AddCameraDialog.propTypes = {
+  onClose: PropTypes.func,
+  onAdd: PropTypes.func,
+  open: PropTypes.bool,
+};
+
+AddCameraDialog.defaultProps = {
+  onClose: () => {},
+  onAdd: () => {},
+  open: false,
+};

@@ -21,6 +21,7 @@ class Video(Resource):
     def get(self, camera_id):
         session = Session(engine)
         camera = session.query(cameras).filter(cameras.id == camera_id).one()
+        # session.close()
         return Response(generate(camera.url),
                         mimetype="multipart/x-mixed-replace; boundary=frame")
 
@@ -53,7 +54,7 @@ if __name__ == '__main__':
 
     # print("mysql://"+DB_USER+":"+DB_PASS+"@"+DB_HOST+":3306/"+DB_NAME)
     engine = create_engine("mysql://"+DB_USER+":" +
-                           DB_PASS+"@"+DB_HOST+":3306/"+DB_NAME)
+                           DB_PASS+"@"+DB_HOST+":3306/"+DB_NAME, pool_size=20, max_overflow=40)
     Base = automap_base()
     Base.prepare(engine, reflect=True)
     cameras = Base.classes.Cameras

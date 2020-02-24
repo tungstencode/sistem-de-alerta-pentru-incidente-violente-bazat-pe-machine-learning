@@ -29,6 +29,37 @@ router.get("/assigned", async (req, res) => {
   }
 });
 
+router.get("/unassigned", async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.cnp);
+    const userCameras = await user.getCameras();
+    const allCameras = await Camera.findAll();
+    const unassignedCameras = [];
+
+    if (userCameras.length === 0) {
+      res.status(200).json(allCameras);
+    } else {
+      for (let i = 0; i < allCameras.length; i++) {
+        const camera = allCameras[i];
+        let found = false;
+        for (let j = 0; j < userCameras.length; j++) {
+          if (camera.id === userCameras[j].id) {
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          unassignedCameras.push(camera);
+        }
+      }
+      res.status(200).json(unassignedCameras);
+    }
+  } catch (error) {
+    console.warn(error);
+    res.status(500).json({ message: "server error" });
+  }
+});
+
 router.post("/assigned", async (req, res) => {
   try {
     const camera = req.body;
@@ -42,7 +73,23 @@ router.post("/assigned", async (req, res) => {
       const newCamera = await Camera.create(camera);
       const user = await User.findByPk(req.user.cnp);
       await user.addCamera(newCamera);
-      res.status(201).json({ message: "created" });
+      res.status(201).json({ message: "created and assigned" });
+    }
+  } catch (e) {
+    console.warn(e);
+    res.status(500).json({ message: "server error" });
+  }
+});
+
+router.put("/assigned", async (req, res) => {
+  try {
+    const camera = await Camera.findByPk(req.body.id);
+    if (!camera) {
+      res.status(406).json({ message: "wrong id" });
+    } else {
+      const user = await User.findByPk(req.user.cnp);
+      await user.addCamera(camera);
+      res.status(201).json({ message: "assigned" });
     }
   } catch (e) {
     console.warn(e);
