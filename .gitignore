@@ -2,6 +2,7 @@ node_modules
 
 # environment
 /processor/venv3.6
+/processor/serverenv
 
 # sensitive info
 /backend/.env
