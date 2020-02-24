@@ -25,7 +25,7 @@ router.get("/assigned", async (req, res) => {
     res.status(200).json(cameras);
   } catch (error) {
     console.warn(error);
-    res.status(500).json({ message: "server error" });
+    res.status(500).json({ message: "server errora" });
   }
 });
 
