@@ -19,11 +19,23 @@ function CameraWrapper({camera, processingP, ...rest}) {
 
   useEffect(() => {
     setProcessing(processingP);
+    // fetch(`http://localhost:5000/cameras/${camera.id}`, {method: 'POST'})
+    //   .then(response => response.body)
+    //   .then(body => {
+    //     console.log(body);
+    //     const reader = body.getReader();
+    //     reader.read().then(({done, value}) => {
+    //       console.log(done, value);
+    //     });
+    //   });
   }, []);
 
   const handleChange = name => event => {
     setProcessing(event.target.checked);
-    console.log(event.target.checked);
+    // console.log(event.target.checked);
+    // if (processing) {
+
+    // }
   };
 
   return (

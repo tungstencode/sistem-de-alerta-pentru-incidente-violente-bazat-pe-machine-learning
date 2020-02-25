@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
@@ -18,6 +18,15 @@ const useStyles = makeStyles(() => ({
 
 export default function Dashboard(props) {
   const classes = useStyles();
+
+  useEffect(() => {
+    const source = new EventSource('http://localhost:5000/stream');
+    // eslint-disable-next-line fp/no-mutation
+    source.onmessage = event => {
+      // eslint-disable-next-line no-alert
+      console.log(event.data);
+    };
+  }, []);
 
   return <div>dash</div>;
 }

@@ -3,6 +3,7 @@ node_modules
 # environment
 /processor/venv3.6
 /processor/serverenv
+/processor/redis-stable
 
 # sensitive info
 /backend/.env
