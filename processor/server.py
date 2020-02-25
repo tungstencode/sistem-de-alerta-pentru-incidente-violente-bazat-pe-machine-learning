@@ -27,6 +27,7 @@ application = Flask(__name__)
 # red = redis.StrictRedis()
 application.config["REDIS_URL"] = "redis://localhost"
 application.register_blueprint(sse, url_prefix='/stream')
+application.
 api = Api(application)
 CORS(application)
 
@@ -139,6 +140,7 @@ def generateImage(url):
     print(stop-start, "capture camera")
     while True:
         detected = not detected
+        # sse.publish({"message": "Hello!"}, type='greeting')
         vcap.start()
         ret, frame = vcap.read()
         vcap.stop()
