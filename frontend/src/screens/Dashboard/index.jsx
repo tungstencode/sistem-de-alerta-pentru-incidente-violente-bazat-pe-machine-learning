@@ -21,11 +21,20 @@ export default function Dashboard(props) {
 
   useEffect(() => {
     const source = new EventSource('http://localhost:5000/stream');
+    source.addEventListener(
+      'greeting',
+      event => {
+        const data = JSON.parse(event.data);
+        console.log(data);
+        // do what you want with this data
+      },
+      false
+    );
     // eslint-disable-next-line fp/no-mutation
-    source.onmessage = event => {
-      // eslint-disable-next-line no-alert
-      console.log(event.data);
-    };
+    // source.onmessage = event => {
+    //   // eslint-disable-next-line no-alert
+    //   console.log(event.data);
+    // };
   }, []);
 
   return <div>dash</div>;
