@@ -16,26 +16,23 @@ const useStyles = makeStyles(theme => ({
 function CameraWrapper({camera, processingP, ...rest}) {
   const classes = useStyles();
   const [processing, setProcessing] = React.useState(false);
+  // const [detectionEvent, setDetectionEvent] = React.useState();
+  let source;
+
+  const onDetection = detection => {
+    console.log(detection);
+  };
 
   useEffect(() => {
     setProcessing(processingP);
-    // fetch(`http://localhost:5000/cameras/${camera.id}`, {method: 'POST'})
-    //   .then(response => response.body)
-    //   .then(body => {
-    //     console.log(body);
-    //     const reader = body.getReader();
-    //     reader.read().then(({done, value}) => {
-    //       console.log(done, value);
-    //     });
-    //   });
+    source = new EventSource(`http://localhost:5000/detect/${camera.id}`);
+    source.onmessage = e => onDetection(e.data);
+    // setDetectionEvent();
   }, []);
 
   const handleChange = name => event => {
     setProcessing(event.target.checked);
     // console.log(event.target.checked);
-    // if (processing) {
-
-    // }
   };
 
   return (
@@ -50,14 +47,24 @@ function CameraWrapper({camera, processingP, ...rest}) {
             inputProps={{'aria-label': 'primary checkbox'}}
           />
           <Box>
-            {processing || camera.url.includes('rtsp') ? (
+            {processing ? (
               <img
                 width="500"
                 alt={camera.name}
-                src={`http://localhost:5000/cameras/${camera.id}`}
+                src={`http://localhost:5000/processed/${camera.id}`}
               />
             ) : (
-              <img width="500" alt={camera.name} src={camera.url} />
+              [
+                camera.url.includes('rtsp') ? (
+                  <img
+                    width="500"
+                    alt={camera.name}
+                    src={`http://localhost:5000/unprocessed/${camera.id}`}
+                  />
+                ) : (
+                  <img width="500" alt={camera.name} src={camera.url} />
+                ),
+              ]
             )}
           </Box>
         </Paper>

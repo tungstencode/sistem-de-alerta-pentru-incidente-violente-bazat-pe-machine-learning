@@ -37,32 +37,10 @@ Base.prepare(engine, reflect=True)
 cameras = Base.classes.Cameras
 
 
-@application.route('/send')
-def send_message():
-    sse.publish({"message": "Hello!"}, type='greeting')
-    return "Message sent!"
-
-def event_stream():
-    pubsub = red.pubsub()
-    pubsub.subscribe('chat')
-    for message in pubsub.listen():
-        print(message)
-        yield 'data: %s\n\n' % message['data']
-
-
-@application.route('/post', methods=['POST'])
-def post():
-    message = request.form['message']
-    user = session.get('user', 'anonymous')
-    now = datetime.datetime.now().replace(microsecond=0).time()
-    red.publish('chat', u'[%s] %s: %s' % (now.isoformat(), user, message))
-    return Response('ok', status=200)
-
-
-@application.route('/stream')
-def stream():
-    return Response(event_stream(),
-                    mimetype="text/event-stream")
+# @application.route('/send')
+# def send_message():
+#     sse.publish({"message": "Hello!"}, type='greeting')
+#     return "Message sent!"
 
 
 def findCameraUrl(camera_id):
@@ -75,70 +53,75 @@ def findCameraUrl(camera_id):
     return camera.url
 
 
-class Video(Resource):
+class Unprocessed(Resource):
     def get(self, camera_id):
         with ThreadPoolWithAppContextExecutor(max_workers=1) as pool:
             future_url = pool.submit(findCameraUrl, [camera_id])
             url = future_url.result()
 
-        gImg = generateImage(url)
-        # response = {'Status': 'Success',
-        #             'message': message, 'ImageBytes': gImg}
-        # response_pickled = jsonpickle.encode(
-        # response)
+        gImg = generateUnprocessedImage(url)
 
         response = Response(stream_with_context(gImg),
                             mimetype="multipart/x-mixed-replace; boundary=frame")
-        # response = Response(
-        #     response_pickled, content_type='application/json')
-        # response.headers['custom'] = 'sss'
         return response
 
-    def post(self, camera_id):
+
+class Processed(Resource):
+    def get(self, camera_id):
         with ThreadPoolWithAppContextExecutor(max_workers=1) as pool:
             future_url = pool.submit(findCameraUrl, [camera_id])
             url = future_url.result()
 
-        gJson = generateJson(url)
-        response = Response(stream_with_context(
-            gJson), mimetype='multipart/x-mixed-replace; boundary=detection')
-        # response.headers['custom'] = 'sss'
+        gImg = generateProcessedImage(url, camera_id)
+
+        response = Response(stream_with_context(gImg),
+                            mimetype="multipart/x-mixed-replace; boundary=frame")
         return response
 
 
-api.add_resource(Video, '/cameras/<camera_id>')
+@application.route('/post', methods=['POST'])
+def post():
+    message = request.form['message']
+    id = request.form['id']
+    user = session.get('user', 'server')
+    now = datetime.datetime.now().replace(microsecond=0).time()
+    red.publish('detect'+str(id), u'[%s] %s: %s' %
+                (now.isoformat(), user, message))
+    red.publish('detect'+str(id), "la munca")
+    return Response('ok', status=200)
 
 
-def generateJson(url):
-    # start = timeit.default_timer()
-    # vcap = cv.VideoCapture(url)
-    # vcap = VideoCaptureThreading(url)
-    detected = False
-    # stop = timeit.default_timer()
-    # print(stop-start, "capture camera")
-    while True:
-        detected = not detected
-        # vcap.start()
-        # ret, frame = vcap.read()
-        # vcap.stop()
-        # (flag, encodedImage) = cv.imencode(".jpg", frame)
-        # print("Frame", datetime.datetime.now())
-        # yield '{' + str(detected) + '}'
-        time.sleep(1)
-        yield (b'--detection\r\n' b'Content-Type: application/json\r\n\r\n' +
-               jsonify({"detected": detected}).data + b'\r\n')
-        # yield jsonify({url: detected}).data
+def event_stream(camera_id):
+    pubsub = red.pubsub()
+    pubsub.subscribe('detect'+str(camera_id))
+    for message in pubsub.listen():
+        print(message)
+        yield 'data: %s from %s\n\n' % (message['data'], camera_id)
 
 
-def generateImage(url):
+class Detect(Resource):
+    def get(self, camera_id):
+        # with ThreadPoolWithAppContextExecutor(max_workers=1) as pool:
+        #     future_url = pool.submit(findCameraUrl, [camera_id])
+        #     url = future_url.result()
+
+        response = Response(event_stream(camera_id),
+                            mimetype="text/event-stream")
+        return response
+
+
+api.add_resource(Unprocessed, '/unprocessed/<camera_id>')
+api.add_resource(Processed, '/processed/<camera_id>')
+api.add_resource(Detect, '/detect/<camera_id>')
+
+
+def generateUnprocessedImage(url):
     start = timeit.default_timer()
     # vcap = cv.VideoCapture(url)
     vcap = VideoCaptureThreading(url)
-    detected = False
     stop = timeit.default_timer()
     print(stop-start, "capture camera")
     while True:
-        detected = not detected
         # sse.publish({"message": "Hello!"}, type='greeting')
         vcap.start()
         ret, frame = vcap.read()
@@ -147,8 +130,26 @@ def generateImage(url):
 
         yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' +
                bytearray(encodedImage) + b'\r\n')
-        if(detected):
-            yield (b'--detection\r\n' + b'\r\n')
+
+
+def generateProcessedImage(url, id):
+    start = timeit.default_timer()
+    # vcap = cv.VideoCapture(url)
+    vcap = VideoCaptureThreading(url)
+    stop = timeit.default_timer()
+    detect = True
+    print(stop-start, "capture camera")
+    while True:
+        detect = not detect
+        # sse.publish({"message": "Hello!"}, type='greeting')
+        vcap.start()
+        ret, frame = vcap.read()
+        vcap.stop()
+        (flag, encodedImage) = cv.imencode(".jpg", frame)
+        # red.publish('detect'+str(id), str(detect))
+
+        yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' +
+               bytearray(encodedImage) + b'\r\n')
 
 
 # @application.route('/detect', methods=['POST'])

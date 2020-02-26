@@ -20,7 +20,10 @@ export default function Dashboard(props) {
   const classes = useStyles();
 
   useEffect(() => {
-    const source = new EventSource('http://localhost:5000/stream');
+    // const source = new EventSource(`http://localhost:5000/detect/1`);
+    // source.onmessage = e => {
+    //   console.log(e.data);
+    // };
     // source.addEventListener(
     //   'greeting',
     //   event => {
@@ -31,10 +34,6 @@ export default function Dashboard(props) {
     //   false
     // );
     // eslint-disable-next-line fp/no-mutation
-    source.onmessage = event => {
-      // eslint-disable-next-line no-alert
-      console.log(event.data);
-    };
   }, []);
 
   return <div>dash</div>;
