@@ -24,10 +24,9 @@ DB_USER = os.getenv("DB_USER")
 DB_PASS = os.getenv("DB_PASS")
 
 application = Flask(__name__)
-# red = redis.StrictRedis()
-application.config["REDIS_URL"] = "redis://localhost"
-application.register_blueprint(sse, url_prefix='/stream')
-application.
+red = redis.StrictRedis()
+# application.config["REDIS_URL"] = "redis://localhost"
+# application.register_blueprint(sse, url_prefix='/stream')
 api = Api(application)
 CORS(application)
 
@@ -43,27 +42,27 @@ def send_message():
     sse.publish({"message": "Hello!"}, type='greeting')
     return "Message sent!"
 
-# def event_stream():
-#     pubsub = red.pubsub()
-#     pubsub.subscribe('chat')
-#     for message in pubsub.listen():
-#         print(message)
-#         yield 'data: %s\n\n' % message['data']
+def event_stream():
+    pubsub = red.pubsub()
+    pubsub.subscribe('chat')
+    for message in pubsub.listen():
+        print(message)
+        yield 'data: %s\n\n' % message['data']
 
 
-# @application.route('/post', methods=['POST'])
-# def post():
-#     message = request.form['message']
-#     user = session.get('user', 'anonymous')
-#     now = datetime.datetime.now().replace(microsecond=0).time()
-#     red.publish('chat', u'[%s] %s: %s' % (now.isoformat(), user, message))
-#     return Response('ok', status=200)
+@application.route('/post', methods=['POST'])
+def post():
+    message = request.form['message']
+    user = session.get('user', 'anonymous')
+    now = datetime.datetime.now().replace(microsecond=0).time()
+    red.publish('chat', u'[%s] %s: %s' % (now.isoformat(), user, message))
+    return Response('ok', status=200)
 
 
-# @application.route('/stream')
-# def stream():
-#     return Response(event_stream(),
-#                     mimetype="text/event-stream")
+@application.route('/stream')
+def stream():
+    return Response(event_stream(),
+                    mimetype="text/event-stream")
 
 
 def findCameraUrl(camera_id):
