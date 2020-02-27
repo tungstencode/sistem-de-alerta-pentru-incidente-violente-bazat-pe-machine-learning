@@ -4,6 +4,7 @@ node_modules
 /processor/venv3.6
 /processor/serverenv
 /processor/redis-stable
+/processor/__pycache__
 
 # sensitive info
 /backend/.env
