@@ -1,20 +1,21 @@
 {
-    "name": "ai-surveillance-system-bachelor-degree",
-    "version": "1.0.0",
-    "description": "ai-surveillance-system-bachelor-degree",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "backend": "cd backend && npm start",
-        "frontend": "cd frontend && npm start",
-        "processor": "cd processor && python3.6 server.py",
-        "uwsgi": "cd processor && uwsgi --socket 0.0.0.0:5000 --protocol=http -w wsgi --ini server.ini",
-        "start": "concurrently \"npm run backend\" \"npm run frontend\" \"npm run processor\""
-    },
-    "author": "",
-    "license": "ISC",
-    "homepage": "https://github.com/tungstencode/sistem-de-alerta-pentru-incidente-violente-bazat-pe-machine-learning",
-    "devDependencies": {
-        "concurrently": "^5.1.0",
-        "cra-template-quickstart-redux": "^0.4.0"
-    }
+  "name": "ai-surveillance-system-bachelor-degree",
+  "version": "1.0.0",
+  "description": "ai-surveillance-system-bachelor-degree",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "redis": "cd processor && bash ./run-redis.sh",
+    "backend": "cd backend && npm start",
+    "frontend": "cd frontend && npm start",
+    "processor": "cd processor && python3.6 server.py",
+    "uwsgi": "cd processor && uwsgi --socket 0.0.0.0:5000 --protocol=http -w wsgi --ini server.ini",
+    "start": "concurrently \"npm run backend\" \"npm run frontend\" \"npm run processor\""
+  },
+  "author": "",
+  "license": "ISC",
+  "homepage": "https://github.com/tungstencode/sistem-de-alerta-pentru-incidente-violente-bazat-pe-machine-learning",
+  "devDependencies": {
+    "concurrently": "^5.1.0",
+    "cra-template-quickstart-redux": "^0.4.0"
+  }
 }

@@ -5,6 +5,8 @@ node_modules
 /processor/serverenv
 /processor/redis-stable
 /processor/__pycache__
+processor/save_epoch_12/
+processor/testVideos
 
 # sensitive info
 /backend/.env
