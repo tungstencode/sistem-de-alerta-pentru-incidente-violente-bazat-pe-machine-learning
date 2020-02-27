@@ -5,7 +5,7 @@
 * ubuntu 16.04 for cuda 9(needed for tensorflow-gpu 1.7.0 )
 * Install dependencies
 	* npm install on root directory
-	* "cd backend" and "npm install" and create a certs folder and inside run "openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout key.pem -out cert.pem"
+	* "cd backend" and "npm install"
 	* "cd ../frontend" and "npm install"
 	* "cd ../processor" and "python -m venv serverenv" and "source serverenv/bin/activate"
 	* "cd ../processor" and "source serverenv/bin/activate" and "pip install requirements.txt"
