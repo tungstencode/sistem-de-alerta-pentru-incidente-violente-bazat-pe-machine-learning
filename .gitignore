@@ -8,7 +8,7 @@ node_modules
 
 # sensitive info
 /backend/.env
-/backend/certs
+# /backend/certs
 
 # dependencies
 /backend/node_modules
