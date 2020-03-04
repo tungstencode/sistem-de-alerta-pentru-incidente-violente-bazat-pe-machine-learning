@@ -9,6 +9,7 @@ processor/save_epoch_12/
 processor/testVideos
 processor/darknet19.pb
 processor/temp
+processor/ViolenceDetection
 
 # sensitive info
 /backend/.env

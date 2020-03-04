@@ -4,6 +4,7 @@ import {makeStyles} from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Paper from '@material-ui/core/Paper';
 import Switch from '@material-ui/core/Switch';
+import axios from 'axios';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -32,6 +33,13 @@ function CameraWrapper({camera, processingP, ...rest}) {
 
   const handleChange = name => event => {
     setProcessing(event.target.checked);
+    axios
+      .put(`/cameras/assigned/detect/${camera.id}`, {
+        detect: event.target.checked,
+      })
+      .then(res => {
+        console.log(res);
+      });
     // console.log(event.target.checked);
   };
 
