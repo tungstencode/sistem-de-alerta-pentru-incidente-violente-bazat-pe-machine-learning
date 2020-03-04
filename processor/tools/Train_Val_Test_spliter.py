@@ -12,13 +12,13 @@
 #=====================================================================================
 #    User Settings (The following variables should be adjust to your need.)
 #=====================================================================================
-LIST_OF_NO_FIGHT_DIR = ["data/Bermejo/hockey/noFights/"]
-LIST_OF_FIGHT_DIR = ["data/Bermejo/hockey/fights/"]
+LIST_OF_NO_FIGHT_DIR = ["/home/alex/Licenta/fight-detection-surv-dataset/noFight/cut/"]
+LIST_OF_FIGHT_DIR = ["/home/alex/Licenta/fight-detection-surv-dataset/fight/cut/"] 
 
 VAL_SET_RATIO = 0.1
-TEST_SET_RATIO = 0.4   # NUMBER_OF_TEST_SET = NUMBER_OF_TOTAL_DATA * TEST_SET_RATIO
+TEST_SET_RATIO = 0.1   # NUMBER_OF_TEST_SET = NUMBER_OF_TOTAL_DATA * TEST_SET_RATIO
 
-PATH_TO_SAVE_SPLITED_DATASET = "."
+PATH_TO_SAVE_SPLITED_DATASET = "./data"
 
 #=====================================================================================
 #    End of User Settings

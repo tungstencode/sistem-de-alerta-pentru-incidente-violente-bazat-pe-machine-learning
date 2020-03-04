@@ -8,6 +8,7 @@ node_modules
 processor/save_epoch_12/
 processor/testVideos
 processor/darknet19.pb
+processor/temp
 
 # sensitive info
 /backend/.env
