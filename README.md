@@ -1,5 +1,11 @@
 # SISTEM DE ALERTĂ PENTRU INCIDENTE VIOLENTE BAZAT PE MACHINE LEARNING
 
+## Downloads
+
+* https://drive.google.com/open?id=1fubDq6vHu5qqGw0gjQ7aqFfBTYAzJrtb	Pretrained model
+* https://drive.google.com/open?id=12J6CRE-dyXDmaHRqfNVj8gD0FA6qpcD6	Darknet19.pb
+* Copy the files in the processor folder
+
 ## Requirements to run the app
 * python 3.6.x
 * ubuntu 16.04 for cuda 9(needed for tensorflow-gpu 1.7.0 )
