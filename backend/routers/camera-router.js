@@ -72,7 +72,7 @@ router.post("/assigned", async (req, res) => {
     } else {
       const newCamera = await Camera.create(camera);
       const user = await User.findByPk(req.user.cnp);
-      await user.addCamera(newCamera);
+      await user.addCamera(newCamera, { through: { detect: camera.detect } });
       res.status(201).json({ message: "created and assigned" });
     }
   } catch (e) {
@@ -91,6 +91,19 @@ router.put("/assigned", async (req, res) => {
       await user.addCamera(camera);
       res.status(201).json({ message: "assigned" });
     }
+  } catch (e) {
+    console.warn(e);
+    res.status(500).json({ message: "server error" });
+  }
+});
+
+router.put("/assigned/detect/:id", async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.cnp);
+    const camera = await user.getCameras({ where: { id: req.params.id } });
+    await camera[0].UserCamera.update({ detect: req.body.detect });
+
+    res.status(201).json({ message: `detect: ${req.body.detect}` });
   } catch (e) {
     console.warn(e);
     res.status(500).json({ message: "server error" });

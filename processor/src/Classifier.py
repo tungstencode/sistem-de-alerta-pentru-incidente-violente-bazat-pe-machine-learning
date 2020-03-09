@@ -26,6 +26,7 @@ class Classifier:
 			  predictions.shape: [batchSize, unrolledSize, NUMBER_OF_CATEGORIES]
 		'''
 		self.net.Build()
+		# print(str(tf.int32) + "........................................")
 		self._predictions = tf.nn.softmax(self.net.logitsOp, axis=-1, name="tf.nn.softmax")
 		with tf.name_scope("Loss"):
 			self._crossEntropyOp = tf.nn.softmax_cross_entropy_with_logits(	logits=self.net.logitsOp,

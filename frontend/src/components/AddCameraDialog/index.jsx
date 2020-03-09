@@ -14,6 +14,8 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import Switch from '@material-ui/core/Switch';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 import {makeStyles} from '@material-ui/core/styles';
 
@@ -51,6 +53,8 @@ export default function AddCameraDialog(props) {
   const [name, setName] = React.useState('');
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const [location, setLocation] = React.useState('');
+  const [detect, setDetect] = React.useState(false);
 
   useEffect(() => {
     axios.get('/cameras/unassigned').then(({data}) => {
@@ -74,7 +78,7 @@ export default function AddCameraDialog(props) {
         });
       });
     } else {
-      const newCamera = {url, name, username, password};
+      const newCamera = {url, name, username, password, location, detect};
       axios.post('/cameras/assigned', newCamera).then(({data}) => {
         handleAddParent();
         handleClose();
@@ -102,6 +106,13 @@ export default function AddCameraDialog(props) {
 
   const handleNameChange = event => {
     setName(event.target.value || '');
+  };
+  const handleLocationChange = event => {
+    setLocation(event.target.value || '');
+  };
+  const handleDetectChange = det => event => {
+    setDetect(event.target.checked);
+    console.log(event.target.checked);
   };
 
   return (
@@ -173,6 +184,26 @@ export default function AddCameraDialog(props) {
               label="Password"
               type="password"
               fullWidth
+            />
+            <TextField
+              onChange={handleLocationChange}
+              margin="dense"
+              id="location"
+              label="Location"
+              type="test"
+              fullWidth
+            />
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={detect}
+                  color="primary"
+                  onChange={handleDetectChange('detect')}
+                  value="detect"
+                  inputProps={{'aria-label': 'primary checkbox'}}
+                />
+              }
+              label="Detect Now"
             />
           </div>
         )}

@@ -1,9 +1,16 @@
 import React, {useState, useEffect} from 'react';
+import axios from 'axios';
 import PropTypes from 'prop-types';
 import {makeStyles} from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Paper from '@material-ui/core/Paper';
 import Switch from '@material-ui/core/Switch';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Toolbar from '@material-ui/core/Toolbar';
+import {Typography, IconButton, Icon} from '@material-ui/core';
+import OfflineBoltRoundedIcon from '@material-ui/icons/OfflineBoltRounded';
+import OfflineBoltTwoToneIcon from '@material-ui/icons/OfflineBoltTwoTone';
+import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -11,9 +18,18 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'center',
     color: theme.palette.text.secondary,
   },
+  grow: {
+    flexGrow: 1,
+  },
+  deleteButton: {
+    // marginRight: theme.spacing(2),
+  },
+  processingTogge: {
+    // marginLeft: theme.spacing(2),
+  },
 }));
 
-function CameraWrapper({camera, processingP, ...rest}) {
+function CameraWrapper({camera, ...rest}) {
   const classes = useStyles();
   const [processing, setProcessing] = React.useState(false);
   // const [detectionEvent, setDetectionEvent] = React.useState();
@@ -24,7 +40,7 @@ function CameraWrapper({camera, processingP, ...rest}) {
   };
 
   useEffect(() => {
-    setProcessing(processingP);
+    setProcessing(camera.UserCamera.detect);
     source = new EventSource(`http://localhost:5000/detect/${camera.id}`);
     source.onmessage = e => onDetection(e.data);
     // setDetectionEvent();
@@ -32,6 +48,13 @@ function CameraWrapper({camera, processingP, ...rest}) {
 
   const handleChange = name => event => {
     setProcessing(event.target.checked);
+    axios
+      .put(`/cameras/assigned/detect/${camera.id}`, {
+        detect: event.target.checked,
+      })
+      .then(res => {
+        console.log(res);
+      });
     // console.log(event.target.checked);
   };
 
@@ -39,13 +62,31 @@ function CameraWrapper({camera, processingP, ...rest}) {
     <div>
       <Box>
         <Paper className={classes.paper}>
-          <Switch
-            checked={processing}
-            color="primary"
-            onChange={handleChange('processing')}
-            value="processing"
-            inputProps={{'aria-label': 'primary checkbox'}}
-          />
+          <Box className={classes.grow}>
+            <Toolbar>
+              <IconButton className={classes.processingTogge}>
+                <OfflineBoltRoundedIcon />
+              </IconButton>
+              <Typography>{camera.name}</Typography>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={processing}
+                    color="primary"
+                    onChange={handleChange('processing')}
+                    value="processing"
+                    inputProps={{'aria-label': 'primary checkbox'}}
+                  />
+                }
+                label="Detect"
+              />
+              <div className={classes.grow} />
+              <IconButton edge="end" className={classes.deleteButton}>
+                <DeleteRoundedIcon />
+              </IconButton>
+            </Toolbar>
+          </Box>
+
           <Box>
             {processing ? (
               <img
@@ -76,12 +117,10 @@ function CameraWrapper({camera, processingP, ...rest}) {
 CameraWrapper.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   camera: PropTypes.object,
-  processingP: PropTypes.bool,
 };
 
 CameraWrapper.defaultProps = {
   camera: {},
-  processingP: false,
 };
 
 export default CameraWrapper;

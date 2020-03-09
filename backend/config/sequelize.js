@@ -2,6 +2,7 @@ const Sequelize = require("sequelize");
 const UserModel = require("../models/User");
 const CameraModel = require("../models/Camera");
 const SettingModel = require("../models/Setting");
+const LogModel = require("../models/Log");
 
 const sequelize = new Sequelize(
   process.env.DB_NAME,
@@ -22,14 +23,33 @@ const sequelize = new Sequelize(
 const User = UserModel(sequelize, Sequelize);
 const Camera = CameraModel(sequelize, Sequelize);
 const Setting = SettingModel(sequelize, Sequelize);
+const Log = LogModel(sequelize, Sequelize);
 
-User.belongsToMany(Camera, { through: "UserCamera", foreignKey: "cnp" });
-Camera.belongsToMany(User, { through: "UserCamera", foreignKey: "id" });
+const UserCamera = sequelize.define(
+  "UserCamera",
+  {
+    detect: {
+      type: Sequelize.DataTypes.BOOLEAN,
+      allowNull: false,
+      validate: {
+        notEmpty: true,
+      },
+      defaultValue: false,
+    },
+  },
+  { timestamps: false },
+);
+
+User.belongsToMany(Camera, { through: UserCamera, foreignKey: "cnp" });
+Camera.belongsToMany(User, { through: UserCamera, foreignKey: "id" });
 
 User.hasOne(Setting);
 Setting.belongsTo(User);
 
-const force = false;
+Camera.hasMany(Log);
+Log.belongsTo(Camera);
+
+const force = true;
 
 sequelize.sync({ force }).then(async () => {
   // eslint-disable-next-line no-console
@@ -50,8 +70,21 @@ sequelize.sync({ force }).then(async () => {
       location: "30,20",
     });
 
-    user.addCamera(camera);
-    // await user.setSettings(settings);
+    user.addCamera(camera, { through: { detect: true } });
+
+    const userFound = await User.findByPk("1981029394446");
+
+    const cameras = await userFound.getCameras();
+
+    console.log(cameras[0].UserCamera.detect);
+    // cameras[0].UserCamera.detect = false;
+
+    await cameras[0].UserCamera.update({ detect: false });
+
+    const cameras2 = await userFound.getCameras();
+
+    console.log(cameras2[0].UserCamera.detect);
+    
     await user.setSetting(settings);
   }
 });

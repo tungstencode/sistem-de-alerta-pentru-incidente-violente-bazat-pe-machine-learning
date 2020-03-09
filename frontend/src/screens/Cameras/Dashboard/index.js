@@ -72,7 +72,7 @@ export default function Cameras() {
             <CameraWrapper
               key={camera.id}
               camera={camera}
-              processingP={false}
+              processingP={camera.UserCamera.detect}
             />
           ))
         ) : (
