@@ -2,7 +2,8 @@
 
 ## Downloads
 
-* https://drive.google.com/open?id=1fubDq6vHu5qqGw0gjQ7aqFfBTYAzJrtb	Pretrained model
+* https://drive.google.com/open?id=1fubDq6vHu5qqGw0gjQ7aqFfBTYAzJrtb	Pretrained model (surv dataset)
+* https://drive.google.com/open?id=1Phro3AK9a9EZqIEaXw9-Wi2Vk4USCSxS	Pretrained model (surv dataset + rlv dataset)
 * https://drive.google.com/open?id=12J6CRE-dyXDmaHRqfNVj8gD0FA6qpcD6	Darknet19.pb
 * Copy the files in the processor folder
 

@@ -49,7 +49,7 @@ Setting.belongsTo(User);
 Camera.hasMany(Log);
 Log.belongsTo(Camera);
 
-const force = true;
+const force = false;
 
 sequelize.sync({ force }).then(async () => {
   // eslint-disable-next-line no-console
