@@ -21,6 +21,7 @@ module.exports = (sequelize, type) => sequelize.define("Camera", {
   url: {
     type: type.STRING,
     allowNull: false,
+    unique: true,
     validate: {
       notEmpty: true,
     },

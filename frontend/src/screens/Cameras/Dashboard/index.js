@@ -53,6 +53,12 @@ export default function Cameras() {
     setOpen(false);
   };
 
+  const handleDelete = () => {
+    axios.get('/cameras/assigned').then(({data}) => {
+      setCameras(data);
+    });
+  };
+
   const handleClose = () => {
     setOpen(false);
   };
@@ -73,6 +79,7 @@ export default function Cameras() {
               key={camera.id}
               camera={camera}
               processingP={camera.UserCamera.detect}
+              onDelete={handleDelete}
             />
           ))
         ) : (

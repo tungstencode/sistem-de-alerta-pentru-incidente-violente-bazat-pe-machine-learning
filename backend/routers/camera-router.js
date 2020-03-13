@@ -97,13 +97,30 @@ router.put("/assigned", async (req, res) => {
   }
 });
 
+router.delete("/assigned/:id", async (req, res) => {
+  try {
+    const camera = await Camera.findByPk(req.params.id);
+
+    const user = await User.findByPk(req.user.cnp);
+
+    // console.log(camera);
+
+    await user.removeCamera(camera);
+
+    res.status(202).json({ message: "unassigned" });
+  } catch (e) {
+    console.warn(e);
+    res.status(500).json({ message: "server error" });
+  }
+});
+
 router.put("/assigned/detect/:id", async (req, res) => {
   try {
     const user = await User.findByPk(req.user.cnp);
     const camera = await user.getCameras({ where: { id: req.params.id } });
     await camera[0].UserCamera.update({ detect: req.body.detect });
 
-    res.status(201).json({ message: `detect: ${req.body.detect}` });
+    res.status(202).json({ message: `detect: ${req.body.detect}` });
   } catch (e) {
     console.warn(e);
     res.status(500).json({ message: "server error" });

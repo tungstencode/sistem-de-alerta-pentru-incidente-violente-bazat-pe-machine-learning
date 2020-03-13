@@ -170,6 +170,14 @@ export default function AddCameraDialog(props) {
               fullWidth
             />
             <TextField
+              onChange={handleLocationChange}
+              margin="dense"
+              id="location"
+              label="Location*"
+              type="test"
+              fullWidth
+            />
+            <TextField
               onChange={handleUsernameChange}
               margin="dense"
               id="usernameCamera"
@@ -183,14 +191,6 @@ export default function AddCameraDialog(props) {
               id="passwordCamera"
               label="Password"
               type="password"
-              fullWidth
-            />
-            <TextField
-              onChange={handleLocationChange}
-              margin="dense"
-              id="location"
-              label="Location"
-              type="test"
               fullWidth
             />
             <FormControlLabel
