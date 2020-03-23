@@ -17,5 +17,8 @@
   "devDependencies": {
     "concurrently": "^5.1.0",
     "cra-template-quickstart-redux": "^0.4.0"
+  },
+  "dependencies": {
+    "@react-google-maps/api": "^1.8.5"
   }
 }

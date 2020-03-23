@@ -29,6 +29,18 @@ router.get("/assigned", async (req, res) => {
   }
 });
 
+router.get("/assigned/:id", async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.cnp);
+    const cameras = await user.getCameras({ where: { id: req.params.id } });
+
+    res.status(200).json(cameras[0]);
+  } catch (error) {
+    console.warn(error);
+    res.status(500).json({ message: "server error" });
+  }
+});
+
 router.get("/unassigned", async (req, res) => {
   try {
     const user = await User.findByPk(req.user.cnp);

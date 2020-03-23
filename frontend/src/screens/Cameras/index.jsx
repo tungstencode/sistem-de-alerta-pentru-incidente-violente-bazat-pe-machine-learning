@@ -1,12 +1,12 @@
 import React from 'react';
 import {Switch, Route} from 'react-router-dom';
-import CamerasDashboard from './Dashboard';
-// import AddCamera from './AddCamera';
-// import ProjectDetails from "./Details";
+import CameraDashboard from './Dashboard';
+import CameraDetails from './CameraDetails';
 
-export default function ProjectsPage(props) {
+export default function CamerasPage(props) {
   // eslint-disable-next-line react/prop-types
   const {history = {}, path = ''} = props;
+  // console.log(history);
 
   return (
     <Switch>
@@ -14,19 +14,19 @@ export default function ProjectsPage(props) {
         exact
         path={path}
         render={routerProps => (
-          <CamerasDashboard {...routerProps} history={history} />
+          <CameraDashboard {...routerProps} history={history} />
         )}
       />
       {/* <Route
         path={`${path}/add`}
         render={routerProps => <AddCamera {...routerProps} />}
       /> */}
-      {/* <Route
-        path={`${path}/:camera_id`}
+      <Route
+        path={`${path}/:cameraId`}
         render={routerProps => (
           <CameraDetails {...routerProps} history={history} />
         )}
-      /> */}
+      />
     </Switch>
   );
 }

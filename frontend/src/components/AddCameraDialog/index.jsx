@@ -181,7 +181,7 @@ export default function AddCameraDialog(props) {
               onChange={handleUsernameChange}
               margin="dense"
               id="usernameCamera"
-              label="Usename"
+              label="Username"
               type="text"
               fullWidth
             />

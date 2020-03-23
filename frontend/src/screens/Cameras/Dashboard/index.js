@@ -37,7 +37,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function Cameras() {
+export default function Cameras(props) {
   const classes = useStyles();
   const [cameras, setCameras] = useState([]);
 
@@ -63,6 +63,15 @@ export default function Cameras() {
     setOpen(false);
   };
 
+  const handleCameraClick = id => {
+    // eslint-disable-next-line react/prop-types
+    const {history = {}} = props;
+    const {location} = history;
+    const {pathname = ''} = location;
+
+    history.push(`${pathname}/${id}`);
+  };
+
   useEffect(() => {
     axios.get('/cameras/assigned').then(({data}) => {
       console.log(data);
@@ -80,6 +89,7 @@ export default function Cameras() {
               camera={camera}
               processingP={camera.UserCamera.detect}
               onDelete={handleDelete}
+              onCameraClick={handleCameraClick}
             />
           ))
         ) : (

@@ -1,34 +1,40 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
+import AppBar from '@material-ui/core/AppBar';
 import {makeStyles} from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Paper from '@material-ui/core/Paper';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Link from '@material-ui/core/Link';
 import Toolbar from '@material-ui/core/Toolbar';
-import {Typography, IconButton, Icon} from '@material-ui/core';
+import {Typography, IconButton, Icon, Grid} from '@material-ui/core';
 import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
 // import Divider from '@material-ui/core/Divider';
 import ConfirmDialog from '../ConfirmDialog';
 import ShortenText from '../ShortenText';
+// import MapDialog from '../MapDialog';
 
 const useStyles = makeStyles(theme => ({
   paper: {
     padding: theme.spacing(2, 2),
     textAlign: 'center',
     color: theme.palette.text.secondary,
+    // width: '100%',
   },
   info: {
-    padding: theme.spacing(0, 1),
-    fontSize: 18,
+    // padding: theme.spacing(0, 1),
+    // fontSize: 18,
+    // margin: theme.spacing(0, 0),
   },
   grow: {
     flexGrow: 1,
-    backgroundColor: theme.palette.background.default,
+    // backgroundColor: theme.palette.background.default,
   },
   img: {
     borderRadius: 4,
+    width: '100%',
   },
   deleteButton: {
     // marginRight: theme.spacing(2),
@@ -38,10 +44,20 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function CameraWrapper({camera, onDelete, ...rest}) {
+function CameraWrapper(props) {
+  const {camera, onDelete, onCameraClick} = props;
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
+  const [openMap, setOpenMap] = React.useState(false);
   const [processing, setProcessing] = React.useState(false);
+
+  const handleMapOpen = () => {
+    setOpenMap(true);
+  };
+
+  const handleMapClose = () => {
+    setOpenMap(false);
+  };
 
   // const [detectionEvent, setDetectionEvent] = React.useState();
   let source;
@@ -85,11 +101,35 @@ function CameraWrapper({camera, onDelete, ...rest}) {
   };
 
   return (
-    <div>
-      <Box>
-        <Paper className={classes.paper}>
-          <Box borderRadius={4} className={classes.grow}>
-            <Toolbar>
+    // <div>
+    <Grid item xs={4}>
+      <Paper className={classes.paper}>
+        <AppBar color="secondary" position="static">
+          <Grid
+            container
+            direction="row"
+            // justify="space-around"
+            alignItems="center">
+            <Grid item xs={4}>
+              <Toolbar>
+                <Link color="primary" onClick={() => onCameraClick(camera.id)}>
+                  <Typography noWrap>{camera.name}</Typography>
+                </Link>
+              </Toolbar>
+            </Grid>
+            <Grid item xs={4}>
+              <Toolbar>
+                {/* <Link color="primary" onClick={() => onCameraClick(camera.id)}> */}
+                <Typography noWrap>
+                  {/* <Link href="#" onClick={handleMapOpen}> */}
+                  {camera.location}
+                  {/* </Link> */}
+                </Typography>
+                {/* </Link> */}
+              </Toolbar>
+            </Grid>
+
+            <Grid item xs={2}>
               <FormControlLabel
                 control={
                   <Switch
@@ -102,60 +142,60 @@ function CameraWrapper({camera, onDelete, ...rest}) {
                 }
                 label="Detect"
               />
-              <Typography class={classes.info}>
-                <ShortenText text={camera.name} />
-              </Typography>
-              <Typography class={classes.info}>
-                <ShortenText text={camera.location} />
-              </Typography>
-              <div className={classes.grow} />
-              <IconButton
-                onClick={handleDeleteClick}
-                edge="end"
-                className={classes.deleteButton}>
+            </Grid>
+            <Grid item xs={2}>
+              <IconButton onClick={handleDeleteClick} edge="end">
                 <DeleteRoundedIcon />
               </IconButton>
-            </Toolbar>
-          </Box>
+            </Grid>
+            {/* </Box> */}
+          </Grid>
+        </AppBar>
 
-          <Box>
-            {processing ? (
-              <img
-                width="500"
-                alt={camera.name}
-                src={`http://localhost:5000/processed/${camera.id}`}
-              />
-            ) : (
-              [
-                camera.url.includes('rtsp') ? (
-                  <img
-                    className={classes.img}
-                    width="500"
-                    alt={camera.name}
-                    src={`http://localhost:5000/unprocessed/${camera.id}`}
-                  />
-                ) : (
-                  <img width="500" alt={camera.name} src={camera.url} />
-                ),
-              ]
-            )}
-          </Box>
-        </Paper>
-      </Box>
+        <Box onClick={() => onCameraClick(camera.id)}>
+          {processing ? (
+            <img
+              className={classes.img}
+              alt={camera.name}
+              src={`http://localhost:5000/processed/${camera.id}`}
+            />
+          ) : (
+            [
+              camera.url.includes('rtsp') ? (
+                <img
+                  className={classes.img}
+                  alt={camera.name}
+                  src={`http://localhost:5000/unprocessed/${camera.id}`}
+                />
+              ) : (
+                <img
+                  className={classes.img}
+                  alt={camera.name}
+                  src={camera.url}
+                />
+              ),
+            ]
+          )}
+        </Box>
+      </Paper>
       <ConfirmDialog open={open} handleYes={handleYes} handleNo={handleNo} />
-    </div>
+      {/* <MapDialog open={openMap} onClose={handleMapClose} camera={camera} /> */}
+    </Grid>
   );
 }
 
 CameraWrapper.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   camera: PropTypes.object,
+  // eslint-disable-next-line react/forbid-prop-types
   onDelete: PropTypes.func,
+  onCameraClick: PropTypes.func,
 };
 
 CameraWrapper.defaultProps = {
   camera: {},
   onDelete: () => {},
+  onCameraClick: () => {},
 };
 
 export default CameraWrapper;
