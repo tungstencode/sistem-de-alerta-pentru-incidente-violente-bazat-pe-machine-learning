@@ -110,14 +110,14 @@ function CameraWrapper(props) {
             direction="row"
             // justify="space-around"
             alignItems="center">
-            <Grid item xs={4}>
+            <Grid item xs={3}>
               <Toolbar>
                 <Link color="primary" onClick={() => onCameraClick(camera.id)}>
                   <Typography noWrap>{camera.name}</Typography>
                 </Link>
               </Toolbar>
             </Grid>
-            <Grid item xs={4}>
+            <Grid item xs={5}>
               <Toolbar>
                 {/* <Link color="primary" onClick={() => onCameraClick(camera.id)}> */}
                 <Typography noWrap>

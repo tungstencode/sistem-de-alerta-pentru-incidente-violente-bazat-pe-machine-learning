@@ -56,9 +56,10 @@ router.get("/user_data", isAuthenticated, (req, res) => {
     res.json({});
   } else {
     res.json({
-      name: req.user.username,
+      name: req.user.name,
       email: req.user.email,
-      id: req.user.id,
+      location: req.user.location,
+      cnp: req.user.cnp,
     });
   }
 });
