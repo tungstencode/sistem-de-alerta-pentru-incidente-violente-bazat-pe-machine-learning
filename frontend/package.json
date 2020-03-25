@@ -25,6 +25,7 @@
     "enzyme-to-json": "^3.4.3",
     "formik": "^2.1.4",
     "lint-staged": "^10.0.0",
+    "material-ui-image": "^3.2.3",
     "node-sass": "^4.13.0",
     "prop-types": "^15.7.2",
     "react": "^16.12.0",

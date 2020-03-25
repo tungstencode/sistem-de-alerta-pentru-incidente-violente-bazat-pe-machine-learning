@@ -11,6 +11,7 @@ import Link from '@material-ui/core/Link';
 import Toolbar from '@material-ui/core/Toolbar';
 import {Typography, IconButton, Icon, Grid} from '@material-ui/core';
 import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
+import Image from 'material-ui-image';
 // import Divider from '@material-ui/core/Divider';
 import ConfirmDialog from '../ConfirmDialog';
 import ShortenText from '../ShortenText';
@@ -48,6 +49,10 @@ function CameraWrapper(props) {
   const {camera, onDelete, onCameraClick} = props;
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
+  const [imageState, setImageState] = React.useState({
+    count: 0,
+    show: true,
+  });
   const [openMap, setOpenMap] = React.useState(false);
   const [processing, setProcessing] = React.useState(false);
 
@@ -148,30 +153,40 @@ function CameraWrapper(props) {
                 <DeleteRoundedIcon />
               </IconButton>
             </Grid>
-            {/* </Box> */}
           </Grid>
         </AppBar>
 
         <Box onClick={() => onCameraClick(camera.id)}>
           {processing ? (
-            <img
-              className={classes.img}
-              alt={camera.name}
-              src={`http://localhost:5000/processed/${camera.id}`}
+            <Image
+              src={
+                imageState.show
+                  ? `http://localhost:5000/processed/${camera.id}`
+                  : ''
+              }
+              onClick={() => console.log('onClick')}
+              aspectRatio={16 / 9}
+              // disableSpinner
             />
           ) : (
             [
               camera.url.includes('rtsp') ? (
-                <img
-                  className={classes.img}
-                  alt={camera.name}
-                  src={`http://localhost:5000/unprocessed/${camera.id}`}
+                <Image
+                  src={
+                    imageState.show
+                      ? `http://localhost:5000/unprocessed/${camera.id}`
+                      : ''
+                  }
+                  onClick={() => console.log('onClick')}
+                  aspectRatio={16 / 9}
+                  // disableSpinner
                 />
               ) : (
-                <img
-                  className={classes.img}
-                  alt={camera.name}
-                  src={camera.url}
+                <Image
+                  src={imageState.show ? camera.url : ''}
+                  onClick={() => console.log('onClick')}
+                  aspectRatio={16 / 9}
+                  // disableSpinner
                 />
               ),
             ]
