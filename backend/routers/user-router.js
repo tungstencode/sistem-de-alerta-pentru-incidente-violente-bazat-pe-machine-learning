@@ -45,6 +45,41 @@ router.put("/put_own", async (req, res) => {
   }
 });
 
+router.put("/settings", async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.cnp);
+    if (user) {
+      const settings = await user.getSetting();
+
+      // console.log(settings);
+      await settings.update({ sound: req.body.sound, sms: req.body.sms });
+
+      res.status(202).json({ message: "accepted" });
+    } else {
+      res.status(404).json({ message: "not found" });
+    }
+  } catch (error) {
+    console.warn(error);
+    res.status(500).json({ message: "server error" });
+  }
+});
+
+router.get("/settings", async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.cnp);
+    if (user) {
+      const settings = await user.getSetting();
+
+      res.status(202).json(settings);
+    } else {
+      res.status(404).json({ message: "not found" });
+    }
+  } catch (error) {
+    console.warn(error);
+    res.status(500).json({ message: "server error" });
+  }
+});
+
 router.post("/", async (req, res) => {
   try {
     if (req.query.bulk && req.query.bulk === "on") {

@@ -12,11 +12,12 @@ module.exports = (sequelize, type) => sequelize.define("Setting", {
     },
     defaultValue: true,
   },
-  // sms: {
-  //   type: type.STRING,
-  //   allowNull: true,
-  //   validate: {
-  //     notEmpty: true,
-  //   },
-  // },
+  sms: {
+    type: type.BOOLEAN,
+    allowNull: false,
+    validate: {
+      notEmpty: true,
+    },
+    defaultValue: false,
+  },
 });

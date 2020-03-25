@@ -55,7 +55,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
+  return <MuiAlert /* elevation={6} */ variant="filled" {...props} />;
 }
 
 function CustomAlert(severity, text) {
@@ -64,85 +64,116 @@ function CustomAlert(severity, text) {
 
 export default function Settings(props) {
   const classes = useStyles();
-  // const [checked, setChecked] = React.useState(['sound']);
+  // const [settings, setSettings] = useState({sound: false, sms: false});
+  const [sound, setSound] = useState(false);
+  const [sms, setSms] = useState(false);
   const [fullName, setFullName] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [confirmPassword, setConfirmPassword] = React.useState('');
   const [location, setLocation] = React.useState('');
-  const [alert, setAlert] = React.useState({
+  const [alertProfile, setAlertProfile] = React.useState({
+    variant: '',
+    message: '',
+  });
+  const [alertSettings, setAlertSettings] = React.useState({
     variant: '',
     message: '',
   });
 
   useEffect(() => {
-    axios.get('/users/get_own').then(({data}) => {
+    axios.get('/users/settings').then(({data}) => {
       console.log(data);
+      setSound(data.sound);
+      setSms(data.sms);
+    });
+    axios.get('/users/get_own').then(({data}) => {
       setFullName(data.name);
       setEmail(data.email);
       setLocation(data.location);
     });
   }, []);
 
-  const handleSave = () => {
+  const hideAlert = (delaySeconds, setAlert) => {
+    setTimeout(() => {
+      setAlert({
+        variant: '',
+        message: '',
+      });
+    }, delaySeconds * 1000);
+  };
+
+  const handleSaveSettings = () => {
+    axios
+      .put('/users/settings', {sound, sms})
+      .then(({data, status, statusText}) => {
+        if (status === 202) {
+          setAlertSettings({
+            variant: 'success',
+            message: statusText,
+          });
+        } else {
+          setAlertSettings({
+            variant: 'error',
+            message: statusText,
+          });
+        }
+        hideAlert(2, setAlertSettings);
+      });
+  };
+
+  const handleSoundToggle = name => event => {
+    setSound(event.target.checked);
+  };
+  const handleSMSToggle = name => event => {
+    setSms(event.target.checked);
+  };
+
+  const handleSaveProfile = () => {
     if (password === confirmPassword) {
-      console.log('egale');
       if (password === '') {
-        console.log('cu nimic');
         axios
           .put('/users/put_own', {name: fullName, email, location})
           .then(({data, status, statusText}) => {
-            console.log(data);
             if (status === 202) {
-              setAlert({
+              setAlertProfile({
                 variant: 'success',
                 message: statusText,
               });
             } else {
-              setAlert({
+              setAlertProfile({
                 variant: 'error',
                 message: statusText,
               });
             }
+            hideAlert(2, setAlertProfile);
           });
       } else {
         axios
           .put('/users/put_own', {name: fullName, email, password, location})
           .then(({data, status, statusText}) => {
-            console.log(data);
             if (status === 202) {
-              setAlert({
+              setAlertProfile({
                 variant: 'success',
                 message: statusText,
               });
             } else {
-              setAlert({
+              setAlertProfile({
                 variant: 'error',
                 message: statusText,
               });
             }
+            hideAlert(2, setAlertProfile);
           });
       }
     } else {
-      console.log('nu-s egale');
-      setAlert({
+      setAlertProfile({
         variant: 'error',
         message: 'Passwords should be the same',
       });
+      hideAlert(2, setAlertProfile);
     }
   };
-  // const handleToggle = value => () => {
-  //   const currentIndex = checked.indexOf(value);
-  //   const newChecked = [...checked];
-
-  //   if (currentIndex === -1) {
-  //     newChecked.push(value);
-  //   } else {
-  //     newChecked.splice(currentIndex, 1);
-  //   }
-
-  //   setChecked(newChecked);
-  // };
 
   return (
     <div className={classes.root}>
@@ -192,7 +223,7 @@ export default function Settings(props) {
               margin="dense"
               id="location"
               label="Location*"
-              type="test"
+              type="text"
               value={location}
               fullWidth
             />
@@ -200,7 +231,7 @@ export default function Settings(props) {
               <Toolbar>
                 <div className={classes.grow} />
                 <IconButton
-                  onClick={handleSave}
+                  onClick={handleSaveProfile}
                   edge="end"
                   className={classes.saveButton}>
                   <SaveRoundedIcon />
@@ -208,13 +239,15 @@ export default function Settings(props) {
               </Toolbar>
             </Box>
           </Paper>
-          {alert.statusText ? CustomAlert(alert.variant, alert.message) : true}
+          {alertProfile.statusText !== ''
+            ? CustomAlert(alertProfile.variant, alertProfile.message)
+            : null}
         </Grid>
 
         <Grid item xs={3}>
           <Paper className={classes.paper}>
             <Typography>Alert settings</Typography>
-            <Divider />
+            {/* <Divider /> */}
 
             <List
               // subheader={<ListSubheader>Settings</ListSubheader>}
@@ -227,8 +260,9 @@ export default function Settings(props) {
                 <ListItemSecondaryAction>
                   <Switch
                     edge="end"
-                    // onChange={handleToggle('sound')}
-                    // checked={checked.indexOf('sound') !== -1}
+                    onChange={handleSoundToggle('sound')}
+                    checked={sound}
+                    value="sound"
                     inputProps={{'aria-labelledby': 'switch-list-label-sound'}}
                   />
                 </ListItemSecondaryAction>
@@ -241,8 +275,9 @@ export default function Settings(props) {
                 <ListItemSecondaryAction>
                   <Switch
                     edge="end"
-                    // onChange={handleToggle('sms')}
-                    // checked={checked.indexOf('sms') !== -1}
+                    onChange={handleSMSToggle('sms')}
+                    checked={sms}
+                    value="sms"
                     inputProps={{
                       'aria-labelledby': 'switch-list-label-sms',
                     }}
@@ -251,7 +286,21 @@ export default function Settings(props) {
               </ListItem>
             </List>
             <Divider />
+            <Box className={classes.grow}>
+              <Toolbar>
+                <div className={classes.grow} />
+                <IconButton
+                  onClick={handleSaveSettings}
+                  edge="end"
+                  className={classes.saveButton}>
+                  <SaveRoundedIcon />
+                </IconButton>
+              </Toolbar>
+            </Box>
           </Paper>
+          {alertSettings.statusText !== ''
+            ? CustomAlert(alertSettings.variant, alertSettings.message)
+            : null}
         </Grid>
       </Grid>
     </div>

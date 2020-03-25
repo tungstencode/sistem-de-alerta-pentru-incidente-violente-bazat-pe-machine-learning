@@ -50,5 +50,13 @@ module.exports = (sequelize, type) => {
       null,
     );
   });
+  User.addHook("beforeUpdate", (user) => {
+    // eslint-disable-next-line no-param-reassign
+    user.password = bcrypt.hashSync(
+      user.password,
+      bcrypt.genSaltSync(saltRounds),
+      null,
+    );
+  });
   return User;
 };
