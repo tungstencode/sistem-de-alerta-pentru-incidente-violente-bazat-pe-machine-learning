@@ -24,9 +24,9 @@ import {
 import {ArgumentScale, Animation} from '@devexpress/dx-react-chart';
 import {curveCatmullRom, line} from 'd3-shape';
 import {scalePoint} from 'd3-scale';
-
+import moment from 'moment';
 import axios from 'axios';
-import {energyConsumption as data} from './data';
+import {logs as test} from './data';
 
 const Line = props => (
   <LineSeries.Path
@@ -91,13 +91,16 @@ const Label = withStyles(legendLabelStyles, {name: 'LegendLabel'})(
   legendLabelBase
 );
 const Item = withStyles(legendItemStyles, {name: 'LegendItem'})(legendItemBase);
-const demoStyles = () => ({
+// const demoStyles = () => ({
+//   chart: {
+//     paddingRight: '30px',
+//   },
+// });
+
+const useStyles = makeStyles(theme => ({
   chart: {
     paddingRight: '30px',
   },
-});
-
-const useStyles = makeStyles(theme => ({
   container: {
     display: 'flex',
     flexWrap: 'wrap',
@@ -128,140 +131,88 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-// export default function Graph(props) {
-//   const classes = useStyles();
+export default function Graph(props) {
+  const [logs, setLogs] = useState([]);
+  const classes = useStyles();
 
-//   return (
-//     <div className={classes.root}>
-//       <Grid container spacing={3}>
-//         <Grid item xs={8}>
-//           <Paper className={classes.paper}>
-//             <Typography>chart</Typography>
-//             <Chart data={data} className={classes.chart}>
-//               <ArgumentScale factory={scalePoint} />
-//               <ArgumentAxis />
-//               <ValueAxis />
+  useEffect(() => {
+    axios.get('/logs').then(({data}) => {
+      console.log(data);
 
-//               <LineSeries
-//                 name="Hydro-electric"
-//                 valueField="hydro"
-//                 argumentField="country"
-//                 seriesComponent={Line}
-//               />
-//               <LineSeries
-//                 name="Oil"
-//                 valueField="oil"
-//                 argumentField="country"
-//                 seriesComponent={Line}
-//               />
-//               <LineSeries
-//                 name="Natural gas"
-//                 valueField="gas"
-//                 argumentField="country"
-//                 seriesComponent={Line}
-//               />
-//               <LineSeries
-//                 name="Coal"
-//                 valueField="coal"
-//                 argumentField="country"
-//                 seriesComponent={Line}
-//               />
-//               <LineSeries
-//                 name="Nuclear"
-//                 valueField="nuclear"
-//                 argumentField="country"
-//                 seriesComponent={Line}
-//               />
-//               <Legend
-//                 position="bottom"
-//                 rootComponent={Root}
-//                 itemComponent={Item}
-//                 labelComponent={Label}
-//               />
-//               <Title
-//                 text="Energy Consumption in 2004\n(Millions of Tons, Oil Equivalent)"
-//                 textComponent={Text}
-//               />
-//               <Animation />
-//             </Chart>
-//           </Paper>
-//         </Grid>
+      // eslint-disable-next-line fp/no-mutation
+      // eslint-disable-next-line no-plusplus
+      // for (let i = 0; i < data.length; i++) {
+      //   // eslint-disable-next-line fp/no-mutation
+      //   // eslint-disable-next-line no-param-reassign
+      //   data[i].dateTime = moment(data[0].dateTime, 'x').toDate();
+      // }
 
-//         <Grid item xs={4}>
-//           <Paper className={classes.paper}>
-//             <Typography>Alert settings</Typography>
-//           </Paper>
-//         </Grid>
-//       </Grid>
-//     </div>
-//   );
-// }
+      const logsC = data;
 
-class Graph extends React.PureComponent {
-  constructor(props) {
-    super(props);
+      // logsC.map(log => {
+      //   // eslint-disable-next-line fp/no-mutation
+      //   // eslint-disable-next-line no-param-reassign
+      //   log.dateTime = moment(log.dateTime, 'x').format('YYYY-MM-DD');
+      // });
 
-    this.state = {
-      data,
-    };
-  }
+      console.log(logsC);
 
-  render() {
-    const {data: chartData} = this.state;
-    const {classes} = this.props;
+      setLogs(logsC);
+    });
+  }, []);
 
-    return (
-      <Paper>
-        <Chart data={chartData} className={classes.chart}>
-          <ArgumentScale factory={scalePoint} />
-          <ArgumentAxis />
-          <ValueAxis />
+  return (
+    <div className={classes.root}>
+      <Grid container spacing={3}>
+        <Grid item xs={10}>
+          <Paper className={classes.paper}>
+            {logs.length ? (
+              <Chart data={logs} className={classes.chart}>
+                <ArgumentScale factory={scalePoint} />
+                <ArgumentAxis />
+                <ValueAxis />
 
-          <LineSeries
-            name="Hydro-electric"
-            valueField="hydro"
-            argumentField="country"
-            seriesComponent={Line}
-          />
-          <LineSeries
-            name="Oil"
-            valueField="oil"
-            argumentField="country"
-            seriesComponent={Line}
-          />
-          <LineSeries
-            name="Natural gas"
-            valueField="gas"
-            argumentField="country"
-            seriesComponent={Line}
-          />
-          <LineSeries
-            name="Coal"
-            valueField="coal"
-            argumentField="country"
-            seriesComponent={Line}
-          />
-          <LineSeries
-            name="Nuclear"
-            valueField="nuclear"
-            argumentField="country"
-            seriesComponent={Line}
-          />
-          <Legend
-            position="bottom"
-            rootComponent={Root}
-            itemComponent={Item}
-            labelComponent={Label}
-          />
-          <Title
-            text="Energy Consumption in 2004\n(Millions of Tons, Oil Equivalent)"
-            textComponent={Text}
-          />
-          <Animation />
-        </Chart>
-      </Paper>
-    );
-  }
+                <LineSeries
+                  name="Camera 1"
+                  valueField="numberOfAccidents"
+                  argumentField="dateTime"
+                  seriesComponent={Line}
+                />
+                {/* <LineSeries
+                name="Church"
+                valueField="church"
+                argumentField="year"
+                seriesComponent={Line}
+              />
+              <LineSeries
+                name="Military"
+                valueField="military"
+                argumentField="year"
+                seriesComponent={Line}
+              />
+              <Legend
+                position="bottom"
+                rootComponent={Root}
+                itemComponent={Item}
+                labelComponent={Label}
+              /> */}
+
+                <Title
+                  text="Violence Activity\n(Subtitle)"
+                  textComponent={Text}
+                />
+                <Animation />
+              </Chart>
+            ) : null}
+          </Paper>
+        </Grid>
+
+        <Grid item xs={2}>
+          <Paper className={classes.paper}>
+            <Typography>Filters</Typography>
+          </Paper>
+        </Grid>
+      </Grid>
+    </div>
+  );
 }
-
-export default withStyles(demoStyles, {name: 'Demo'})(Graph);

@@ -598,6 +598,37 @@ export const confidence = [
   },
 ];
 
+export const logs = [
+  {
+    dateTime: '2020-05-04',
+    numberOfAccidents: 20,
+  },
+  {
+    dateTime: '2020-05-07',
+    numberOfAccidents: 15,
+  },
+  {
+    dateTime: '2020-05-04',
+    numberOfAccidents: 9,
+  },
+  {
+    dateTime: '2020-05-06',
+    numberOfAccidents: 30,
+  },
+  {
+    dateTime: '2020-05-04',
+    numberOfAccidents: 50,
+  },
+  {
+    dateTime: '2020-05-04',
+    numberOfAccidents: 5,
+  },
+  {
+    dateTime: '2020-05-05',
+    numberOfAccidents: 2,
+  },
+];
+
 export const energyConsumption = [
   {
     country: 'USA',

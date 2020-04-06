@@ -55,6 +55,7 @@ function CameraWrapper(props) {
   });
   const [openMap, setOpenMap] = React.useState(false);
   const [processing, setProcessing] = React.useState(false);
+  const [url, setUrl] = React.useState('');
 
   const handleMapOpen = () => {
     setOpenMap(true);
@@ -86,15 +87,36 @@ function CameraWrapper(props) {
     setOpen(false);
   };
 
+  const reload = () => {
+    setImageState({show: false});
+    setTimeout(
+      () => setImageState(state => ({count: state.count + 1, show: true})),
+      500
+    );
+  };
+
+  const setImage = processingP => {
+    if (processingP) {
+      setUrl(`http://localhost:5000/processed/${camera.id}`);
+    } else if (camera.url.includes('rtsp')) {
+      setUrl(`http://localhost:5000/unprocessed/${camera.id}`);
+    } else {
+      setUrl(camera.url);
+    }
+    reload();
+  };
+
   useEffect(() => {
     setProcessing(camera.UserCamera.detect);
     source = new EventSource(`http://localhost:5000/detect/${camera.id}`);
     source.onmessage = e => onDetection(e.data);
+    setImage(camera.UserCamera.detect);
     // setDetectionEvent();
   }, []);
 
   const handleChange = name => event => {
     setProcessing(event.target.checked);
+    setImage(event.target.checked);
     axios
       .put(`/cameras/assigned/detect/${camera.id}`, {
         detect: event.target.checked,
@@ -157,40 +179,12 @@ function CameraWrapper(props) {
         </AppBar>
 
         <Box onClick={() => onCameraClick(camera.id)}>
-          {processing ? (
-            <Image
-              src={
-                imageState.show
-                  ? `http://localhost:5000/processed/${camera.id}`
-                  : ''
-              }
-              onClick={() => console.log('onClick')}
-              aspectRatio={16 / 9}
-              // disableSpinner
-            />
-          ) : (
-            [
-              camera.url.includes('rtsp') ? (
-                <Image
-                  src={
-                    imageState.show
-                      ? `http://localhost:5000/unprocessed/${camera.id}`
-                      : ''
-                  }
-                  onClick={() => console.log('onClick')}
-                  aspectRatio={16 / 9}
-                  // disableSpinner
-                />
-              ) : (
-                <Image
-                  src={imageState.show ? camera.url : ''}
-                  onClick={() => console.log('onClick')}
-                  aspectRatio={16 / 9}
-                  // disableSpinner
-                />
-              ),
-            ]
-          )}
+          <Image
+            src={imageState.show ? url : ''}
+            onClick={() => console.log('onClick')}
+            aspectRatio={16 / 9}
+            // disableSpinner
+          />
         </Box>
       </Paper>
       <ConfirmDialog open={open} handleYes={handleYes} handleNo={handleNo} />

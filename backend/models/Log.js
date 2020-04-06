@@ -4,9 +4,6 @@ module.exports = (sequelize, type) => sequelize.define("Log", {
     primaryKey: true,
     autoIncrement: true,
   },
-  idCamera: {
-    type: type.INTEGER,
-  },
   accurate: {
     type: type.BOOLEAN,
     allowNull: true,

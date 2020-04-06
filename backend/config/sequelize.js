@@ -3,6 +3,7 @@ const UserModel = require("../models/User");
 const CameraModel = require("../models/Camera");
 const SettingModel = require("../models/Setting");
 const LogModel = require("../models/Log");
+const moment = require("moment");
 
 const sequelize = new Sequelize(
   process.env.DB_NAME,
@@ -49,7 +50,7 @@ Setting.belongsTo(User);
 Camera.hasMany(Log);
 Log.belongsTo(Camera);
 
-const force = false;
+const force = true;
 
 sequelize.sync({ force }).then(async () => {
   // eslint-disable-next-line no-console
@@ -84,8 +85,51 @@ sequelize.sync({ force }).then(async () => {
     const cameras2 = await userFound.getCameras();
 
     console.log(cameras2[0].UserCamera.detect);
-    
+
     await user.setSetting(settings);
+
+    const log = await Log.create({
+      accurate: true,
+      dateTime: moment.now().toString(),
+    });
+
+    await camera.addLog(log);
+
+    const log2 = await Log.create({
+      accurate: true,
+      dateTime: moment.now().toString(),
+    });
+
+    await camera.addLog(log2);
+
+    const logs = await camera.getLogs();
+    console.log(logs);
+
+    // const allLogs = await Log.findAll();
+
+    // const camerasWithLogs = await Camera.findAll({
+    //   include: [{ model: Log }],
+    //   raw: false,
+    // });
+
+    // console.log(camerasWithLogs);
+
+    // router.get('/users', function(req, res, next) {
+    //   models.User.findAll({
+    //       include: [ {model: models.House, as: 'houses'} ],
+    //       raw: false // returns result-set as sequelize object...
+    //   })
+    //   .then(function(users) {
+    //       users = users.get(); //turns sequelize object into json
+    //       d('num users found: ' + users.length);
+    //       res.json(users);
+    //   })
+    //   .catch(function(err){
+    //       d('DB ERROR: '+err.message);
+    //       next(err);
+    //   });
+
+    // });
   }
 });
 
@@ -94,4 +138,5 @@ module.exports = {
   Camera,
   Setting,
   sequelize,
+  Log,
 };

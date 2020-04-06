@@ -41,11 +41,13 @@ app.use(passport.session());
 const loginRouter = require("./routers/login-router");
 const cameraRouter = require("./routers/camera-router");
 const userRouter = require("./routers/user-router");
+const logRouter = require("./routers/log-router");
 
 app.use("/", loginRouter);
 app.use(isAuthenticated);
 app.use("/cameras", cameraRouter);
 app.use("/users", userRouter);
+app.use("/logs", logRouter);
 
 app.get("/create", async (req, res) => {
   try {
