@@ -50,7 +50,7 @@ Setting.belongsTo(User);
 Camera.hasMany(Log);
 Log.belongsTo(Camera);
 
-const force = true;
+const force = false;
 
 sequelize.sync({ force }).then(async () => {
   // eslint-disable-next-line no-console
@@ -73,6 +73,14 @@ sequelize.sync({ force }).then(async () => {
 
     user.addCamera(camera, { through: { detect: true } });
 
+    const camera2 = await Camera.create({
+      name: "test2",
+      url: "http://173.79.214.76:9000/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER",
+      location: "30,30",
+    });
+
+    user.addCamera(camera2, { through: { detect: true } });
+
     const userFound = await User.findByPk("1981029394446");
 
     const cameras = await userFound.getCameras();
@@ -92,15 +100,24 @@ sequelize.sync({ force }).then(async () => {
       accurate: true,
       dateTime: moment.now().toString(),
     });
-
-    await camera.addLog(log);
-
     const log2 = await Log.create({
       accurate: true,
       dateTime: moment.now().toString(),
     });
 
+    const log3 = await Log.create({
+      accurate: true,
+      dateTime: moment.now().toString(),
+    });
+    const log4 = await Log.create({
+      accurate: true,
+      dateTime: moment.now().toString(),
+    });
+
+    await camera.addLog(log);
     await camera.addLog(log2);
+    await camera2.addLog(log3);
+    await camera2.addLog(log4);
 
     const logs = await camera.getLogs();
     console.log(logs);

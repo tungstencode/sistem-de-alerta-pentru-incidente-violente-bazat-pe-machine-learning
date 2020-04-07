@@ -4,23 +4,25 @@ import TextField from '@material-ui/core/TextField';
 // import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
-import {IconButton, Icon} from '@material-ui/core';
-import SaveRoundedIcon from '@material-ui/icons/SaveRounded';
 import {makeStyles, withStyles} from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-import Toolbar from '@material-ui/core/Toolbar';
-import Switch from '@material-ui/core/Switch';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Divider from '@material-ui/core/Divider';
 import {
-  Chart,
-  ArgumentAxis,
-  ValueAxis,
-  LineSeries,
-  Title,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   Legend,
-} from '@devexpress/dx-react-chart-material-ui';
+} from 'recharts';
+// import {
+//   Chart,
+//   ArgumentAxis,
+//   ValueAxis,
+//   LineSeries,
+//   Title,
+//   Legend,
+// } from '@devexpress/dx-react-chart-material-ui';
 import {ArgumentScale, Animation} from '@devexpress/dx-react-chart';
 import {curveCatmullRom, line} from 'd3-shape';
 import {scalePoint} from 'd3-scale';
@@ -28,15 +30,60 @@ import moment from 'moment';
 import axios from 'axios';
 import {logs as test} from './data';
 
-const Line = props => (
-  <LineSeries.Path
-    {...props}
-    path={line()
-      .x(({arg}) => arg)
-      .y(({val}) => val)
-      .curve(curveCatmullRom)}
-  />
-);
+const datee = [
+  {
+    name: 'Page A',
+    uv: 4000,
+    pv: 2400,
+    amt: 2400,
+  },
+  {
+    name: 'Page B',
+    uv: 3000,
+    pv: 1398,
+    amt: 2210,
+  },
+  {
+    name: 'Page C',
+    uv: 2000,
+    pv: 9800,
+    amt: 2290,
+  },
+  {
+    name: 'Page D',
+    uv: 2780,
+    pv: 3908,
+    amt: 2000,
+  },
+  {
+    name: 'Page E',
+    uv: 1890,
+    pv: 4800,
+    amt: 2181,
+  },
+  {
+    name: 'Page F',
+    uv: 2390,
+    pv: 3800,
+    amt: 2500,
+  },
+  {
+    name: 'Page G',
+    uv: 3490,
+    pv: 4300,
+    amt: 2100,
+  },
+];
+
+// const Line = props => (
+//   <LineSeries.Path
+//     {...props}
+//     path={line()
+//       .x(({arg}) => arg)
+//       .y(({val}) => val)
+//       .curve(curveCatmullRom)}
+//   />
+// );
 
 const titleStyles = {
   title: {
@@ -167,6 +214,53 @@ export default function Graph(props) {
         <Grid item xs={10}>
           <Paper className={classes.paper}>
             {logs.length ? (
+              <LineChart
+                width={500}
+                height={300}
+                data={logs}
+                margin={{
+                  top: 5,
+                  right: 30,
+                  left: 20,
+                  bottom: 5,
+                }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="dateTime" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                {Object.keys(logs[0]).map((keyName, keyIndex) => {
+                  if (keyIndex > 0) {
+                    return (
+                      <Line
+                        type="monotone"
+                        dataKey={keyName}
+                        stroke="#8884d8"
+                        activeDot={{r: 8}}
+                      />
+                    );
+                  }
+                  return null;
+                })}
+
+                {/* <Line
+                  type="monotone"
+                  dataKey="camera1"
+                  stroke="#8884d8"
+                  activeDot={{r: 8}}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="camera2"
+                  stroke="#8884d8"
+                  activeDot={{r: 8}}
+                /> */}
+                {/* <Line type="monotone" dataKey="uv" stroke="#82ca9d" /> */}
+              </LineChart>
+            ) : null}
+
+            {/* 
+            {logs.length ? (
               <Chart data={logs} className={classes.chart}>
                 <ArgumentScale factory={scalePoint} />
                 <ArgumentAxis />
@@ -178,24 +272,6 @@ export default function Graph(props) {
                   argumentField="dateTime"
                   seriesComponent={Line}
                 />
-                {/* <LineSeries
-                name="Church"
-                valueField="church"
-                argumentField="year"
-                seriesComponent={Line}
-              />
-              <LineSeries
-                name="Military"
-                valueField="military"
-                argumentField="year"
-                seriesComponent={Line}
-              />
-              <Legend
-                position="bottom"
-                rootComponent={Root}
-                itemComponent={Item}
-                labelComponent={Label}
-              /> */}
 
                 <Title
                   text="Violence Activity\n(Subtitle)"
@@ -203,7 +279,7 @@ export default function Graph(props) {
                 />
                 <Animation />
               </Chart>
-            ) : null}
+            ) : null} */}
           </Paper>
         </Grid>
 

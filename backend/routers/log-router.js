@@ -1,38 +1,88 @@
 const express = require("express");
-const { Camera, Log } = require("../config/sequelize");
+const { Camera, Log, User } = require("../config/sequelize");
 const moment = require("moment");
 
 const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
-    const camerasWithLogs = await Camera.findAll({
+    // const camerasWithLogs = await Camera.findAll({
+    //   include: [{ model: Log }],
+    //   raw: false,
+    // });
+
+    const user = await User.findByPk(req.user.cnp);
+
+    const camerasWithLogs = await user.getCameras({
       include: [{ model: Log }],
       raw: false,
     });
 
-    const logs = [];
+    const data = [
+      {
+        dateTime: "2020-04-10",
+        camera1: 12,
+        camera2: 12,
+        camera3: 44,
+      },
+      {
+        dateTime: "2020-04-30",
+        camera1: 24,
+        camera2: 12,
+        camera3: 44,
+      },
+      {
+        dateTime: "2020-04-21",
+        camera1: 15,
+        camera2: 12,
+        camera3: 44,
+      },
+    ];
+
+    const logsBuild = [];
+
+    const findLog = (date, logs) => {
+      for (let i = 0; i < logs.length; i++) {
+        const log = logs[i];
+        if (log.dateTime === date) {
+          // console.log(log.dateTime, date);
+          return i;
+        }
+      }
+      return false;
+    };
 
     camerasWithLogs.map((cameraWithLogs) => {
-      const builtLog = {
-        name: "",
-        location: "",
-        dateTime: "",
-        numberOfAccidents: 0,
-      };
-      builtLog.location = cameraWithLogs.location;
-      builtLog.name = cameraWithLogs.name;
       for (let i = 0; i < cameraWithLogs.Logs.length; i++) {
-        builtLog.dateTime = moment(cameraWithLogs.Logs[i].dateTime, "x").format(
+        let builtLog = {};
+        const dateToFind = moment(cameraWithLogs.Logs[i].dateTime, "x").format(
           "YYYY-MM-DD",
         );
-        // builtLog.dateTime = cameraWithLogs.Logs[i].dateTime;
-        builtLog.numberOfAccidents += 1;
+        const logIndex = findLog(dateToFind, logsBuild);
+
+        if (logIndex === false) {
+          builtLog = {};
+          builtLog.dateTime = dateToFind;
+          builtLog[cameraWithLogs.name] = 1;
+          logsBuild.push(builtLog);
+        } else {
+          builtLog = logsBuild[logIndex];
+          if (builtLog[cameraWithLogs.name]) {
+            builtLog[cameraWithLogs.name] += 1;
+          } else {
+            builtLog[cameraWithLogs.name] = 1;
+          }
+        }
       }
-      logs.push(builtLog);
+      if (cameraWithLogs.Logs.length === 0) {
+        for (let i = 0; i < logsBuild.length; i++) {
+          const builtLog = logsBuild[i];
+          builtLog[cameraWithLogs.name] = 0;
+        }
+      }
     });
 
-    res.status(200).json(logs);
+    res.status(200).json(data);
   } catch (error) {
     console.warn(error);
     res.status(500).json({ message: "server error" });
