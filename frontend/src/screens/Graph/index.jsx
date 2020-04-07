@@ -242,20 +242,6 @@ export default function Graph(props) {
                   }
                   return null;
                 })}
-
-                {/* <Line
-                  type="monotone"
-                  dataKey="camera1"
-                  stroke="#8884d8"
-                  activeDot={{r: 8}}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="camera2"
-                  stroke="#8884d8"
-                  activeDot={{r: 8}}
-                /> */}
-                {/* <Line type="monotone" dataKey="uv" stroke="#82ca9d" /> */}
               </LineChart>
             ) : null}
 

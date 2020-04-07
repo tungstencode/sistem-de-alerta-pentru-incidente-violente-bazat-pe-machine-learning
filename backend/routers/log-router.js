@@ -82,7 +82,7 @@ router.get("/", async (req, res) => {
       }
     });
 
-    res.status(200).json(data);
+    res.status(200).json(logsBuild);
   } catch (error) {
     console.warn(error);
     res.status(500).json({ message: "server error" });
