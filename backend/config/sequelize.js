@@ -98,20 +98,20 @@ sequelize.sync({ force }).then(async () => {
 
     const log = await Log.create({
       accurate: true,
-      dateTime: moment.now().toString(),
+      dateTime: moment("2020-04-02", "YYYY-MM-DD").valueOf().toString(),
     });
     const log2 = await Log.create({
       accurate: true,
-      dateTime: moment.now().toString(),
+      dateTime: moment("2020-04-02", "YYYY-MM-DD").valueOf().toString(),
     });
 
     const log3 = await Log.create({
       accurate: true,
-      dateTime: moment.now().toString(),
+      dateTime: moment("2020-04-04", "YYYY-MM-DD").valueOf().toString(),
     });
     const log4 = await Log.create({
       accurate: true,
-      dateTime: moment.now().toString(),
+      dateTime: moment("2020-04-04", "YYYY-MM-DD").valueOf().toString(),
     });
 
     await camera.addLog(log);

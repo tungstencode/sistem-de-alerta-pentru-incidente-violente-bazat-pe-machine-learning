@@ -5,6 +5,7 @@ import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import {makeStyles, withStyles} from '@material-ui/core/styles';
+import {MenuItem, FormControl, InputLabel, Select} from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import {
   LineChart,
@@ -14,66 +15,12 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
+  ResponsiveContainer,
 } from 'recharts';
-// import {
-//   Chart,
-//   ArgumentAxis,
-//   ValueAxis,
-//   LineSeries,
-//   Title,
-//   Legend,
-// } from '@devexpress/dx-react-chart-material-ui';
-import {ArgumentScale, Animation} from '@devexpress/dx-react-chart';
-import {curveCatmullRom, line} from 'd3-shape';
-import {scalePoint} from 'd3-scale';
 import moment from 'moment';
 import axios from 'axios';
+import randomColor from 'randomcolor';
 import {logs as test} from './data';
-
-const datee = [
-  {
-    name: 'Page A',
-    uv: 4000,
-    pv: 2400,
-    amt: 2400,
-  },
-  {
-    name: 'Page B',
-    uv: 3000,
-    pv: 1398,
-    amt: 2210,
-  },
-  {
-    name: 'Page C',
-    uv: 2000,
-    pv: 9800,
-    amt: 2290,
-  },
-  {
-    name: 'Page D',
-    uv: 2780,
-    pv: 3908,
-    amt: 2000,
-  },
-  {
-    name: 'Page E',
-    uv: 1890,
-    pv: 4800,
-    amt: 2181,
-  },
-  {
-    name: 'Page F',
-    uv: 2390,
-    pv: 3800,
-    amt: 2500,
-  },
-  {
-    name: 'Page G',
-    uv: 3490,
-    pv: 4300,
-    amt: 2100,
-  },
-];
 
 // const Line = props => (
 //   <LineSeries.Path
@@ -154,7 +101,7 @@ const useStyles = makeStyles(theme => ({
   },
   formControl: {
     margin: theme.spacing(1),
-    minWidth: 240,
+    minWidth: 120,
   },
   root: {
     flexGrow: 1,
@@ -180,33 +127,37 @@ const useStyles = makeStyles(theme => ({
 
 export default function Graph(props) {
   const [logs, setLogs] = useState([]);
+  const [month, setMonth] = useState('');
+  const [year, setYear] = useState('');
   const classes = useStyles();
+  const currentYear = new Date().getFullYear();
+  const years = Array.from(
+    new Array(20),
+    (val, index) => index + currentYear - 10
+  );
 
   useEffect(() => {
-    axios.get('/logs').then(({data}) => {
+    setYear(currentYear);
+    axios.get(`/logs/${currentYear}`).then(({data}) => {
       console.log(data);
-
-      // eslint-disable-next-line fp/no-mutation
-      // eslint-disable-next-line no-plusplus
-      // for (let i = 0; i < data.length; i++) {
-      //   // eslint-disable-next-line fp/no-mutation
-      //   // eslint-disable-next-line no-param-reassign
-      //   data[i].dateTime = moment(data[0].dateTime, 'x').toDate();
-      // }
-
-      const logsC = data;
-
-      // logsC.map(log => {
-      //   // eslint-disable-next-line fp/no-mutation
-      //   // eslint-disable-next-line no-param-reassign
-      //   log.dateTime = moment(log.dateTime, 'x').format('YYYY-MM-DD');
-      // });
-
-      console.log(logsC);
-
-      setLogs(logsC);
+      setLogs(data);
     });
   }, []);
+
+  const handleMonthChange = event => {
+    setMonth(event.target.value);
+    axios.get(`/logs/${year}/${event.target.value}`).then(({data}) => {
+      console.log(data);
+      setLogs(data);
+    });
+  };
+  const handleYearChange = event => {
+    setYear(event.target.value);
+    axios.get(`/logs/${event.target.value}`).then(({data}) => {
+      console.log(data);
+      setLogs(data);
+    });
+  };
 
   return (
     <div className={classes.root}>
@@ -214,64 +165,72 @@ export default function Graph(props) {
         <Grid item xs={10}>
           <Paper className={classes.paper}>
             {logs.length ? (
-              <LineChart
-                width={500}
-                height={300}
-                data={logs}
-                margin={{
-                  top: 5,
-                  right: 30,
-                  left: 20,
-                  bottom: 5,
-                }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="dateTime" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                {Object.keys(logs[0]).map((keyName, keyIndex) => {
-                  if (keyIndex > 0) {
-                    return (
-                      <Line
-                        type="monotone"
-                        dataKey={keyName}
-                        stroke="#8884d8"
-                        activeDot={{r: 8}}
-                      />
-                    );
-                  }
-                  return null;
-                })}
-              </LineChart>
+              <ResponsiveContainer width="95%" height={600}>
+                <LineChart
+                  data={logs}
+                  margin={{
+                    top: 5,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
+                  }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="dateTime" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  {Object.keys(logs[0]).map((keyName, keyIndex) => {
+                    if (keyIndex > 0) {
+                      return (
+                        <Line
+                          type="monotone"
+                          dataKey={keyName}
+                          stroke={randomColor()}
+                          activeDot={{r: 8}}
+                        />
+                      );
+                    }
+                    return null;
+                  })}
+                </LineChart>
+              </ResponsiveContainer>
             ) : null}
-
-            {/* 
-            {logs.length ? (
-              <Chart data={logs} className={classes.chart}>
-                <ArgumentScale factory={scalePoint} />
-                <ArgumentAxis />
-                <ValueAxis />
-
-                <LineSeries
-                  name="Camera 1"
-                  valueField="numberOfAccidents"
-                  argumentField="dateTime"
-                  seriesComponent={Line}
-                />
-
-                <Title
-                  text="Violence Activity\n(Subtitle)"
-                  textComponent={Text}
-                />
-                <Animation />
-              </Chart>
-            ) : null} */}
           </Paper>
         </Grid>
 
         <Grid item xs={2}>
           <Paper className={classes.paper}>
             <Typography>Filters</Typography>
+            <FormControl className={classes.formControl}>
+              <InputLabel id="demo-simple-select-label">Year</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={year}
+                onChange={handleYearChange}>
+                <MenuItem value={currentYear}>
+                  <em>Current</em>
+                </MenuItem>
+                {years.map(yearS => {
+                  return <MenuItem value={yearS}>{yearS}</MenuItem>;
+                })}
+              </Select>
+            </FormControl>
+            <FormControl className={classes.formControl}>
+              <InputLabel id="demo-simple-select-label">Month</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={month}
+                onChange={handleMonthChange}>
+                <MenuItem value="">
+                  <em>All</em>
+                </MenuItem>
+                {moment.months().map((monthS, key) => {
+                  return <MenuItem value={key}>{monthS}</MenuItem>;
+                })}
+              </Select>
+            </FormControl>
           </Paper>
         </Grid>
       </Grid>
