@@ -13,6 +13,7 @@ import {Typography, IconButton, Icon, Grid} from '@material-ui/core';
 import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
 import Image from 'material-ui-image';
 // import Divider from '@material-ui/core/Divider';
+import debounce from 'debounce';
 import ConfirmDialog from '../ConfirmDialog';
 import ShortenText from '../ShortenText';
 // import MapDialog from '../MapDialog';
@@ -56,6 +57,12 @@ function CameraWrapper(props) {
   const [openMap, setOpenMap] = React.useState(false);
   const [processing, setProcessing] = React.useState(false);
   const [url, setUrl] = React.useState('');
+  const [source, setSource] = useState();
+
+  // const sourceB = new EventSource(`http://localhost:5000/detect/${camera.id}`);
+  // sourceB.onopen = () => console.log('opened');
+  // sourceB.onerror = () => console.log('error');
+  // sourceB.onmessage = (e) => console.log('mesaj');
 
   const handleMapOpen = () => {
     setOpenMap(true);
@@ -66,11 +73,6 @@ function CameraWrapper(props) {
   };
 
   // const [detectionEvent, setDetectionEvent] = React.useState();
-  let source;
-
-  const onDetection = detection => {
-    console.log(detection);
-  };
 
   const handleDeleteClick = event => {
     setOpen(true);
@@ -106,15 +108,41 @@ function CameraWrapper(props) {
     reload();
   };
 
+  const onDetection = async event => {
+    console.log(event.data);
+    if (event.data === `b'True'`) {
+      console.log('true');
+      await axios.post(`/logs/${camera.id}`).then(({data}) => {
+        console.log(data);
+      });
+    }
+  };
+
+  const openStream = () => {
+    const sourceB = new EventSource(
+      `http://localhost:5000/detect/${camera.id}`
+    );
+    sourceB.onmessage = onDetection
+
+    setSource(sourceB);
+  };
+
+  const closeStream = () => {
+    source.close();
+  };
+
   useEffect(() => {
     setProcessing(camera.UserCamera.detect);
-    source = new EventSource(`http://localhost:5000/detect/${camera.id}`);
-    source.onmessage = e => onDetection(e.data);
+
+    if (camera.UserCamera.detect) {
+      openStream();
+    }
+
     setImage(camera.UserCamera.detect);
-    // setDetectionEvent();
   }, []);
 
   const handleChange = name => event => {
+    event.target.checked ? openStream() : closeStream();
     setProcessing(event.target.checked);
     setImage(event.target.checked);
     axios
@@ -124,11 +152,9 @@ function CameraWrapper(props) {
       .then(res => {
         console.log(res);
       });
-    // console.log(event.target.checked);
   };
 
   return (
-    // <div>
     <Grid item xs={4}>
       <Paper className={classes.paper}>
         <AppBar color="secondary" position="static">
@@ -146,13 +172,7 @@ function CameraWrapper(props) {
             </Grid>
             <Grid item xs={5}>
               <Toolbar>
-                {/* <Link color="primary" onClick={() => onCameraClick(camera.id)}> */}
-                <Typography noWrap>
-                  {/* <Link href="#" onClick={handleMapOpen}> */}
-                  {camera.location}
-                  {/* </Link> */}
-                </Typography>
-                {/* </Link> */}
+                <Typography noWrap>{camera.location}</Typography>
               </Toolbar>
             </Grid>
 

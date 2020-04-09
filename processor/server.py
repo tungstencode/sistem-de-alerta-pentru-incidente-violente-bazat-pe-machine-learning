@@ -14,13 +14,13 @@ from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
 from flask_cors import CORS
 from dotenv import load_dotenv
-
 import imutils
 import numpy as np
 from src.ViolenceDetector import *
 import settings.DeploySettings as deploySettings
 import settings.DataSettings as dataSettings
 import src.data.ImageUtils as ImageUtils
+from debounce import debounce
 
 load_dotenv('processor.env')
 
@@ -30,10 +30,10 @@ DB_NAME = os.getenv("DB_NAME")
 DB_USER = os.getenv("DB_USER")
 DB_PASS = os.getenv("DB_PASS")
 
+
+
 application = Flask(__name__)
 red = redis.StrictRedis()
-# application.config["REDIS_URL"] = "redis://localhost"
-# application.register_blueprint(sse, url_prefix='/stream')
 api = Api(application)
 CORS(application)
 
@@ -42,12 +42,6 @@ engine = create_engine("mysql://"+DB_USER+":" +
 Base = automap_base()
 Base.prepare(engine, reflect=True)
 cameras = Base.classes.Cameras
-
-
-# @application.route('/send')
-# def send_message():
-#     sse.publish({"message": "Hello!"}, type='greeting')
-#     return "Message sent!"
 
 
 class Unprocessed(Resource):
@@ -70,7 +64,6 @@ def generateUnprocessedImage(url):
     stop = timeit.default_timer()
     print(stop-start, "capture camera")
     while True:
-        # sse.publish({"message": "Hello!"}, type='greeting')
         vcap.start()
         ret, frame = vcap.read()
         vcap.stop()
@@ -92,6 +85,11 @@ class Processed(Resource):
         return response
 
 
+@debounce(15)
+def publishFighting(isFighting, id):
+    red.publish('detect'+str(id), str(isFighting))
+
+
 def generateProcessedImage(url, id):
     violenceDetector = ViolenceDetector()
     # videoReader = VideoCaptureThreading(url)
@@ -110,7 +108,7 @@ def generateProcessedImage(url, id):
         currentImage = imutils.resize(currentImage, width=targetSize)
 
         if isFighting:
-            red.publish('detect'+str(id), str(isFighting))
+            publishFighting(isFighting, id)
             resultImage = cv.copyMakeBorder(currentImage, deploySettings.BORDER_SIZE, deploySettings.BORDER_SIZE,
                                             deploySettings.BORDER_SIZE, deploySettings.BORDER_SIZE, cv.BORDER_CONSTANT, value=deploySettings.FIGHT_BORDER_COLOR)
         else:
@@ -134,14 +132,6 @@ class Detect(Resource):
         return response
 
 
-def event_stream(camera_id):
-    pubsub = red.pubsub()
-    pubsub.subscribe('detect'+str(camera_id))
-    for message in pubsub.listen():
-        print(message)
-        yield 'detect: %s from %s\n\n' % (message['data'], camera_id)
-
-
 def findCameraUrl(camera_id):
     start = timeit.default_timer()
     session = Session(engine)
@@ -150,18 +140,6 @@ def findCameraUrl(camera_id):
     stop = timeit.default_timer()
     print(stop-start, "camera url")
     return camera.url
-
-    # while True:
-    #     detect = not detect
-    #     # sse.publish({"message": "Hello!"}, type='greeting')
-    #     vcap.start()
-    #     ret, frame = vcap.read()
-    #     vcap.stop()
-    #     (flag, encodedImage) = cv.imencode(".jpg", frame)
-    #     # red.publish('detect'+str(id), str(detect))
-
-    #     yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' +
-    #            bytearray(encodedImage) + b'\r\n')
 
 
 api.add_resource(Unprocessed, '/unprocessed/<camera_id>')
@@ -173,17 +151,31 @@ api.add_resource(Detect, '/detect/<camera_id>')
 def post():
     message = request.form['message']
     id = request.form['id']
-    user = session.get('user', 'server')
-    now = datetime.datetime.now().replace(microsecond=0).time()
-    red.publish('detect'+str(id), u'[%s] %s: %s' %
-                (now.isoformat(), user, message))
-    red.publish('detect'+str(id), "la munca")
+    # user = session.get('user', 'server')
+    # now = datetime.datetime.now().replace(microsecond=0).time()
+    # red.publish('detect'+str(id), u'[%s] %s: %s' %
+    #             (now.isoformat(), user, message))
+    red.publish('detect'+str(id), message)
     return Response('ok', status=200)
 
 
 @application.route('/')
 def slash():
     return Response("this is the slash page")
+
+
+def event_stream(camera_id):
+    pubsub = red.pubsub()
+    pubsub.subscribe('detect'+str(camera_id))
+    for message in pubsub.listen():
+        print(message)
+        yield 'data: %s\n\n' % message['data']
+
+
+@application.route('/stream')
+def stream():
+    return Response(event_stream(),
+                    mimetype="text/event-stream")
 
 
 if __name__ == '__main__':

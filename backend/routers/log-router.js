@@ -1,6 +1,6 @@
 const express = require("express");
 const moment = require("moment");
-const { Log, User } = require("../config/sequelize");
+const { Log, User, Camera } = require("../config/sequelize");
 
 const router = express.Router();
 
@@ -97,6 +97,24 @@ router.get("/:year/:month", async (req, res) => {
     res.status(200).json(logsBuild);
   } catch (error) {
     console.warn(error);
+    res.status(500).json({ message: "server error" });
+  }
+});
+
+router.post("/:cameraId", async (req, res) => {
+  try {
+    const user = await User.findByPk(req.user.cnp);
+    const camera = await Camera.findByPk(req.params.cameraId);
+
+    const log = await Log.create({
+      accurate: null,
+      dateTime: moment.now().toString(),
+    });
+    await camera.addLog(log);
+
+    res.status(201).json({ message: "created" });
+  } catch (e) {
+    console.warn(e);
     res.status(500).json({ message: "server error" });
   }
 });
