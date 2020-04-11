@@ -16,6 +16,7 @@ import Image from 'material-ui-image';
 import debounce from 'debounce';
 import ConfirmDialog from '../ConfirmDialog';
 import ShortenText from '../ShortenText';
+import CoordTranslator from '../CoordTranslator';
 // import MapDialog from '../MapDialog';
 
 const useStyles = makeStyles(theme => ({
@@ -109,12 +110,8 @@ function CameraWrapper(props) {
   };
 
   const onDetection = async event => {
-    console.log(event.data);
     if (event.data === `b'True'`) {
-      console.log('true');
-      await axios.post(`/logs/${camera.id}`).then(({data}) => {
-        console.log(data);
-      });
+      await axios.post(`/logs/${camera.id}`).then(({data}) => {});
     }
   };
 
@@ -122,7 +119,7 @@ function CameraWrapper(props) {
     const sourceB = new EventSource(
       `http://localhost:5000/detect/${camera.id}`
     );
-    sourceB.onmessage = onDetection
+    sourceB.onmessage = onDetection;
 
     setSource(sourceB);
   };
@@ -172,7 +169,9 @@ function CameraWrapper(props) {
             </Grid>
             <Grid item xs={5}>
               <Toolbar>
-                <Typography noWrap>{camera.location}</Typography>
+                <Typography noWrap>
+                  <CoordTranslator location={camera.location} />
+                </Typography>
               </Toolbar>
             </Grid>
 

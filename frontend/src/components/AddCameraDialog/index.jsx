@@ -16,8 +16,9 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-
 import {makeStyles} from '@material-ui/core/styles';
+import LocationSearchInput from '../LocationSearchInput';
+// import Autocomplete from 'react-google-autocomplete';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -107,12 +108,11 @@ export default function AddCameraDialog(props) {
   const handleNameChange = event => {
     setName(event.target.value || '');
   };
-  const handleLocationChange = event => {
-    setLocation(event.target.value || '');
+  const handleLocationChange = address => {
+    setLocation(address || '');
   };
   const handleDetectChange = det => event => {
     setDetect(event.target.checked);
-    console.log(event.target.checked);
   };
 
   return (
@@ -125,7 +125,6 @@ export default function AddCameraDialog(props) {
         <DialogContentText>
           Select a camera from the list or add a new one
         </DialogContentText>
-
         <form className={classes.container}>
           <FormControl fullWidth className={classes.formControl}>
             <InputLabel id="add-camera">Camera List</InputLabel>
@@ -169,14 +168,7 @@ export default function AddCameraDialog(props) {
               type="text"
               fullWidth
             />
-            <TextField
-              onChange={handleLocationChange}
-              margin="dense"
-              id="location"
-              label="Location*"
-              type="test"
-              fullWidth
-            />
+            <LocationSearchInput onChange={handleLocationChange} />
             <TextField
               onChange={handleUsernameChange}
               margin="dense"
