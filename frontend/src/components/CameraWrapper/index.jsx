@@ -12,6 +12,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import {Typography, IconButton, Icon, Grid} from '@material-ui/core';
 import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
 import Image from 'material-ui-image';
+import Sound from 'react-sound';
 // import Divider from '@material-ui/core/Divider';
 import debounce from 'debounce';
 import ConfirmDialog from '../ConfirmDialog';
@@ -58,7 +59,10 @@ function CameraWrapper(props) {
   const [openMap, setOpenMap] = React.useState(false);
   const [processing, setProcessing] = React.useState(false);
   const [url, setUrl] = React.useState('');
-  const [source, setSource] = useState();
+  // const [source, setSource] = useState();
+
+  const source = new EventSource(`http://localhost:5000/detect/${camera.id}`);
+  const [playStatus, setPlayStatus] = useState(Sound.status.STOPPED);
 
   // const sourceB = new EventSource(`http://localhost:5000/detect/${camera.id}`);
   // sourceB.onopen = () => console.log('opened');
@@ -112,20 +116,20 @@ function CameraWrapper(props) {
   const onDetection = async event => {
     if (event.data === `b'True'`) {
       await axios.post(`/logs/${camera.id}`).then(({data}) => {});
+      setPlayStatus(Sound.status.PLAYING);
+    } else {
+      setPlayStatus(Sound.status.STOPPED);
     }
   };
 
   const openStream = () => {
-    const sourceB = new EventSource(
-      `http://localhost:5000/detect/${camera.id}`
-    );
-    sourceB.onmessage = onDetection;
-
-    setSource(sourceB);
+    source.onmessage = onDetection;
   };
 
   const closeStream = () => {
-    source.close();
+    // source.close();
+    source.onmessage = () => {};
+    setPlayStatus(Sound.status.STOPPED);
   };
 
   useEffect(() => {
@@ -154,6 +158,15 @@ function CameraWrapper(props) {
   return (
     <Grid item xs={4}>
       <Paper className={classes.paper}>
+        <Sound
+          url="fight-alarm.ogg"
+          playStatus={playStatus}
+          loop
+          // playFromPosition={300 /* in milliseconds */}
+          // onLoading={this.handleSongLoading}
+          // onPlaying={this.handleSongPlaying}
+          // onFinishedPlaying={this.handleSongFinishedPlaying}
+        />
         <AppBar color="secondary" position="static">
           <Grid
             container

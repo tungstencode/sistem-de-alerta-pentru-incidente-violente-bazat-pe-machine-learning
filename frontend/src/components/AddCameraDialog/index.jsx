@@ -18,7 +18,6 @@ import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import {makeStyles} from '@material-ui/core/styles';
 import LocationSearchInput from '../LocationSearchInput';
-// import Autocomplete from 'react-google-autocomplete';
 
 const useStyles = makeStyles(theme => ({
   container: {

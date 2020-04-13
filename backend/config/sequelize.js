@@ -16,9 +16,9 @@ const sequelize = new Sequelize(
       max: 10,
       min: 0,
       acquire: 30000,
-      idle: 10000,
-    },
-  },
+      idle: 10000
+    }
+  }
 );
 
 const User = UserModel(sequelize, Sequelize);
@@ -33,12 +33,12 @@ const UserCamera = sequelize.define(
       type: Sequelize.DataTypes.BOOLEAN,
       allowNull: false,
       validate: {
-        notEmpty: true,
+        notEmpty: true
       },
-      defaultValue: false,
-    },
+      defaultValue: false
+    }
   },
-  { timestamps: false },
+  { timestamps: false }
 );
 
 User.belongsToMany(Camera, { through: UserCamera, foreignKey: "cnp" });
@@ -50,7 +50,8 @@ Setting.belongsTo(User);
 Camera.hasMany(Log);
 Log.belongsTo(Camera);
 
-const force = false;
+let force = false;
+// force = true;
 
 sequelize.sync({ force }).then(async () => {
   // eslint-disable-next-line no-console
@@ -62,21 +63,22 @@ sequelize.sync({ force }).then(async () => {
       cnp: "1981029394446",
       name: "lesin",
       email: "lesin@yahoo.com",
-      password: "lesin",
+      password: "lesin"
     });
     const settings = await Setting.create();
     const camera = await Camera.create({
       name: "test",
       url: "rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov",
-      location: "30,20",
+      location: "30,20"
     });
 
     user.addCamera(camera, { through: { detect: true } });
 
     const camera2 = await Camera.create({
       name: "test2",
-      url: "http://173.79.214.76:9000/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER",
-      location: "30,30",
+      url:
+        "http://173.79.214.76:9000/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER",
+      location: "30,30"
     });
 
     user.addCamera(camera2, { through: { detect: true } });
@@ -98,20 +100,28 @@ sequelize.sync({ force }).then(async () => {
 
     const log = await Log.create({
       accurate: true,
-      dateTime: moment("2020-04-02", "YYYY-MM-DD").valueOf().toString(),
+      dateTime: moment("2020-04-02", "YYYY-MM-DD")
+        .valueOf()
+        .toString()
     });
     const log2 = await Log.create({
       accurate: true,
-      dateTime: moment("2020-04-02", "YYYY-MM-DD").valueOf().toString(),
+      dateTime: moment("2020-04-02", "YYYY-MM-DD")
+        .valueOf()
+        .toString()
     });
 
     const log3 = await Log.create({
       accurate: true,
-      dateTime: moment("2020-04-04", "YYYY-MM-DD").valueOf().toString(),
+      dateTime: moment("2020-04-04", "YYYY-MM-DD")
+        .valueOf()
+        .toString()
     });
     const log4 = await Log.create({
       accurate: true,
-      dateTime: moment("2020-04-04", "YYYY-MM-DD").valueOf().toString(),
+      dateTime: moment("2020-04-04", "YYYY-MM-DD")
+        .valueOf()
+        .toString()
     });
 
     await camera.addLog(log);
@@ -155,5 +165,5 @@ module.exports = {
   Camera,
   Setting,
   sequelize,
-  Log,
+  Log
 };
