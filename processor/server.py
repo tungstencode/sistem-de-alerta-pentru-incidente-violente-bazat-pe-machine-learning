@@ -21,6 +21,7 @@ import settings.DeploySettings as deploySettings
 import settings.DataSettings as dataSettings
 import src.data.ImageUtils as ImageUtils
 from debounce import debounce
+from Camera import Camera
 
 load_dotenv('processor.env')
 
@@ -29,7 +30,6 @@ DB_HOST = os.getenv("DB_HOST")
 DB_NAME = os.getenv("DB_NAME")
 DB_USER = os.getenv("DB_USER")
 DB_PASS = os.getenv("DB_PASS")
-
 
 
 application = Flask(__name__)
@@ -94,19 +94,18 @@ def generateProcessedImage(url, id):
     violenceDetector = ViolenceDetector()
     # videoReader = VideoCaptureThreading(url)
     videoReader = cv.VideoCapture(url)
+    # videoReader = Camera(url)
     start = timeit.default_timer()
     isCurrentFrameValid, currentImage = videoReader.read()
     stop = timeit.default_timer()
     print(stop-start, "frame time")
 
     while True:
-
         netInput = ImageUtils.ConvertImageFrom_CV_to_NetInput(currentImage)
         isFighting = violenceDetector.Detect(netInput)
         targetSize = deploySettings.DISPLAY_IMAGE_SIZE - 2*deploySettings.BORDER_SIZE
         # currentImage = cv.resize(currentImage, (targetSize, targetSize))
         currentImage = imutils.resize(currentImage, width=targetSize)
-
         if isFighting:
             publishFighting(isFighting, id)
             resultImage = cv.copyMakeBorder(currentImage, deploySettings.BORDER_SIZE, deploySettings.BORDER_SIZE,
@@ -123,9 +122,6 @@ def generateProcessedImage(url, id):
 
 class Detect(Resource):
     def get(self, camera_id):
-        # with ThreadPoolWithAppContextExecutor(max_workers=1) as pool:
-        #     future_url = pool.submit(findCameraUrl, [camera_id])
-        #     url = future_url.result()
 
         response = Response(event_stream(camera_id),
                             mimetype="text/event-stream")
@@ -151,10 +147,6 @@ api.add_resource(Detect, '/detect/<camera_id>')
 def post():
     message = request.form['message']
     id = request.form['id']
-    # user = session.get('user', 'server')
-    # now = datetime.datetime.now().replace(microsecond=0).time()
-    # red.publish('detect'+str(id), u'[%s] %s: %s' %
-    #             (now.isoformat(), user, message))
     red.publish('detect'+str(id), message)
     return Response('ok', status=200)
 
@@ -168,14 +160,8 @@ def event_stream(camera_id):
     pubsub = red.pubsub()
     pubsub.subscribe('detect'+str(camera_id))
     for message in pubsub.listen():
-        print(message)
+        # print(message['data'])
         yield 'data: %s\n\n' % message['data']
-
-
-@application.route('/stream')
-def stream():
-    return Response(event_stream(),
-                    mimetype="text/event-stream")
 
 
 if __name__ == '__main__':

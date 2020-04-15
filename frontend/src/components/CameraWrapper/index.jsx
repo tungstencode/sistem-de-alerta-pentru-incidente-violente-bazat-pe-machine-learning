@@ -9,14 +9,13 @@ import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Link from '@material-ui/core/Link';
 import Toolbar from '@material-ui/core/Toolbar';
-import {Typography, IconButton, Icon, Grid} from '@material-ui/core';
+import {Typography, IconButton, Grid} from '@material-ui/core';
 import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
 import Image from 'material-ui-image';
 import Sound from 'react-sound';
-// import Divider from '@material-ui/core/Divider';
-import debounce from 'debounce';
+import Popover from '@material-ui/core/Popover';
+// import debounce from 'debounce';
 import ConfirmDialog from '../ConfirmDialog';
-import ShortenText from '../ShortenText';
 import CoordTranslator from '../CoordTranslator';
 // import MapDialog from '../MapDialog';
 
@@ -26,25 +25,6 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'center',
     color: theme.palette.text.secondary,
     // width: '100%',
-  },
-  info: {
-    // padding: theme.spacing(0, 1),
-    // fontSize: 18,
-    // margin: theme.spacing(0, 0),
-  },
-  grow: {
-    flexGrow: 1,
-    // backgroundColor: theme.palette.background.default,
-  },
-  img: {
-    borderRadius: 4,
-    width: '100%',
-  },
-  deleteButton: {
-    // marginRight: theme.spacing(2),
-  },
-  processingTogge: {
-    // marginLeft: theme.spacing(2),
   },
 }));
 
@@ -56,28 +36,33 @@ function CameraWrapper(props) {
     count: 0,
     show: true,
   });
-  const [openMap, setOpenMap] = React.useState(false);
+  // const [openMap, setOpenMap] = React.useState(false);
   const [processing, setProcessing] = React.useState(false);
   const [url, setUrl] = React.useState('');
-  // const [source, setSource] = useState();
 
   const source = new EventSource(`http://localhost:5000/detect/${camera.id}`);
   const [playStatus, setPlayStatus] = useState(Sound.status.STOPPED);
 
-  // const sourceB = new EventSource(`http://localhost:5000/detect/${camera.id}`);
-  // sourceB.onopen = () => console.log('opened');
-  // sourceB.onerror = () => console.log('error');
-  // sourceB.onmessage = (e) => console.log('mesaj');
+  const [anchorEl, setAnchorEl] = React.useState(null);
 
-  const handleMapOpen = () => {
-    setOpenMap(true);
+  const handleOpenPopover = event => {
+    setAnchorEl(event.currentTarget);
   };
 
-  const handleMapClose = () => {
-    setOpenMap(false);
+  const handleClosePopover = () => {
+    setAnchorEl(null);
   };
 
-  // const [detectionEvent, setDetectionEvent] = React.useState();
+  const openPopover = Boolean(anchorEl);
+  const idPopover = open ? 'simple-popover' : undefined;
+
+  // const handleMapOpen = () => {
+  //   setOpenMap(true);
+  // };
+
+  // const handleMapClose = () => {
+  //   setOpenMap(false);
+  // };
 
   const handleDeleteClick = event => {
     setOpen(true);
@@ -113,37 +98,40 @@ function CameraWrapper(props) {
     reload();
   };
 
-  const onDetection = async event => {
+  const onDetection = event => {
+    console.warn(event.data);
     if (event.data === `b'True'`) {
-      await axios.post(`/logs/${camera.id}`).then(({data}) => {});
+      axios.post(`/logs/${camera.id}`).then(({data}) => {});
       setPlayStatus(Sound.status.PLAYING);
-    } else {
-      setPlayStatus(Sound.status.STOPPED);
     }
   };
 
-  const openStream = () => {
-    source.onmessage = onDetection;
+  const notificationOn = () => {
+    source.addEventListener('message', onDetection);
   };
 
-  const closeStream = () => {
-    // source.close();
-    source.onmessage = () => {};
+  const notificationOff = () => {
+    source.removeEventListener('message', onDetection);
     setPlayStatus(Sound.status.STOPPED);
   };
 
   useEffect(() => {
     setProcessing(camera.UserCamera.detect);
-
     if (camera.UserCamera.detect) {
-      openStream();
+      notificationOn();
+    } else {
+      notificationOff();
     }
-
     setImage(camera.UserCamera.detect);
+
+    return () => {
+      notificationOff();
+      source.close();
+    };
   }, []);
 
   const handleChange = name => event => {
-    event.target.checked ? openStream() : closeStream();
+    event.target.checked ? notificationOn() : notificationOff();
     setProcessing(event.target.checked);
     setImage(event.target.checked);
     axios
@@ -151,28 +139,16 @@ function CameraWrapper(props) {
         detect: event.target.checked,
       })
       .then(res => {
-        console.log(res);
+        // console.log(res);
       });
   };
 
   return (
     <Grid item xs={4}>
       <Paper className={classes.paper}>
-        <Sound
-          url="fight-alarm.ogg"
-          playStatus={playStatus}
-          loop
-          // playFromPosition={300 /* in milliseconds */}
-          // onLoading={this.handleSongLoading}
-          // onPlaying={this.handleSongPlaying}
-          // onFinishedPlaying={this.handleSongFinishedPlaying}
-        />
+        <Sound url="fight-alarm.ogg" playStatus={playStatus} loop volume={50} />
         <AppBar color="secondary" position="static">
-          <Grid
-            container
-            direction="row"
-            // justify="space-around"
-            alignItems="center">
+          <Grid container direction="row" alignItems="center">
             <Grid item xs={3}>
               <Toolbar>
                 <Link color="primary" onClick={() => onCameraClick(camera.id)}>
@@ -182,9 +158,26 @@ function CameraWrapper(props) {
             </Grid>
             <Grid item xs={5}>
               <Toolbar>
-                <Typography noWrap>
+                <Typography onClick={handleOpenPopover} noWrap>
                   <CoordTranslator location={camera.location} />
                 </Typography>
+                <Popover
+                  id={idPopover}
+                  open={openPopover}
+                  anchorEl={anchorEl}
+                  onClose={handleClosePopover}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                  }}
+                  transformOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                  }}>
+                  <Typography className={classes.typography}>
+                    <CoordTranslator location={camera.location} />
+                  </Typography>
+                </Popover>
               </Toolbar>
             </Grid>
 
@@ -211,12 +204,7 @@ function CameraWrapper(props) {
         </AppBar>
 
         <Box onClick={() => onCameraClick(camera.id)}>
-          <Image
-            src={imageState.show ? url : ''}
-            onClick={() => console.log('onClick')}
-            aspectRatio={16 / 9}
-            // disableSpinner
-          />
+          <Image src={imageState.show ? url : ''} aspectRatio={16 / 9} />
         </Box>
       </Paper>
       <ConfirmDialog open={open} handleYes={handleYes} handleNo={handleNo} />
@@ -226,15 +214,25 @@ function CameraWrapper(props) {
 }
 
 CameraWrapper.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
-  camera: PropTypes.object,
-  // eslint-disable-next-line react/forbid-prop-types
+  camera: PropTypes.shape({
+    id: PropTypes.number,
+    url: PropTypes.string,
+    name: PropTypes.string,
+    location: PropTypes.string,
+    UserCamera: PropTypes.array,
+  }),
   onDelete: PropTypes.func,
   onCameraClick: PropTypes.func,
 };
 
 CameraWrapper.defaultProps = {
-  camera: {},
+  camera: {
+    id: 0,
+    url: '',
+    name: '',
+    location: '',
+    UserCamera: [],
+  },
   onDelete: () => {},
   onCameraClick: () => {},
 };

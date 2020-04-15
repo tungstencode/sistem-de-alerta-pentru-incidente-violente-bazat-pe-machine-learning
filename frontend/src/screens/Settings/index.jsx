@@ -3,21 +3,19 @@ import TextField from '@material-ui/core/TextField';
 // import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
-import {IconButton, Icon} from '@material-ui/core';
+import {IconButton} from '@material-ui/core';
 import SaveRoundedIcon from '@material-ui/icons/SaveRounded';
 import {makeStyles} from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Toolbar from '@material-ui/core/Toolbar';
 import Switch from '@material-ui/core/Switch';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
-import ListSubheader from '@material-ui/core/ListSubheader';
 import VolumeUpRounded from '@material-ui/icons/VolumeUpRounded';
 import SmsRounded from '@material-ui/icons/SmsRounded';
 import MuiAlert from '@material-ui/lab/Alert';
@@ -83,7 +81,6 @@ export default function Settings(props) {
 
   useEffect(() => {
     axios.get('/users/settings').then(({data}) => {
-      console.log(data);
       setSound(data.sound);
       setSms(data.sms);
     });
@@ -247,11 +244,8 @@ export default function Settings(props) {
         <Grid item xs={3}>
           <Paper className={classes.paper}>
             <Typography>Alert settings</Typography>
-            {/* <Divider /> */}
 
-            <List
-              // subheader={<ListSubheader>Settings</ListSubheader>}
-              className={classes.root}>
+            <List className={classes.root}>
               <ListItem>
                 <ListItemIcon>
                   <VolumeUpRounded />

@@ -22,7 +22,6 @@ const styles = theme => ({
   paper: {
     padding: theme.spacing.unit,
     color: theme.palette.text.light,
-    // backgroundColor: theme.palette.text.light,
   },
 });
 
@@ -41,12 +40,9 @@ class Login extends React.Component {
       const response = await axios.post('/login', {email, password, remember});
       console.warn(response);
       if (response.status === 202) {
-        // this dissapears immediately, I think we need to use content-flash with passport to display it on the page we redirect to after login
-        // whatever page that may be
         this.setState({
           variant: 'success',
           message: `${response.statusText}`,
-          // open: true,
         });
         const {handleLoginSubmit} = this.props;
 
@@ -56,7 +52,6 @@ class Login extends React.Component {
       this.setState({
         variant: 'error',
         message: `${error.response.statusText}`,
-        // open: true,
       });
     }
   };
@@ -83,14 +78,7 @@ class Login extends React.Component {
           await this.handleSubmit(values);
           isSubmitting = false;
         }}>
-        {({
-          values,
-          errors,
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          /* and other goodies */
-        }) => (
+        {({values, errors, handleChange, handleBlur, handleSubmit}) => (
           <Grid
             container
             spacing={0}

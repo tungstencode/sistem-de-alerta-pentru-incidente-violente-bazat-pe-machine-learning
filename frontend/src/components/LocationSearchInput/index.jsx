@@ -1,5 +1,5 @@
-/* eslint-disable react/prop-types */
 import React, {useState, useEffect} from 'react';
+import PropTypes from 'prop-types';
 import TextField from '@material-ui/core/TextField';
 import PlacesAutocomplete, {
   geocodeByAddress,
@@ -8,7 +8,6 @@ import PlacesAutocomplete, {
 
 export default function LocationSearchInput(props) {
   const [address, setAddress] = useState('');
-  const [geoLoc, setGeoLoc] = useState('');
   const {onChange, location} = props;
 
   const handleChange = newAddress => {
@@ -27,7 +26,6 @@ export default function LocationSearchInput(props) {
     geocodeByAddress(newAddress)
       .then(results => getLatLng(results[0]))
       .then(latLng => {
-        // console.log('Success', latLng.lat, latLng.lng);
         handleChange(`${latLng.lat},${latLng.lng}`);
       })
       .catch(error => console.error('Error', error));
@@ -42,14 +40,12 @@ export default function LocationSearchInput(props) {
         <div>
           <TextField
             onChange={onChange}
-            // value={location}
             margin="dense"
             id="location"
             label="Location*"
             type="text"
             fullWidth
             {...getInputProps({
-              // placeholder: 'Search Places ...',
               className: 'location-search-input',
             })}
           />
@@ -84,3 +80,13 @@ export default function LocationSearchInput(props) {
     </PlacesAutocomplete>
   );
 }
+
+LocationSearchInput.propTypes = {
+  onChange: PropTypes.func,
+  location: PropTypes.string,
+};
+
+LocationSearchInput.defaultProps = {
+  onChange: () => {},
+  location: '',
+};

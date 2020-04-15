@@ -50,13 +50,15 @@ function NavItem({path, title, Icon, exact = false, bottom = false, ...rest}) {
 NavItem.propTypes = {
   path: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
-  // eslint-disable-next-line react/require-default-props
   exact: PropTypes.bool,
-
-  // eslint-disable-next-line react/require-default-props
   bottom: PropTypes.bool,
-  // eslint-disable-next-line react/require-default-props
   Icon: PropTypes.node,
+};
+
+NavItem.defaultProps = {
+  exact: false,
+  bottom: false,
+  Icon: null,
 };
 
 export default NavItem;
