@@ -20,6 +20,7 @@ import VolumeUpRounded from '@material-ui/icons/VolumeUpRounded';
 import SmsRounded from '@material-ui/icons/SmsRounded';
 import MuiAlert from '@material-ui/lab/Alert';
 import axios from 'axios';
+import LocationSearchInput from '../../components/LocationSearchInput';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -84,7 +85,7 @@ export default function Settings(props) {
       setSound(data.sound);
       setSms(data.sms);
     });
-    axios.get('/users/get_own').then(({data}) => {
+    axios.get(`/users/get_own/`).then(({data}) => {
       setFullName(data.name);
       setEmail(data.email);
       setLocation(data.location);
@@ -128,7 +129,7 @@ export default function Settings(props) {
 
   const handleSaveProfile = () => {
     if (password === confirmPassword) {
-      if (password === '') {
+      if (password == '') {
         axios
           .put('/users/put_own', {name: fullName, email, location})
           .then(({data, status, statusText}) => {
@@ -154,6 +155,7 @@ export default function Settings(props) {
                 variant: 'success',
                 message: statusText,
               });
+              axios.get('/logout');
             } else {
               setAlertProfile({
                 variant: 'error',
@@ -170,6 +172,10 @@ export default function Settings(props) {
       });
       hideAlert(2, setAlertProfile);
     }
+  };
+
+  const handleLocationChange = address => {
+    setLocation(address || '');
   };
 
   return (
@@ -215,15 +221,11 @@ export default function Settings(props) {
               value={confirmPassword}
               fullWidth
             />
-            <TextField
-              onChange={event => setLocation(event.target.value || '')}
-              margin="dense"
-              id="location"
-              label="Location*"
-              type="text"
-              value={location}
-              fullWidth
+            <LocationSearchInput
+              location={location}
+              onChange={handleLocationChange}
             />
+
             <Box className={classes.grow}>
               <Toolbar>
                 <div className={classes.grow} />
@@ -261,7 +263,7 @@ export default function Settings(props) {
                   />
                 </ListItemSecondaryAction>
               </ListItem>
-              <ListItem>
+              {/* <ListItem>
                 <ListItemIcon>
                   <SmsRounded />
                 </ListItemIcon>
@@ -277,7 +279,7 @@ export default function Settings(props) {
                     }}
                   />
                 </ListItemSecondaryAction>
-              </ListItem>
+              </ListItem> */}
             </List>
             <Divider />
             <Box className={classes.grow}>

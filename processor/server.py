@@ -21,7 +21,6 @@ import settings.DeploySettings as deploySettings
 import settings.DataSettings as dataSettings
 import src.data.ImageUtils as ImageUtils
 from debounce import debounce
-from Camera import Camera
 
 load_dotenv('processor.env')
 

@@ -23,6 +23,7 @@ export default function LocationSearchInput(props) {
 
   const handleSelect = newAddress => {
     setAddress(newAddress);
+
     geocodeByAddress(newAddress)
       .then(results => getLatLng(results[0]))
       .then(latLng => {
@@ -35,7 +36,8 @@ export default function LocationSearchInput(props) {
     <PlacesAutocomplete
       value={address}
       onChange={handleChange}
-      onSelect={handleSelect}>
+      onSelect={handleSelect}
+      debounce={500}>
       {({getInputProps, suggestions, getSuggestionItemProps, loading}) => (
         <div>
           <TextField

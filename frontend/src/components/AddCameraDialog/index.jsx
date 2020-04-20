@@ -166,7 +166,10 @@ export default function AddCameraDialog(props) {
               type="text"
               fullWidth
             />
-            <LocationSearchInput onChange={handleLocationChange} />
+            <LocationSearchInput
+              location={location}
+              onChange={handleLocationChange}
+            />
             <TextField
               onChange={handleUsernameChange}
               margin="dense"

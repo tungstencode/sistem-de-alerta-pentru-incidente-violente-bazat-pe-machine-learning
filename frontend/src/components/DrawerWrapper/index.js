@@ -15,6 +15,7 @@ import DashboardOutlined from '@material-ui/icons/DashboardOutlined';
 import Timeline from '@material-ui/icons/Timeline';
 import Settings from '@material-ui/icons/Settings';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import {NavLink, Link} from 'react-router-dom';
 import NavItem from '../NavItem/NavItem';
 
 const drawerWidth = 110;
@@ -121,7 +122,11 @@ export default function DrawerWrapper({children}) {
               }}
               open={open}
               onClose={handleClose}>
-              <MenuItem className={classes.menuItem} onClick={handleProfile}>
+              <MenuItem
+                component={Link}
+                to="/settings"
+                className={classes.menuItem}
+                onClick={handleProfile}>
                 Profile
               </MenuItem>
               <MenuItem className={classes.menuItem} onClick={handleLogOut}>

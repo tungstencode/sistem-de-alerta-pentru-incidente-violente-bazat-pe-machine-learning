@@ -1,7 +1,9 @@
 const express = require("express");
+const bcrypt = require("bcrypt");
 const { User } = require("../config/sequelize");
 const urlRegex = require("../config/url-regex");
 
+const saltRounds = parseInt(process.env.SALT_ROUNDS, 10);
 const regex = new RegExp(urlRegex);
 
 const router = express.Router();
@@ -18,12 +20,16 @@ const router = express.Router();
 
 router.get("/get_own", async (req, res) => {
   try {
-    res.json({
-      name: req.user.name,
-      email: req.user.email,
-      location: req.user.location,
-      cnp: req.user.cnp,
-    });
+    const user = await User.findByPk(req.user.cnp);
+    res
+      .status(200)
+      .json({
+        name: user.name,
+        email: user.email,
+        location: user.location,
+        cnp: user.cnp,
+      })
+      .end();
   } catch (e) {
     console.warn(e);
     res.status(500).json({ message: "server error" });
@@ -34,8 +40,18 @@ router.put("/put_own", async (req, res) => {
   try {
     const user = await User.findByPk(req.user.cnp);
     if (user) {
+      if (req.body.password) {
+        req.body.password = bcrypt.hashSync(
+          req.body.password,
+          bcrypt.genSaltSync(saltRounds),
+          null,
+        );
+      }
       await user.update(req.body);
-      res.status(202).json({ message: "accepted" });
+      res
+        .status(202)
+        .json({ message: "accepted" })
+        .end();
     } else {
       res.status(404).json({ message: "not found" });
     }
