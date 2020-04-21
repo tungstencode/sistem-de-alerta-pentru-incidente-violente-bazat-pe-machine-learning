@@ -79,6 +79,7 @@ export default function Graph() {
   };
   const handleYearChange = event => {
     setYear(event.target.value);
+    setMonth('');
     axios.get(`/logs/${event.target.value}`).then(({data}) => {
       setLogs(data);
     });

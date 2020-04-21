@@ -51,6 +51,50 @@ router.get("/:year", async (req, res) => {
   }
 });
 
+router.get("/camera/:year/:cameraId", async (req, res) => {
+  try {
+    const cameraWithLogs = await Camera.findOne({
+      include: [{ model: Log }],
+      raw: false,
+      where: {
+        id: req.params.cameraId,
+      },
+    });
+
+    const logsBuild = [];
+
+    moment.months().map((month) => {
+      const builtLog = {};
+      builtLog.dateTime = month;
+      logsBuild.push(builtLog);
+    });
+
+    logsBuild.map((monthLogs) => {
+      monthLogs[cameraWithLogs.name] = 0;
+    });
+
+    for (let i = 0; i < cameraWithLogs.Logs.length; i++) {
+      const year = moment(parseInt(cameraWithLogs.Logs[i].dateTime)).year();
+
+      if (year.toString() === req.params.year.toString()) {
+        const month = moment.months(
+          moment(parseInt(cameraWithLogs.Logs[i].dateTime)).month(),
+        );
+        logsBuild.map((monthLogs) => {
+          if (monthLogs.dateTime === month) {
+            monthLogs[cameraWithLogs.name] += 1;
+          }
+        });
+      }
+    }
+
+    res.status(200).json(logsBuild);
+  } catch (error) {
+    console.warn(error);
+    res.status(500).json({ message: "server error" });
+  }
+});
+
 router.get("/:year/:month", async (req, res) => {
   try {
     const user = await User.findByPk(req.user.cnp);
@@ -93,6 +137,54 @@ router.get("/:year/:month", async (req, res) => {
         });
       }
     });
+
+    res.status(200).json(logsBuild);
+  } catch (error) {
+    console.warn(error);
+    res.status(500).json({ message: "server error" });
+  }
+});
+
+router.get("/camera/:year/:month/:cameraId", async (req, res) => {
+  try {
+    const { year, month } = req.params;
+
+    const cameraWithLogs = await Camera.findOne({
+      include: [{ model: Log }],
+      raw: false,
+      where: {
+        id: req.params.cameraId,
+      },
+    });
+
+    const logsBuild = [];
+
+    const daysInMonth = moment([year, month]).daysInMonth();
+
+    for (let i = 0; i < daysInMonth; i++) {
+      const current = moment([year, month])
+        .date(i + 1)
+        .format("YYYY-MM-DD");
+      const builtLog = {};
+      builtLog.dateTime = current;
+      logsBuild.push(builtLog);
+    }
+
+    logsBuild.map((dayLogs) => {
+      dayLogs[cameraWithLogs.name] = 0;
+    });
+
+    for (let i = 0; i < cameraWithLogs.Logs.length; i++) {
+      const dayToFind = moment(
+        parseInt(cameraWithLogs.Logs[i].dateTime),
+      ).format("YYYY-MM-DD");
+
+      logsBuild.map((dayLogs) => {
+        if (dayLogs.dateTime === dayToFind) {
+          dayLogs[cameraWithLogs.name] += 1;
+        }
+      });
+    }
 
     res.status(200).json(logsBuild);
   } catch (error) {

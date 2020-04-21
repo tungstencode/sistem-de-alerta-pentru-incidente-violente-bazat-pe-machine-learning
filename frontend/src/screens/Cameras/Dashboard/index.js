@@ -74,7 +74,6 @@ export default function Cameras(props) {
 
   useEffect(() => {
     axios.get('/cameras/assigned').then(({data}) => {
-      console.log(data);
       setCameras(data);
     });
   }, []);
