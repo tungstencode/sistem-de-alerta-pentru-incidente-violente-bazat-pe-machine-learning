@@ -14,6 +14,7 @@ import TextField from '@material-ui/core/TextField';
 import {IconButton, Icon} from '@material-ui/core';
 import SaveRoundedIcon from '@material-ui/icons/SaveRounded';
 import {makeStyles} from '@material-ui/core/styles';
+import Sound from 'react-sound';
 import LocationSearchInput from '../../../components/LocationSearchInput';
 
 const useStyles = makeStyles(theme => ({
@@ -58,6 +59,8 @@ export default function CameraDetails(props) {
   const [url, setUrl] = React.useState('');
   // eslint-disable-next-line react/prop-types
   const {cameraId} = props.match.params;
+  const source = new EventSource(`http://localhost:5000/detect/${cameraId}`);
+  const [playStatus, setPlayStatus] = useState(Sound.status.STOPPED);
 
   useEffect(() => {
     axios.get(`/cameras/assigned/${cameraId}`).then(({data}) => {
@@ -69,8 +72,36 @@ export default function CameraDetails(props) {
       setPassword(data.password);
       setUrl(data.url);
       setLocation(data.location);
+
+      if (data.UserCamera.detect) {
+        notificationOn();
+      } else {
+        notificationOff();
+      }
+
+      return () => {
+        notificationOff();
+        source.close();
+      };
     });
   }, []);
+
+  const onDetection = event => {
+    console.warn(event.data);
+    if (event.data === `b'True'`) {
+      axios.post(`/logs/${camera.id}`).then(({data}) => {});
+      setPlayStatus(Sound.status.PLAYING);
+    }
+  };
+
+  const notificationOn = () => {
+    source.addEventListener('message', onDetection);
+  };
+
+  const notificationOff = () => {
+    source.removeEventListener('message', onDetection);
+    setPlayStatus(Sound.status.STOPPED);
+  };
 
   const handleSavelick = () => {
     axios
@@ -86,6 +117,7 @@ export default function CameraDetails(props) {
 
   const handleProcessingChange = name => event => {
     setProcessing(event.target.checked);
+    event.target.checked ? notificationOn() : notificationOff();
     axios
       .put(`/cameras/assigned/detect/${camera.id}`, {
         detect: event.target.checked,
@@ -119,6 +151,13 @@ export default function CameraDetails(props) {
         {camera ? (
           <Grid item xs={8}>
             <Paper className={classes.paper}>
+              <Sound
+                url="fight-alarm.ogg"
+                playStatus={playStatus}
+                loop
+                volume={50}
+              />
+
               <Box>
                 {processing ? (
                   <img

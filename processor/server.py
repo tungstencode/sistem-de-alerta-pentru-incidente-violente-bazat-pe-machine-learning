@@ -155,6 +155,13 @@ def slash():
     return Response("this is the slash page")
 
 
+@application.route('/unsub/<camera_id>')
+def unsub(camera_id):
+    pubsub = red.pubsub()
+    pubsub.unsubscribe('detect'+str(camera_id))
+    return Response("unsubbed",204)
+
+
 def event_stream(camera_id):
     pubsub = red.pubsub()
     pubsub.subscribe('detect'+str(camera_id))

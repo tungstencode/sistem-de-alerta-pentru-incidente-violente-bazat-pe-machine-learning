@@ -14,10 +14,9 @@ import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
 import Image from 'material-ui-image';
 import Sound from 'react-sound';
 import Popover from '@material-ui/core/Popover';
-// import debounce from 'debounce';
 import ConfirmDialog from '../ConfirmDialog';
 import CoordTranslator from '../CoordTranslator';
-// import MapDialog from '../MapDialog';
+import Alarm from '../Alarm';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -36,12 +35,11 @@ function CameraWrapper(props) {
     count: 0,
     show: true,
   });
-  // const [openMap, setOpenMap] = React.useState(false);
   const [processing, setProcessing] = React.useState(false);
   const [url, setUrl] = React.useState('');
 
-  const source = new EventSource(`http://localhost:5000/detect/${camera.id}`);
-  const [playStatus, setPlayStatus] = useState(Sound.status.STOPPED);
+  // const source = new EventSource(`http://localhost:5000/detect/${camera.id}`);
+  // const [playStatus, setPlayStatus] = useState(Sound.status.STOPPED);
 
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -55,14 +53,6 @@ function CameraWrapper(props) {
 
   const openPopover = Boolean(anchorEl);
   const idPopover = open ? 'simple-popover' : undefined;
-
-  // const handleMapOpen = () => {
-  //   setOpenMap(true);
-  // };
-
-  // const handleMapClose = () => {
-  //   setOpenMap(false);
-  // };
 
   const handleDeleteClick = event => {
     setOpen(true);
@@ -98,40 +88,40 @@ function CameraWrapper(props) {
     reload();
   };
 
-  const onDetection = event => {
-    console.warn(event.data);
-    if (event.data === `b'True'`) {
-      axios.post(`/logs/${camera.id}`).then(({data}) => {});
-      setPlayStatus(Sound.status.PLAYING);
-    }
-  };
+  // const onDetection = event => {
+  //   console.warn(event.data);
+  //   if (event.data === `b'True'`) {
+  //     axios.post(`/logs/${camera.id}`).then(({data}) => {});
+  //     setPlayStatus(Sound.status.PLAYING);
+  //   }
+  // };
 
-  const notificationOn = () => {
-    source.addEventListener('message', onDetection);
-  };
+  // const notificationOn = () => {
+  //   source.addEventListener('message', onDetection);
+  // };
 
-  const notificationOff = () => {
-    source.removeEventListener('message', onDetection);
-    setPlayStatus(Sound.status.STOPPED);
-  };
+  // const notificationOff = () => {
+  //   source.removeEventListener('message', onDetection);
+  //   setPlayStatus(Sound.status.STOPPED);
+  // };
 
   useEffect(() => {
     setProcessing(camera.UserCamera.detect);
-    if (camera.UserCamera.detect) {
-      notificationOn();
-    } else {
-      notificationOff();
-    }
+    // if (camera.UserCamera.detect) {
+    //   notificationOn();
+    // } else {
+    //   notificationOff();
+    // }
     setImage(camera.UserCamera.detect);
 
-    return () => {
-      notificationOff();
-      source.close();
-    };
+    // return () => {
+    //   notificationOff();
+    //   source.close();
+    // };
   }, []);
 
   const handleChange = name => event => {
-    event.target.checked ? notificationOn() : notificationOff();
+    // event.target.checked ? notificationOn() : notificationOff();
     setProcessing(event.target.checked);
     setImage(event.target.checked);
     axios
@@ -146,7 +136,8 @@ function CameraWrapper(props) {
   return (
     <Grid item xs={4}>
       <Paper className={classes.paper}>
-        <Sound url="fight-alarm.ogg" playStatus={playStatus} loop volume={50} />
+        {/* <Sound url="fight-alarm.ogg" playStatus={playStatus} loop volume={50} /> */}
+        <Alarm processing={processing} id={camera.id} />
         <AppBar color="secondary" position="static">
           <Grid container direction="row" alignItems="center">
             <Grid item xs={3}>
@@ -208,7 +199,6 @@ function CameraWrapper(props) {
         </Box>
       </Paper>
       <ConfirmDialog open={open} handleYes={handleYes} handleNo={handleNo} />
-      {/* <MapDialog open={openMap} onClose={handleMapClose} camera={camera} /> */}
     </Grid>
   );
 }
