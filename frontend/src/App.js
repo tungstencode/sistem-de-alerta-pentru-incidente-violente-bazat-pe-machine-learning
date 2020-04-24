@@ -51,7 +51,6 @@ export default class App extends React.Component {
       isLoading: true,
       isAuthenticated: false,
     };
-
     window.soundManager.setup({debugMode: false});
 
     axios.interceptors.response.use(

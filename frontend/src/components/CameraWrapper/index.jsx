@@ -12,7 +12,6 @@ import Toolbar from '@material-ui/core/Toolbar';
 import {Typography, IconButton, Grid} from '@material-ui/core';
 import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
 import Image from 'material-ui-image';
-import Sound from 'react-sound';
 import Popover from '@material-ui/core/Popover';
 import ConfirmDialog from '../ConfirmDialog';
 import CoordTranslator from '../CoordTranslator';
@@ -30,18 +29,14 @@ const useStyles = makeStyles(theme => ({
 function CameraWrapper(props) {
   const {camera, onDelete, onCameraClick} = props;
   const classes = useStyles();
-  const [open, setOpen] = React.useState(false);
-  const [imageState, setImageState] = React.useState({
+  const [open, setOpen] = useState(false);
+  const [processing, setProcessing] = useState(false);
+  const [url, setUrl] = useState('');
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [imageState, setImageState] = useState({
     count: 0,
     show: true,
   });
-  const [processing, setProcessing] = React.useState(false);
-  const [url, setUrl] = React.useState('');
-
-  // const source = new EventSource(`http://localhost:5000/detect/${camera.id}`);
-  // const [playStatus, setPlayStatus] = useState(Sound.status.STOPPED);
-
-  const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleOpenPopover = event => {
     setAnchorEl(event.currentTarget);
@@ -88,36 +83,9 @@ function CameraWrapper(props) {
     reload();
   };
 
-  // const onDetection = event => {
-  //   console.warn(event.data);
-  //   if (event.data === `b'True'`) {
-  //     axios.post(`/logs/${camera.id}`).then(({data}) => {});
-  //     setPlayStatus(Sound.status.PLAYING);
-  //   }
-  // };
-
-  // const notificationOn = () => {
-  //   source.addEventListener('message', onDetection);
-  // };
-
-  // const notificationOff = () => {
-  //   source.removeEventListener('message', onDetection);
-  //   setPlayStatus(Sound.status.STOPPED);
-  // };
-
   useEffect(() => {
     setProcessing(camera.UserCamera.detect);
-    // if (camera.UserCamera.detect) {
-    //   notificationOn();
-    // } else {
-    //   notificationOff();
-    // }
     setImage(camera.UserCamera.detect);
-
-    // return () => {
-    //   notificationOff();
-    //   source.close();
-    // };
   }, []);
 
   const handleChange = name => event => {
@@ -136,8 +104,6 @@ function CameraWrapper(props) {
   return (
     <Grid item xs={4}>
       <Paper className={classes.paper}>
-        {/* <Sound url="fight-alarm.ogg" playStatus={playStatus} loop volume={50} /> */}
-        <Alarm processing={processing} id={camera.id} />
         <AppBar color="secondary" position="static">
           <Grid container direction="row" alignItems="center">
             <Grid item xs={3}>
@@ -193,11 +159,11 @@ function CameraWrapper(props) {
             </Grid>
           </Grid>
         </AppBar>
-
         <Box onClick={() => onCameraClick(camera.id)}>
           <Image src={imageState.show ? url : ''} aspectRatio={16 / 9} />
         </Box>
       </Paper>
+      <Alarm processing={processing} id={camera.id} />
       <ConfirmDialog open={open} handleYes={handleYes} handleNo={handleNo} />
     </Grid>
   );

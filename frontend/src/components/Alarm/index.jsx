@@ -2,68 +2,75 @@ import React from 'react';
 import Sound from 'react-sound';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import MuiAlert from '@material-ui/lab/Alert';
 
-const useEventListener = (target, type, listener, ...options) => {
-  React.useEffect(() => {
-    target.addEventListener(type, listener, ...options);
-    return () => {
-      target.removeEventListener(type, listener, ...options);
-    };
-  }, [target, type, listener, options]);
-};
+function Alert(props) {
+  return <MuiAlert /* elevation={6} */ variant="filled" {...props} />;
+}
+
+function CustomAlert(severity, text) {
+  return <Alert severity={severity}>{text}</Alert>;
+}
 
 export default function Alarm(props) {
   const {processing, id} = props;
-  const source = new EventSource(`http://localhost:5000/detect/${id}`);
+  let source;
   const [playStatus, setPlayStatus] = React.useState(Sound.status.STOPPED);
-  // soundManager.setup({debugMode: false});
+  const [alertNotification, setAlertNotification] = React.useState({
+    variant: '',
+    message: '',
+  });
 
-  const onDetection = React.useCallback(
-    event => {
-      if (event.data === `b'True'`) {
-        console.log(event.data);
-        setPlayStatus(Sound.status.PLAYING);
+  const hideAlert = (delaySeconds, setAlert) => {
+    setTimeout(() => {
+      setAlert({
+        variant: '',
+        message: '',
+      });
+    }, delaySeconds * 1000);
+  };
 
-        // eslint-disable-next-line no-var
-        // axios.post(`/logs/${id}`).then(({data}) => {});
-      }
-    },
-    [] // Tells React to memoize regardless of arguments.
-  );
-
-  // const onDetection = event => {
-  //   // console.warn(event.data);
-  //   if (event.data === `b'True'`) {
-  //     console.log(event.data);
-  //     // eslint-disable-next-line no-var
-  //     // axios.post(`/logs/${id}`).then(({data}) => {});
-  //     setPlayStatus(Sound.status.PLAYING);
-  //   }
-  // };
+  function onDetection(event) {
+    if (event.data === `b'True'`) {
+      axios.post(`/logs/${id}`).then(({data}) => {});
+      setPlayStatus(Sound.status.PLAYING);
+      setAlertNotification({
+        variant: 'error',
+        message: 'Violence detected!',
+      });
+    }
+  }
 
   const notificationOn = () => {
-    source.addEventListener('message', onDetection);
-    // source.onmessage = onDetection;
-    console.log('on');
+    source.onmessage = onDetection;
   };
 
   const notificationOff = () => {
-    source.removeEventListener('message', onDetection);
-    source.close();
+    source.onmessage = null;
     axios.get(`http://localhost:5000/unsub/${id}`);
     setPlayStatus(Sound.status.STOPPED);
-    console.log('off');
+    // hideAlert(15, setAlertNotification);
+    setAlertNotification({
+      variant: '',
+      message: '',
+    });
   };
 
   React.useEffect(() => {
+    source = new EventSource(`http://localhost:5000/detect/${id}`);
     processing ? notificationOn() : notificationOff();
+    console.log(source);
+    return function cleanup() {
+      source.close();
+    };
   }, [processing]);
 
   return (
     <div>
-      {/* {processing ? ( */}
       <Sound url="fight-alarm.ogg" playStatus={playStatus} loop volume={20} />
-      {/* ) : null} */}
+      {alertNotification.statusText !== ''
+        ? CustomAlert(alertNotification.variant, alertNotification.message)
+        : null}
     </div>
   );
 }
@@ -71,9 +78,11 @@ export default function Alarm(props) {
 Alarm.propTypes = {
   processing: PropTypes.bool,
   id: PropTypes.number,
+  // source: PropTypes.instanceOf(EventSource),
 };
 
 Alarm.defaultProps = {
   processing: false,
   id: 0,
+  // source: null,
 };

@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react';
 import TextField from '@material-ui/core/TextField';
-// import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import {IconButton} from '@material-ui/core';
@@ -61,7 +60,7 @@ function CustomAlert(severity, text) {
   return <Alert severity={severity}>{text}</Alert>;
 }
 
-export default function Settings(props) {
+export default function Settings() {
   const classes = useStyles();
   // const [settings, setSettings] = useState({sound: false, sms: false});
   const [sound, setSound] = useState(false);
