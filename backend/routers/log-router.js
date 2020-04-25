@@ -4,7 +4,7 @@ const { Log, User, Camera } = require("../config/sequelize");
 
 const router = express.Router();
 
-router.get("/:year", async (req, res) => {
+router.get("/graph/:year", async (req, res) => {
   try {
     const user = await User.findByPk(req.user.cnp);
 
@@ -95,7 +95,7 @@ router.get("/camera/:year/:cameraId", async (req, res) => {
   }
 });
 
-router.get("/:year/:month", async (req, res) => {
+router.get("/graph/:year/:month", async (req, res) => {
   try {
     const user = await User.findByPk(req.user.cnp);
     const { year, month } = req.params;
@@ -211,88 +211,30 @@ router.post("/:cameraId", async (req, res) => {
   }
 });
 
-// router.get("/", async (req, res) => {
-//   try {
+router.get("/camera/:cameraId", async (req, res) => {
+  try {
+    // const user = await User.findByPk(req.user.cnp);
 
-//     const user = await User.findByPk(req.user.cnp);
+    const logs = await camera.getLogs();
 
-//     const camerasWithLogs = await user.getCameras({
-//       include: [{ model: Log }],
-//       raw: false,
-//     });
+    res.status(201).json(logs);
+  } catch (error) {
+    console.warn(error);
+    res.status(500).json({ message: "server error" });
+  }
+});
 
-//     const data = [
-//       {
-//         dateTime: "2020-04-10",
-//         camera1: 12,
-//         camera2: 12,
-//         camera3: 44,
-//       },
-//       {
-//         dateTime: "2020-04-30",
-//         camera1: 24,
-//         camera2: 12,
-//         camera3: 44,
-//       },
-//       {
-//         dateTime: "2020-04-21",
-//         camera1: 15,
-//         camera2: 12,
-//         camera3: 44,
-//       },
-//     ];
-
-//     const logsBuild = [];
-
-//     const findLog = (date, logs) => {
-//       for (let i = 0; i < logs.length; i++) {
-//         const log = logs[i];
-//         if (log.dateTime === date) {
-//           // console.log(log.dateTime, date);
-//           return i;
-//         }
-//       }
-//       return false;
-//     };
-
-//     camerasWithLogs.map((cameraWithLogs) => {
-//       for (let i = 0; i < cameraWithLogs.Logs.length; i++) {
-//         let builtLog = {};
-//         const dateToFind = moment(cameraWithLogs.Logs[i].dateTime, "x").format(
-//           "YYYY-MM-DD",
-//         );
-//         const logIndex = findLog(dateToFind, logsBuild);
-
-//         if (logIndex === false) {
-//           builtLog = {};
-//           builtLog.dateTime = dateToFind;
-//           builtLog[cameraWithLogs.name] = 1;
-//           logsBuild.push(builtLog);
-//         } else {
-//           builtLog = logsBuild[logIndex];
-//           if (builtLog[cameraWithLogs.name]) {
-//             builtLog[cameraWithLogs.name] += 1;
-//           } else {
-//             builtLog[cameraWithLogs.name] = 1;
-//           }
-//         }
-//       }
-//       if (cameraWithLogs.Logs.length === 0) {
-//         for (let i = 0; i < logsBuild.length; i++) {
-//           const builtLog = logsBuild[i];
-//           builtLog[cameraWithLogs.name] = 0;
-//         }
-//       }
-//     });
-
-//     // camerasWithLogs.map((camerasWithLogs) => {});
-
-//     res.status(200).json(logsBuild);
-//   } catch (error) {
-//     console.warn(error);
-//     res.status(500).json({ message: "server error" });
-//   }
-// });
+router.get("/limit/:limit", async (req, res) => {
+  try {
+    const { limit } = req.params;
+    const logs = await Log.findAll({ limit: parseInt(limit, 10) });
+    console.log("sunt aici");
+    res.status(201).json(logs);
+  } catch (error) {
+    console.warn(error);
+    res.status(500).json({ message: "server error" });
+  }
+});
 
 // router.post("/", async (req, res) => {
 //   try {

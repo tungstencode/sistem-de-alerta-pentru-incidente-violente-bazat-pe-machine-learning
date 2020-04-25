@@ -66,21 +66,21 @@ export default function Graph() {
 
   useEffect(() => {
     setYear(currentYear);
-    axios.get(`/logs/${currentYear}`).then(({data}) => {
+    axios.get(`/logs/graph/${currentYear}`).then(({data}) => {
       setLogs(data);
     });
   }, []);
 
   const handleMonthChange = event => {
     setMonth(event.target.value);
-    axios.get(`/logs/${year}/${event.target.value}`).then(({data}) => {
+    axios.get(`/logs/graph/${year}/${event.target.value}`).then(({data}) => {
       setLogs(data);
     });
   };
   const handleYearChange = event => {
     setYear(event.target.value);
     setMonth('');
-    axios.get(`/logs/${event.target.value}`).then(({data}) => {
+    axios.get(`/logs/graph/${event.target.value}`).then(({data}) => {
       setLogs(data);
     });
   };
@@ -128,10 +128,10 @@ export default function Graph() {
           <Paper className={classes.paper}>
             <Typography>Filters</Typography>
             <FormControl className={classes.formControl}>
-              <InputLabel id="demo-simple-select-label">Year</InputLabel>
+              <InputLabel id="year-select-label">Year</InputLabel>
               <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
+                labelId="year-select-label"
+                id="year-select"
                 value={year}
                 onChange={handleYearChange}>
                 <MenuItem value={currentYear}>
@@ -143,10 +143,10 @@ export default function Graph() {
               </Select>
             </FormControl>
             <FormControl className={classes.formControl}>
-              <InputLabel id="demo-simple-select-label">Month</InputLabel>
+              <InputLabel id="month-select-label">Month</InputLabel>
               <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
+                labelId="month-select-label"
+                id="month-select"
                 value={month}
                 onChange={handleMonthChange}>
                 <MenuItem value="">
