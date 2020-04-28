@@ -27,7 +27,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function CameraWrapper(props) {
-  const {camera, onDelete, onCameraClick} = props;
+  const {camera, onDelete, onCameraClick, sound} = props;
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [processing, setProcessing] = useState(false);
@@ -101,6 +101,18 @@ function CameraWrapper(props) {
       });
   };
 
+  const turn = processingP => {
+    setProcessing(processingP);
+    setImage(processingP);
+    axios
+      .put(`/cameras/assigned/detect/${camera.id}`, {
+        detect: processingP,
+      })
+      .then(res => {
+        // console.log(res);
+      });
+  };
+
   return (
     <Grid item xs={4}>
       <Paper className={classes.paper}>
@@ -163,7 +175,7 @@ function CameraWrapper(props) {
           <Image src={imageState.show ? url : ''} aspectRatio={16 / 9} />
         </Box>
       </Paper>
-      <Alarm processing={processing} id={camera.id} />
+      <Alarm turn={turn} sound={sound} processing={processing} id={camera.id} />
       <ConfirmDialog open={open} handleYes={handleYes} handleNo={handleNo} />
     </Grid>
   );
@@ -179,6 +191,7 @@ CameraWrapper.propTypes = {
   }),
   onDelete: PropTypes.func,
   onCameraClick: PropTypes.func,
+  sound: PropTypes.bool,
 };
 
 CameraWrapper.defaultProps = {
@@ -191,6 +204,7 @@ CameraWrapper.defaultProps = {
   },
   onDelete: () => {},
   onCameraClick: () => {},
+  sound: true,
 };
 
 export default CameraWrapper;

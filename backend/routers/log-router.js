@@ -29,11 +29,13 @@ router.get("/graph/:year", async (req, res) => {
 
     camerasWithLogs.map((cameraWithLogs) => {
       for (let i = 0; i < cameraWithLogs.Logs.length; i++) {
-        const year = moment(parseInt(cameraWithLogs.Logs[i].dateTime)).year();
+        const year = moment(
+          parseInt(cameraWithLogs.Logs[i].dateTime, 10),
+        ).year();
 
         if (year.toString() === req.params.year.toString()) {
           const month = moment.months(
-            moment(parseInt(cameraWithLogs.Logs[i].dateTime)).month(),
+            moment(parseInt(cameraWithLogs.Logs[i].dateTime, 10)).month(),
           );
           logsBuild.map((monthLogs) => {
             if (monthLogs.dateTime === month) {
@@ -74,11 +76,11 @@ router.get("/camera/:year/:cameraId", async (req, res) => {
     });
 
     for (let i = 0; i < cameraWithLogs.Logs.length; i++) {
-      const year = moment(parseInt(cameraWithLogs.Logs[i].dateTime)).year();
+      const year = moment(parseInt(cameraWithLogs.Logs[i].dateTime, 10)).year();
 
       if (year.toString() === req.params.year.toString()) {
         const month = moment.months(
-          moment(parseInt(cameraWithLogs.Logs[i].dateTime)).month(),
+          moment(parseInt(cameraWithLogs.Logs[i].dateTime, 10)).month(),
         );
         logsBuild.map((monthLogs) => {
           if (monthLogs.dateTime === month) {
@@ -127,7 +129,7 @@ router.get("/graph/:year/:month", async (req, res) => {
     camerasWithLogs.map((cameraWithLogs) => {
       for (let i = 0; i < cameraWithLogs.Logs.length; i++) {
         const dayToFind = moment(
-          parseInt(cameraWithLogs.Logs[i].dateTime),
+          parseInt(cameraWithLogs.Logs[i].dateTime, 10),
         ).format("YYYY-MM-DD");
 
         logsBuild.map((dayLogs) => {
@@ -176,7 +178,7 @@ router.get("/camera/:year/:month/:cameraId", async (req, res) => {
 
     for (let i = 0; i < cameraWithLogs.Logs.length; i++) {
       const dayToFind = moment(
-        parseInt(cameraWithLogs.Logs[i].dateTime),
+        parseInt(cameraWithLogs.Logs[i].dateTime, 10),
       ).format("YYYY-MM-DD");
 
       logsBuild.map((dayLogs) => {
@@ -193,13 +195,26 @@ router.get("/camera/:year/:month/:cameraId", async (req, res) => {
   }
 });
 
+router.put("/:id", async (req, res) => {
+  try {
+    const log = await Log.findByPk(req.params.id);
+
+    if (req.body.accurate) {
+      await log.update(req.body);
+    }
+
+    res.status(201).json({ message: "accepted" });
+  } catch (e) {
+    console.warn(e);
+    res.status(500).json({ message: "server error" });
+  }
+});
+
 router.post("/:cameraId", async (req, res) => {
   try {
-    const user = await User.findByPk(req.user.cnp);
     const camera = await Camera.findByPk(req.params.cameraId);
 
     const log = await Log.create({
-      accurate: null,
       dateTime: moment.now().toString(),
     });
     await camera.addLog(log);
@@ -213,7 +228,7 @@ router.post("/:cameraId", async (req, res) => {
 
 router.get("/camera/:cameraId", async (req, res) => {
   try {
-    // const user = await User.findByPk(req.user.cnp);
+    const camera = await Camera.findByPk(req.params.cameraId);
 
     const logs = await camera.getLogs();
 
@@ -224,11 +239,46 @@ router.get("/camera/:cameraId", async (req, res) => {
   }
 });
 
+router.get("/limit", async (req, res) => {
+  try {
+    const logs = [];
+    const user = await User.findByPk(req.user.cnp);
+
+    const cameras = await user.getCameras();
+
+    for (let i = 0; i < cameras.length; i++) {
+      const logsC = await cameras[i].getLogs();
+      for (let j = 0; j < logsC.length; j++) {
+        logs.push(logsC[j]);
+      }
+    }
+
+    res.status(201).json(logs);
+  } catch (error) {
+    console.warn(error);
+    res.status(500).json({ message: "server error" });
+  }
+});
+
 router.get("/limit/:limit", async (req, res) => {
   try {
+    const logs = [];
     const { limit } = req.params;
-    const logs = await Log.findAll({ limit: parseInt(limit, 10) });
-    console.log("sunt aici");
+
+    const user = await User.findByPk(req.user.cnp);
+
+    const cameras = await user.getCameras();
+
+    for (let i = 0; i < cameras.length; i++) {
+      const logsC = await cameras[i].getLogs();
+      for (let j = 0; j < logsC.length; j++) {
+        if (logs.length <= limit) {
+          logs.push(logsC[j]);
+        } else {
+          break;
+        }
+      }
+    }
     res.status(201).json(logs);
   } catch (error) {
     console.warn(error);

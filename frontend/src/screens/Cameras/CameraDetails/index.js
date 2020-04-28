@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
@@ -11,17 +11,19 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import TextField from '@material-ui/core/TextField';
-import {IconButton, Icon} from '@material-ui/core';
+import {IconButton, Icon, List} from '@material-ui/core';
 import SaveRoundedIcon from '@material-ui/icons/SaveRounded';
 import {makeStyles} from '@material-ui/core/styles';
-import Sound from 'react-sound';
+import CustomListItem from 'components/CustomListItem';
 import LocationSearchInput from '../../../components/LocationSearchInput';
+import Alarm from '../../../components/Alarm';
 
 const useStyles = makeStyles(theme => ({
   container: {
     display: 'flex',
     flexWrap: 'wrap',
   },
+
   formControl: {
     margin: theme.spacing(1),
     minWidth: 240,
@@ -46,6 +48,18 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'center',
     color: theme.palette.text.secondary,
   },
+  list: {
+    width: '100%',
+    // maxWidth: 360,
+    backgroundColor: theme.palette.background.paper,
+    position: 'relative',
+    overflow: 'auto',
+    maxHeight: '20vh',
+  },
+  side: {
+    // height: '40vh',
+    paddingTop: theme.spacing(2),
+  },
 }));
 
 export default function CameraDetails(props) {
@@ -57,14 +71,19 @@ export default function CameraDetails(props) {
   const [password, setPassword] = React.useState('');
   const [location, setLocation] = React.useState('');
   const [url, setUrl] = React.useState('');
+  const [sound, setSound] = useState(false);
+  const [logs, setLogs] = React.useState([]);
   // eslint-disable-next-line react/prop-types
   const {cameraId} = props.match.params;
-  const source = new EventSource(`http://localhost:5000/detect/${cameraId}`);
-  const [playStatus, setPlayStatus] = useState(Sound.status.STOPPED);
 
   useEffect(() => {
+    axios.get(`/logs/camera/${cameraId}`).then(({data}) => {
+      setLogs(data);
+    });
+    axios.get('/users/settings').then(({data}) => {
+      setSound(data.sound);
+    });
     axios.get(`/cameras/assigned/${cameraId}`).then(({data}) => {
-      console.log(data);
       setCamera(data);
       setProcessing(data.UserCamera.detect);
       setCameraName(data.name);
@@ -72,35 +91,18 @@ export default function CameraDetails(props) {
       setPassword(data.password);
       setUrl(data.url);
       setLocation(data.location);
-
-      if (data.UserCamera.detect) {
-        notificationOn();
-      } else {
-        notificationOff();
-      }
-
-      return () => {
-        notificationOff();
-        source.close();
-      };
     });
   }, []);
 
-  const onDetection = event => {
-    console.warn(event.data);
-    if (event.data === `b'True'`) {
-      axios.post(`/logs/${camera.id}`).then(({data}) => {});
-      setPlayStatus(Sound.status.PLAYING);
-    }
-  };
-
-  const notificationOn = () => {
-    source.addEventListener('message', onDetection);
-  };
-
-  const notificationOff = () => {
-    source.removeEventListener('message', onDetection);
-    setPlayStatus(Sound.status.STOPPED);
+  const turn = processingP => {
+    setProcessing(processingP);
+    axios
+      .put(`/cameras/assigned/detect/${camera.id}`, {
+        detect: processingP,
+      })
+      .then(res => {
+        // console.log(res);
+      });
   };
 
   const handleSavelick = () => {
@@ -117,7 +119,6 @@ export default function CameraDetails(props) {
 
   const handleProcessingChange = name => event => {
     setProcessing(event.target.checked);
-    event.target.checked ? notificationOn() : notificationOff();
     axios
       .put(`/cameras/assigned/detect/${camera.id}`, {
         detect: event.target.checked,
@@ -151,13 +152,6 @@ export default function CameraDetails(props) {
         {camera ? (
           <Grid item xs={8}>
             <Paper className={classes.paper}>
-              <Sound
-                url="fight-alarm.ogg"
-                playStatus={playStatus}
-                loop
-                volume={50}
-              />
-
               <Box>
                 {processing ? (
                   <img
@@ -184,6 +178,12 @@ export default function CameraDetails(props) {
                 )}
               </Box>
             </Paper>
+            <Alarm
+              turn={turn}
+              sound={sound}
+              processing={processing}
+              id={camera.id}
+            />
           </Grid>
         ) : (
           'Loading...'
@@ -191,72 +191,86 @@ export default function CameraDetails(props) {
 
         {camera ? (
           <Grid item xs={4}>
-            <Paper className={classes.paper}>
-              <TextField
-                autoFocus
-                onChange={handleIPChange}
-                margin="dense"
-                id="ipCamera"
-                label="IP*"
-                type="text"
-                value={url}
-                fullWidth
-              />
-              <TextField
-                onChange={handleCameraNameChange}
-                margin="dense"
-                id="nameCamera"
-                label="Name*"
-                type="text"
-                value={cameraName}
-                fullWidth
-              />
-              <LocationSearchInput
-                location={location}
-                onChange={handleLocationChange}
-              />
-              <TextField
-                onChange={handleUsernameChange}
-                margin="dense"
-                id="usernameCamera"
-                label="Username"
-                type="text"
-                value={username}
-                fullWidth
-              />
-              <TextField
-                onChange={handlePasswordChange}
-                margin="dense"
-                id="passwordCamera"
-                label="Password"
-                type="password"
-                value={password}
-                fullWidth
-              />
-              <Box className={classes.grow}>
-                <Toolbar>
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={processing}
-                        color="primary"
-                        onChange={handleProcessingChange('processing')}
-                        value="processing"
-                        inputProps={{'aria-label': 'primary checkbox'}}
-                      />
-                    }
-                    label="Detect"
+            <Grid container>
+              <Grid item xs={12}>
+                <Paper className={classes.paper}>
+                  <TextField
+                    autoFocus
+                    onChange={handleIPChange}
+                    margin="dense"
+                    id="ipCamera"
+                    label="IP*"
+                    type="text"
+                    value={url}
+                    fullWidth
                   />
-                  <div className={classes.grow} />
-                  <IconButton
-                    onClick={handleSavelick}
-                    edge="end"
-                    className={classes.saveButton}>
-                    <SaveRoundedIcon />
-                  </IconButton>
-                </Toolbar>
-              </Box>
-            </Paper>
+                  <TextField
+                    onChange={handleCameraNameChange}
+                    margin="dense"
+                    id="nameCamera"
+                    label="Name*"
+                    type="text"
+                    value={cameraName}
+                    fullWidth
+                  />
+                  <LocationSearchInput
+                    location={location}
+                    onChange={handleLocationChange}
+                  />
+                  <TextField
+                    onChange={handleUsernameChange}
+                    margin="dense"
+                    id="usernameCamera"
+                    label="Username"
+                    type="text"
+                    value={username}
+                    fullWidth
+                  />
+                  <TextField
+                    onChange={handlePasswordChange}
+                    margin="dense"
+                    id="passwordCamera"
+                    label="Password"
+                    type="password"
+                    value={password}
+                    fullWidth
+                  />
+                  <Box className={classes.grow}>
+                    <Toolbar>
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            checked={processing}
+                            color="primary"
+                            onChange={handleProcessingChange('processing')}
+                            value="processing"
+                            inputProps={{'aria-label': 'primary checkbox'}}
+                          />
+                        }
+                        label="Detect"
+                      />
+                      <div className={classes.grow} />
+                      <IconButton
+                        onClick={handleSavelick}
+                        edge="end"
+                        className={classes.saveButton}>
+                        <SaveRoundedIcon />
+                      </IconButton>
+                    </Toolbar>
+                  </Box>
+                </Paper>
+              </Grid>
+              <Grid className={classes.side} item xs={12}>
+                <Paper className={classes.paper}>
+                  {/* <Box className={classes.grow}>recent activity</Box> */}
+                  <List className={classes.list}>
+                    {logs.map((log, key) => {
+                      return <CustomListItem key={key} log={log} />;
+                    })}
+                  </List>
+                </Paper>
+              </Grid>
+            </Grid>
           </Grid>
         ) : (
           'Loading...'
@@ -265,3 +279,11 @@ export default function CameraDetails(props) {
     </div>
   );
 }
+
+CameraDetails.propTypes = {
+  cameraId: PropTypes.number,
+};
+
+CameraDetails.defaultProps = {
+  cameraId: 0,
+};

@@ -40,7 +40,7 @@ const useStyles = makeStyles(theme => ({
 export default function Cameras(props) {
   const classes = useStyles();
   const [cameras, setCameras] = useState([]);
-
+  const [sound, setSound] = useState(false);
   const [open, setOpen] = React.useState(false);
 
   const handleOpen = () => {
@@ -76,6 +76,9 @@ export default function Cameras(props) {
     axios.get('/cameras/assigned').then(({data}) => {
       setCameras(data);
     });
+    axios.get('/users/settings').then(({data}) => {
+      setSound(data.sound);
+    });
   }, []);
 
   return (
@@ -89,6 +92,7 @@ export default function Cameras(props) {
               processingP={camera.UserCamera.detect}
               onDelete={handleDelete}
               onCameraClick={handleCameraClick}
+              sound={sound}
             />
           ))
         ) : (

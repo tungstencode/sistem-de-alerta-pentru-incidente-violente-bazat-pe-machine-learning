@@ -6,9 +6,10 @@ module.exports = (sequelize, type) => sequelize.define("Log", {
   },
   accurate: {
     type: type.BOOLEAN,
-    allowNull: true,
+    allowNull: false,
+    defaultValue: true,
     validate: {
-      notEmpty: false,
+      notEmpty: true,
     },
   },
   dateTime: {

@@ -23,6 +23,7 @@ import ListIcon from '@material-ui/icons/List';
 import PlaylistAddCheckIcon from '@material-ui/icons/PlaylistAddCheck';
 import axios from 'axios';
 // import {Folder, Delete} from '@material-ui/icons';
+import CustomListItem from 'components/CustomListItem';
 import CameraMap from '../../components/CameraMap';
 
 const useStyles = makeStyles(theme => ({
@@ -63,10 +64,6 @@ const useStyles = makeStyles(theme => ({
     backgroundColor: 'inherit',
     padding: 0,
   },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 120,
-  },
 }));
 
 export default function Dashboard() {
@@ -75,19 +72,36 @@ export default function Dashboard() {
   const [secondary, setSecondary] = useState(true);
   const [logs, setLogs] = useState([]);
   const [limit, setLimit] = useState(10);
+  const [accurate, setAccurate] = useState(0);
+  const [inaccurate, setInaccurate] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [cameras, setCameras] = useState([]);
 
   useEffect(() => {
     axios.get(`/logs/limit/${limit}`).then(({data}) => {
       setLogs(data);
     });
+    axios.get(`/logs/limit`).then(({data}) => {
+      let acc = 0;
+      let inac = 0;
+      let tot = 0;
+      data.map(log => {
+        if (log.accurate === true) {
+          acc += 1;
+        }
+        if (log.accurate === false) {
+          inac += 1;
+        }
+        tot += 1;
+      });
+      setAccurate(acc);
+      setInaccurate(inac);
+      setTotal(tot);
+    });
   }, []);
 
-  const handleAccuracyChange = (id, event) => {
-    console.log(id, event.target.value);
-  };
-
   return (
-    <div className={classes.root}>
+    <div>
       <Grid container spacing={3}>
         <Grid item xs={8}>
           <Paper className={classes.paper}>
@@ -114,7 +128,7 @@ export default function Dashboard() {
                         <Typography color="textSecondary">Total</Typography>
                         <Divider />
                         <Typography variant="h5" color="textPrimary">
-                          {2}
+                          {total}
                         </Typography>
                       </Box>
                     </Paper>
@@ -126,7 +140,7 @@ export default function Dashboard() {
                         <Typography color="textSecondary">Accurate</Typography>
                         <Divider />
                         <Typography variant="h5" color="textPrimary">
-                          {2}
+                          {accurate}
                         </Typography>
                       </Box>
                     </Paper>
@@ -140,7 +154,7 @@ export default function Dashboard() {
                         </Typography>
                         <Divider />
                         <Typography variant="h5" color="textPrimary">
-                          {2}
+                          {inaccurate}
                         </Typography>
                       </Box>
                     </Paper>
@@ -154,43 +168,7 @@ export default function Dashboard() {
 
                 <List className={classes.list}>
                   {logs.map((log, key) => {
-                    return (
-                      <ListItem key={`log-${log.id}`}>
-                        {/* <ListItemAvatar>
-                     <Avatar>
-                       <Folder />
-                     </Avatar>
-                   </ListItemAvatar> */}
-                        <ListItemText
-                          primary={log.id + log.dateTime}
-                          secondary={
-                            secondary ? `Camera ID: ${log.CameraId}` : null
-                          }
-                        />
-                        <ListItemSecondaryAction>
-                          <FormControl className={classes.formControl}>
-                            <InputLabel id="accuracy-select-label">
-                              Accuracy
-                            </InputLabel>
-
-                            <Select
-                              labelId="accuracy-select-label"
-                              id="accuracy-select"
-                              value={log.accurate}
-                              onChange={event =>
-                                handleAccuracyChange(log.id, event)
-                              }>
-                              <MenuItem value>
-                                <em>True</em>
-                              </MenuItem>
-                              <MenuItem value={false}>
-                                <em>False</em>
-                              </MenuItem>
-                            </Select>
-                          </FormControl>
-                        </ListItemSecondaryAction>
-                      </ListItem>
-                    );
+                    return <CustomListItem key={key} log={log} />;
                   })}
                 </List>
               </Paper>

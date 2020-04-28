@@ -3,17 +3,23 @@ import Sound from 'react-sound';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import MuiAlert from '@material-ui/lab/Alert';
+import {Button} from '@material-ui/core';
 
-function Alert(props) {
-  return <MuiAlert /* elevation={6} */ variant="filled" {...props} />;
-}
-
-function CustomAlert(severity, text) {
-  return <Alert severity={severity}>{text}</Alert>;
+function CustomAlert(severity, text, turn) {
+  return (
+    <MuiAlert
+      /* elevation={6} */ severity={severity}
+      variant="filled"
+      action={
+        severity ? <Button onClick={() => turn(false)}>Turn off</Button> : null
+      }>
+      {text}
+    </MuiAlert>
+  );
 }
 
 export default function Alarm(props) {
-  const {processing, id} = props;
+  const {processing, id, sound, turn} = props;
   let source;
   const [playStatus, setPlayStatus] = React.useState(Sound.status.STOPPED);
   const [alertNotification, setAlertNotification] = React.useState({
@@ -33,7 +39,9 @@ export default function Alarm(props) {
   function onDetection(event) {
     if (event.data === `b'True'`) {
       axios.post(`/logs/${id}`).then(({data}) => {});
-      setPlayStatus(Sound.status.PLAYING);
+      if (sound) {
+        setPlayStatus(Sound.status.PLAYING);
+      }
       setAlertNotification({
         variant: 'error',
         message: 'Violence detected!',
@@ -69,7 +77,11 @@ export default function Alarm(props) {
     <div>
       <Sound url="fight-alarm.ogg" playStatus={playStatus} loop volume={20} />
       {alertNotification.statusText !== ''
-        ? CustomAlert(alertNotification.variant, alertNotification.message)
+        ? CustomAlert(
+            alertNotification.variant,
+            alertNotification.message,
+            turn
+          )
         : null}
     </div>
   );
@@ -78,11 +90,13 @@ export default function Alarm(props) {
 Alarm.propTypes = {
   processing: PropTypes.bool,
   id: PropTypes.number,
-  // source: PropTypes.instanceOf(EventSource),
+  sound: PropTypes.bool,
+  turn: PropTypes.func,
 };
 
 Alarm.defaultProps = {
   processing: false,
   id: 0,
-  // source: null,
+  sound: true,
+  turn: () => {},
 };
