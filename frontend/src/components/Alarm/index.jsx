@@ -27,18 +27,9 @@ export default function Alarm(props) {
     message: '',
   });
 
-  const hideAlert = (delaySeconds, setAlert) => {
-    setTimeout(() => {
-      setAlert({
-        variant: '',
-        message: '',
-      });
-    }, delaySeconds * 1000);
-  };
-
   function onDetection(event) {
     if (event.data === `b'True'`) {
-      axios.post(`/logs/${id}`).then(({data}) => {});
+      axios.post(`/logs/${id}`);
       if (sound) {
         setPlayStatus(Sound.status.PLAYING);
       }
@@ -75,7 +66,7 @@ export default function Alarm(props) {
 
   return (
     <div>
-      <Sound url="fight-alarm.ogg" playStatus={playStatus} loop volume={20} />
+      <Sound url="/fight-alarm.ogg" playStatus={playStatus} loop volume={20} />
       {alertNotification.statusText !== ''
         ? CustomAlert(
             alertNotification.variant,

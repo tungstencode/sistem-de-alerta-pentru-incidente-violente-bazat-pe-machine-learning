@@ -272,7 +272,7 @@ router.get("/limit/:limit", async (req, res) => {
     for (let i = 0; i < cameras.length; i++) {
       const logsC = await cameras[i].getLogs();
       for (let j = 0; j < logsC.length; j++) {
-        if (logs.length <= limit) {
+        if (logs.length <= limit - 1) {
           logs.push(logsC[j]);
         } else {
           break;

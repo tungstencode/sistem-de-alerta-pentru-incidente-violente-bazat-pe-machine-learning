@@ -15,6 +15,8 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  AppBar,
+  Toolbar,
 } from '@material-ui/core';
 import Grid from '@material-ui/core/Grid';
 import {makeStyles} from '@material-ui/core/styles';
@@ -76,8 +78,12 @@ export default function Dashboard() {
   const [inaccurate, setInaccurate] = useState(0);
   const [total, setTotal] = useState(0);
   const [cameras, setCameras] = useState([]);
+  // data.find(x => x.id === '45').foo;
 
   useEffect(() => {
+    axios.get(`/cameras/assigned`).then(({data}) => {
+      setCameras(data);
+    });
     axios.get(`/logs/limit/${limit}`).then(({data}) => {
       setLogs(data);
     });
@@ -99,6 +105,13 @@ export default function Dashboard() {
       setTotal(tot);
     });
   }, []);
+
+  const handleLimitChange = event => {
+    setLimit(event.target.value);
+    axios.get(`/logs/limit/${event.target.value}`).then(({data}) => {
+      setLogs(data);
+    });
+  };
 
   return (
     <div>
@@ -164,13 +177,45 @@ export default function Dashboard() {
             </Grid>
             <Grid className={classes.side} item xs={12}>
               <Paper className={classes.paper}>
-                {/* <Box className={classes.grow}>recent activity</Box> */}
-
-                <List className={classes.list}>
-                  {logs.map((log, key) => {
-                    return <CustomListItem key={key} log={log} />;
-                  })}
-                </List>
+                <AppBar color="secondary" position="static">
+                  <Grid container direction="row" alignItems="center">
+                    <Grid item xs={6}>
+                      <Toolbar>
+                        <Typography>Maximum {limit} logs</Typography>
+                      </Toolbar>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Toolbar>
+                        <Select
+                          labelId="limit-select-label"
+                          id="limit-select"
+                          value={limit}
+                          onChange={handleLimitChange}>
+                          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(value => {
+                            return (
+                              <MenuItem value={value * 10}>
+                                <em>{value * 10}</em>
+                              </MenuItem>
+                            );
+                          })}
+                        </Select>
+                      </Toolbar>
+                    </Grid>
+                  </Grid>
+                </AppBar>
+                {cameras ? (
+                  <List className={classes.list}>
+                    {logs.map((log, key) => {
+                      return (
+                        <CustomListItem
+                          key={key}
+                          camera={cameras.find(x => x.id === log.CameraId)}
+                          log={log}
+                        />
+                      );
+                    })}
+                  </List>
+                ) : null}
               </Paper>
             </Grid>
           </Grid>

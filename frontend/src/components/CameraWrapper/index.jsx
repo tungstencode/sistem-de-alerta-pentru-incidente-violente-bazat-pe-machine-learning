@@ -161,7 +161,7 @@ function CameraWrapper(props) {
                     inputProps={{'aria-label': 'primary checkbox'}}
                   />
                 }
-                label="Detect"
+                // label="Detect"
               />
             </Grid>
             <Grid item xs={2}>

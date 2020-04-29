@@ -14,6 +14,7 @@ import TextField from '@material-ui/core/TextField';
 import {IconButton, Icon, List} from '@material-ui/core';
 import SaveRoundedIcon from '@material-ui/icons/SaveRounded';
 import {makeStyles} from '@material-ui/core/styles';
+import Image from 'material-ui-image';
 import CustomListItem from 'components/CustomListItem';
 import LocationSearchInput from '../../../components/LocationSearchInput';
 import Alarm from '../../../components/Alarm';
@@ -71,10 +72,16 @@ export default function CameraDetails(props) {
   const [password, setPassword] = React.useState('');
   const [location, setLocation] = React.useState('');
   const [url, setUrl] = React.useState('');
+  const [imageUrl, setImageUrl] = React.useState('');
+
   const [sound, setSound] = useState(false);
   const [logs, setLogs] = React.useState([]);
   // eslint-disable-next-line react/prop-types
   const {cameraId} = props.match.params;
+  const [imageState, setImageState] = useState({
+    count: 0,
+    show: true,
+  });
 
   useEffect(() => {
     axios.get(`/logs/camera/${cameraId}`).then(({data}) => {
@@ -86,6 +93,7 @@ export default function CameraDetails(props) {
     axios.get(`/cameras/assigned/${cameraId}`).then(({data}) => {
       setCamera(data);
       setProcessing(data.UserCamera.detect);
+      setImage(data.UserCamera.detect, data);
       setCameraName(data.name);
       setUsername(data.username);
       setPassword(data.password);
@@ -96,6 +104,7 @@ export default function CameraDetails(props) {
 
   const turn = processingP => {
     setProcessing(processingP);
+    setImage(processingP, camera);
     axios
       .put(`/cameras/assigned/detect/${camera.id}`, {
         detect: processingP,
@@ -124,6 +133,7 @@ export default function CameraDetails(props) {
         detect: event.target.checked,
       })
       .then(res => {});
+    setImage(event.target.checked, camera);
     // console.log(event.target.checked);
   };
 
@@ -146,6 +156,25 @@ export default function CameraDetails(props) {
     // setLocation(event.target.value || '');
   };
 
+  const setImage = (processingP, cameraC) => {
+    if (processingP) {
+      setImageUrl(`http://localhost:5000/processed/${cameraC.id}`);
+    } else if (cameraC.url.includes('rtsp')) {
+      setImageUrl(`http://localhost:5000/unprocessed/${cameraC.id}`);
+    } else {
+      setImageUrl(cameraC.url);
+    }
+    reload();
+  };
+
+  const reload = () => {
+    setImageState({show: false});
+    setTimeout(
+      () => setImageState(state => ({count: state.count + 1, show: true})),
+      500
+    );
+  };
+
   return (
     <div className={classes.root}>
       <Grid container spacing={3}>
@@ -153,29 +182,10 @@ export default function CameraDetails(props) {
           <Grid item xs={8}>
             <Paper className={classes.paper}>
               <Box>
-                {processing ? (
-                  <img
-                    className={classes.img}
-                    alt={camera.name}
-                    src={`http://localhost:5000/processed/${camera.id}`}
-                  />
-                ) : (
-                  [
-                    camera.url.includes('rtsp') ? (
-                      <img
-                        className={classes.img}
-                        alt={camera.name}
-                        src={`http://localhost:5000/unprocessed/${camera.id}`}
-                      />
-                    ) : (
-                      <img
-                        className={classes.img}
-                        alt={camera.name}
-                        src={camera.url}
-                      />
-                    ),
-                  ]
-                )}
+                <Image
+                  src={imageState.show ? imageUrl : ''}
+                  aspectRatio={16 / 9}
+                />
               </Box>
             </Paper>
             <Alarm
@@ -265,7 +275,9 @@ export default function CameraDetails(props) {
                   {/* <Box className={classes.grow}>recent activity</Box> */}
                   <List className={classes.list}>
                     {logs.map((log, key) => {
-                      return <CustomListItem key={key} log={log} />;
+                      return (
+                        <CustomListItem key={key} camera={camera} log={log} />
+                      );
                     })}
                   </List>
                 </Paper>

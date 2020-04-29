@@ -17,17 +17,21 @@ import {makeStyles} from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import axios from 'axios';
+import CoordTranslator from 'components/CoordTranslator';
 
 const useStyles = makeStyles(theme => ({
   formControl: {
     margin: theme.spacing(1),
     minWidth: 120,
   },
+  text: {
+    maxWidth: 200,
+  },
 }));
 
 export default function CustomListItem(props) {
   const classes = useStyles();
-  const {log} = props;
+  const {log, camera} = props;
   React.useEffect(() => {}, []);
   const [accurate, setAccurate] = React.useState(log.accurate);
 
@@ -39,8 +43,11 @@ export default function CustomListItem(props) {
   return (
     <ListItem key={`log-${log.id}`}>
       <ListItemText
-        primary={`Camera ID: ${log.CameraId}`}
-        secondary={moment(parseInt(log.dateTime, 10)).format('DD-MM-YYYY')}
+        className={classes.text}
+        primary={`${camera.name}, ${moment(parseInt(log.dateTime, 10)).format(
+          'DD-MM-YYYY'
+        )}`}
+        secondary={<CoordTranslator location={camera.location} />}
       />
       <ListItemSecondaryAction>
         <FormControl className={classes.formControl}>
@@ -71,8 +78,16 @@ CustomListItem.propTypes = {
     dateTime: PropTypes.string,
     accurate: PropTypes.bool,
   }),
+  camera: PropTypes.shape({
+    id: PropTypes.number,
+    url: PropTypes.string,
+    name: PropTypes.string,
+    location: PropTypes.string,
+    UserCamera: PropTypes.array,
+  }),
 };
 
 CustomListItem.defaultProps = {
   log: {},
+  camera: {},
 };
