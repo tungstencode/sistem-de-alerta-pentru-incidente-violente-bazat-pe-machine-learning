@@ -14,6 +14,7 @@ import MuiAlert from '@material-ui/lab/Alert';
 import {Face, Fingerprint} from '@material-ui/icons';
 import axios from 'axios';
 import {Formik} from 'formik';
+import {NavLink, useHistory, Link} from 'react-router-dom';
 
 const styles = theme => ({
   margin: {
@@ -135,14 +136,16 @@ class Login extends React.Component {
                         />
                       </Grid>
                       <Grid item>
-                        <Button
-                          disableFocusRipple
-                          disableRipple
-                          style={{textTransform: 'none'}}
-                          variant="text"
-                          color="primary">
-                          Forgot password ?
-                        </Button>
+                        <Link to="/register">
+                          <Button
+                            disableFocusRipple
+                            disableRipple
+                            style={{textTransform: 'none'}}
+                            variant="text"
+                            color="primary">
+                            Signup Here
+                          </Button>
+                        </Link>
                       </Grid>
                     </Grid>
                     <Grid
