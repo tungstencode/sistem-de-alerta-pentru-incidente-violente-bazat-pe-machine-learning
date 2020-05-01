@@ -64,6 +64,7 @@ sequelize.sync({ force }).then(async () => {
       name: "lesin",
       email: "lesin@yahoo.com",
       password: "lesin",
+      location: "44.4267674,26.1025384",
     });
     const settings = await Setting.create();
     const camera = await Camera.create({
@@ -75,10 +76,9 @@ sequelize.sync({ force }).then(async () => {
     user.addCamera(camera, { through: { detect: true } });
 
     const camera2 = await Camera.create({
-      name: "test2",
-      url:
-        "http://173.79.214.76:9000/cgi-bin/faststream.jpg?stream=half&fps=15&rand=COUNTER",
-      location: "30,30",
+      name: "demo",
+      url: "http://localhost:5001/demo",
+      location: "44.4267674,26.1025384",
     });
 
     user.addCamera(camera2, { through: { detect: true } });

@@ -1,5 +1,9 @@
 node_modules
 
+
+#demo
+demo/V_789.mp4
+
 # environment
 /processor/venv3.6
 /processor/serverenv

@@ -30,6 +30,8 @@ const markerStyling = {
 function CameraMap(props) {
   const currentYear = new Date().getFullYear();
   const [coords, setCoords] = useState();
+  const [zoom, setZoom] = useState(8);
+  const [center, setCenter] = useState();
   const [cameras, setCameras] = useState([]);
   const [openArr, setOpenArr] = useState([]);
   const [numberOfAccidentsArr, setNumberOfAccidentsArr] = useState([]);
@@ -77,8 +79,13 @@ function CameraMap(props) {
     });
     axios.get(`/users/get_own/`).then(({data}) => {
       setCoords(translateCoords(data.location));
+      setCenter(translateCoords(data.location));
     });
   }, []);
+
+  const toggleAllOff = () => {
+    setOpenArr([]);
+  };
 
   const toggleInfoWindow = id => {
     const newOpenArr = [...openArr];
@@ -91,12 +98,19 @@ function CameraMap(props) {
       {coords ? (
         <GoogleMap
           googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places"
-          defaultZoom={8}
-          defaultCenter={coords}>
+          defaultZoom={zoom}
+          center={center}
+          zoom={zoom}
+          onClick={toggleAllOff}
+          defaultCenter={coords || {lat: 44.4267674, lng: 26.1025384}}>
           {cameras
             ? cameras.map(camera => {
                 return (
                   <Marker
+                    onDblClick={() => {
+                      setCenter(translateCoords(camera.location));
+                      setZoom(8);
+                    }}
                     defaultIcon={iconMarker}
                     position={translateCoords(camera.location)}
                     onClick={() => toggleInfoWindow(camera.id)}>

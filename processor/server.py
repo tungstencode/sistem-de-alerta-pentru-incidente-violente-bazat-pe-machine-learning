@@ -159,7 +159,7 @@ def slash():
 def unsub(camera_id):
     pubsub = red.pubsub()
     pubsub.unsubscribe('detect'+str(camera_id))
-    return Response("unsubbed",204)
+    return Response("unsubbed", 204)
 
 
 def event_stream(camera_id):

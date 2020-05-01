@@ -52,12 +52,12 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function Alert(props) {
-  return <MuiAlert /* elevation={6} */ variant="filled" {...props} />;
-}
-
 function CustomAlert(severity, text) {
-  return <Alert severity={severity}>{text}</Alert>;
+  return (
+    <MuiAlert /* elevation={6} */ severity={severity} variant="filled">
+      {text}
+    </MuiAlert>
+  );
 }
 
 export default function Settings() {

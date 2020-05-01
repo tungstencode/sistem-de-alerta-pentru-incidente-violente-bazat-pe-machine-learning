@@ -14,6 +14,7 @@ import TextField from '@material-ui/core/TextField';
 import {IconButton, Icon, List} from '@material-ui/core';
 import SaveRoundedIcon from '@material-ui/icons/SaveRounded';
 import {makeStyles} from '@material-ui/core/styles';
+import MuiAlert from '@material-ui/lab/Alert';
 import Image from 'material-ui-image';
 import CustomListItem from 'components/CustomListItem';
 import LocationSearchInput from '../../../components/LocationSearchInput';
@@ -63,6 +64,14 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+function Alert(props) {
+  return <MuiAlert /* elevation={6} */ variant="filled" {...props} />;
+}
+
+function CustomAlert(severity, text) {
+  return <Alert severity={severity}>{text}</Alert>;
+}
+
 export default function CameraDetails(props) {
   const classes = useStyles();
   const [processing, setProcessing] = React.useState(false);
@@ -82,6 +91,19 @@ export default function CameraDetails(props) {
     count: 0,
     show: true,
   });
+  const [cameraSettings, setCameraSettings] = React.useState({
+    variant: '',
+    message: '',
+  });
+
+  const hideAlert = (delaySeconds, setAlert) => {
+    setTimeout(() => {
+      setAlert({
+        variant: '',
+        message: '',
+      });
+    }, delaySeconds * 1000);
+  };
 
   useEffect(() => {
     axios.get(`/logs/camera/${cameraId}`).then(({data}) => {
@@ -123,7 +145,20 @@ export default function CameraDetails(props) {
         url,
         name: cameraName,
       })
-      .then(res => {});
+      .then(res => {
+        if (res.status === 202) {
+          setCameraSettings({
+            variant: 'success',
+            message: res.statusText,
+          });
+        } else {
+          setCameraSettings({
+            variant: 'error',
+            message: res.statusText,
+          });
+        }
+        hideAlert(2, setCameraSettings);
+      });
   };
 
   const handleProcessingChange = name => event => {
@@ -269,6 +304,9 @@ export default function CameraDetails(props) {
                     </Toolbar>
                   </Box>
                 </Paper>
+                {cameraSettings.statusText !== ''
+                  ? CustomAlert(cameraSettings.variant, cameraSettings.message)
+                  : null}
               </Grid>
               <Grid className={classes.side} item xs={12}>
                 <Paper className={classes.paper}>

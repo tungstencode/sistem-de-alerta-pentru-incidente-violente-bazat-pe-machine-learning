@@ -9,7 +9,8 @@
     "frontend": "cd frontend && npm start",
     "processor": "cd processor && python3.6 server.py",
     "uwsgi": "cd processor && uwsgi --socket 0.0.0.0:5000 --protocol=http -w wsgi --ini server.ini",
-    "start": "concurrently \"npm run backend\" \"npm run frontend\" \"npm run processor\""
+    "demo":"cd demo && python3.6 server.py",
+    "start": "concurrently \"npm run backend\" \"npm run frontend\" \"npm run processor\" \"npm run demo\""
   },
   "author": "",
   "license": "ISC",
