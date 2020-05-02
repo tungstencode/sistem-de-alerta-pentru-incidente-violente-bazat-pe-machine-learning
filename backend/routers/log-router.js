@@ -198,11 +198,7 @@ router.get("/camera/:year/:month/:cameraId", async (req, res) => {
 router.put("/:id", async (req, res) => {
   try {
     const log = await Log.findByPk(req.params.id);
-
-    if (req.body.accurate) {
-      await log.update(req.body);
-    }
-
+    await log.update(req.body);
     res.status(201).json({ message: "accepted" });
   } catch (e) {
     console.warn(e);

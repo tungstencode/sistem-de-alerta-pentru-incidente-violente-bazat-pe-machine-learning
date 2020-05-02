@@ -17,6 +17,7 @@ import {
 import moment from 'moment';
 import axios from 'axios';
 import randomColor from 'randomcolor';
+import Loader from 'components/Loader';
 // import {logs as test} from './data';
 
 const useStyles = makeStyles(theme => ({
@@ -57,6 +58,8 @@ export default function Graph() {
   const [logs, setLogs] = useState([]);
   const [month, setMonth] = useState('');
   const [year, setYear] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [height, setHeight] = useState(window.innerHeight * 0.8);
   const classes = useStyles();
   const currentYear = new Date().getFullYear();
   const years = Array.from(
@@ -64,10 +67,18 @@ export default function Graph() {
     (val, index) => index + currentYear - 10
   );
 
+  // eslint-disable-next-line fp/no-mutation
+  window.onresize = () => {
+    setTimeout(() => {
+      setHeight(window.innerHeight * 0.8);
+    }, 200);
+  };
+
   useEffect(() => {
     setYear(currentYear);
     axios.get(`/logs/graph/${currentYear}`).then(({data}) => {
       setLogs(data);
+      setLoading(false);
     });
   }, []);
 
@@ -86,80 +97,82 @@ export default function Graph() {
   };
 
   return (
-    <div className={classes.root}>
-      <Grid container spacing={3}>
-        <Grid item xs={10}>
-          <Paper className={classes.paper}>
-            {logs.length ? (
-              <ResponsiveContainer width="95%" height={600}>
-                <LineChart
-                  data={logs}
-                  margin={{
-                    top: 5,
-                    right: 30,
-                    left: 20,
-                    bottom: 5,
-                  }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="dateTime" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  {Object.keys(logs[0]).map((keyName, keyIndex) => {
-                    if (keyIndex > 0) {
-                      return (
-                        <Line
-                          type="monotone"
-                          dataKey={keyName}
-                          stroke={randomColor()}
-                          activeDot={{r: 8}}
-                        />
-                      );
-                    }
-                    return null;
-                  })}
-                </LineChart>
-              </ResponsiveContainer>
-            ) : null}
-          </Paper>
-        </Grid>
+    <Loader isLoading={loading}>
+      <div className={classes.root}>
+        <Grid container spacing={3}>
+          <Grid item xs={10}>
+            <Paper className={classes.paper}>
+              {logs.length ? (
+                <ResponsiveContainer width="95%" height={height}>
+                  <LineChart
+                    data={logs}
+                    margin={{
+                      top: 5,
+                      right: 30,
+                      left: 20,
+                      bottom: 5,
+                    }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="dateTime" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    {Object.keys(logs[0]).map((keyName, keyIndex) => {
+                      if (keyIndex > 0) {
+                        return (
+                          <Line
+                            type="monotone"
+                            dataKey={keyName}
+                            stroke={randomColor()}
+                            activeDot={{r: 8}}
+                          />
+                        );
+                      }
+                      return null;
+                    })}
+                  </LineChart>
+                </ResponsiveContainer>
+              ) : null}
+            </Paper>
+          </Grid>
 
-        <Grid item xs={2}>
-          <Paper className={classes.paper}>
-            <Typography>Filters</Typography>
-            <FormControl className={classes.formControl}>
-              <InputLabel id="year-select-label">Year</InputLabel>
-              <Select
-                labelId="year-select-label"
-                id="year-select"
-                value={year}
-                onChange={handleYearChange}>
-                <MenuItem value={currentYear}>
-                  <em>Current</em>
-                </MenuItem>
-                {years.map(yearS => {
-                  return <MenuItem value={yearS}>{yearS}</MenuItem>;
-                })}
-              </Select>
-            </FormControl>
-            <FormControl className={classes.formControl}>
-              <InputLabel id="month-select-label">Month</InputLabel>
-              <Select
-                labelId="month-select-label"
-                id="month-select"
-                value={month}
-                onChange={handleMonthChange}>
-                <MenuItem value="">
-                  <em>All</em>
-                </MenuItem>
-                {moment.months().map((monthS, key) => {
-                  return <MenuItem value={key}>{monthS}</MenuItem>;
-                })}
-              </Select>
-            </FormControl>
-          </Paper>
+          <Grid item xs={2}>
+            <Paper className={classes.paper}>
+              <Typography>Filters</Typography>
+              <FormControl className={classes.formControl}>
+                <InputLabel id="year-select-label">Year</InputLabel>
+                <Select
+                  labelId="year-select-label"
+                  id="year-select"
+                  value={year}
+                  onChange={handleYearChange}>
+                  <MenuItem value={currentYear}>
+                    <em>Current</em>
+                  </MenuItem>
+                  {years.map(yearS => {
+                    return <MenuItem value={yearS}>{yearS}</MenuItem>;
+                  })}
+                </Select>
+              </FormControl>
+              <FormControl className={classes.formControl}>
+                <InputLabel id="month-select-label">Month</InputLabel>
+                <Select
+                  labelId="month-select-label"
+                  id="month-select"
+                  value={month}
+                  onChange={handleMonthChange}>
+                  <MenuItem value="">
+                    <em>All</em>
+                  </MenuItem>
+                  {moment.months().map((monthS, key) => {
+                    return <MenuItem value={key}>{monthS}</MenuItem>;
+                  })}
+                </Select>
+              </FormControl>
+            </Paper>
+          </Grid>
         </Grid>
-      </Grid>
-    </div>
+      </div>
+    </Loader>
   );
 }

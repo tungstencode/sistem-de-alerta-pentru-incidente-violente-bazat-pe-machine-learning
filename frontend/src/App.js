@@ -8,6 +8,7 @@ import {
   Redirect,
 } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import Loader from 'components/Loader';
 import DrawerWrapper from './components/DrawerWrapper';
 import Dashboard from './screens/Dashboard';
 import Cameras from './screens/Cameras';
@@ -107,66 +108,68 @@ export default class App extends React.Component {
     return (
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Router>
-          {isAuthenticated ? (
-            <DrawerWrapper>
+        <Loader isLoading={isLoading}>
+          <Router>
+            {isAuthenticated ? (
+              <DrawerWrapper>
+                <Switch>
+                  <Route
+                    exact
+                    path="/"
+                    render={routerProps => (
+                      <Redirect {...routerProps} to="/dashboard" />
+                    )}
+                  />
+                  <Route
+                    path="/cameras"
+                    render={routerProps => (
+                      <Cameras {...routerProps} path="/cameras" />
+                    )}
+                  />
+                  <Route
+                    path="/dashboard"
+                    render={routerProps => <Dashboard {...routerProps} />}
+                  />
+                  <Route
+                    path="/graph"
+                    render={routerProps => (
+                      <Graph {...routerProps} path="/graph" />
+                    )}
+                  />
+                  <Route
+                    path="/settings"
+                    render={routerProps => (
+                      <Settings {...routerProps} path="/settings" />
+                    )}
+                  />
+                  {/* <Route path="*" exact component={The404} /> */}
+                </Switch>
+              </DrawerWrapper>
+            ) : (
               <Switch>
                 <Route
-                  exact
+                  path="/register"
+                  render={routerProps => <Auth {...routerProps} />}
+                />
+                <Route
+                  path="/login"
+                  render={routerProps => (
+                    <Auth {...routerProps} onSucces={this.checkLoggedIn} />
+                  )}
+                />
+                <Route
                   path="/"
                   render={routerProps => (
-                    <Redirect {...routerProps} to="/dashboard" />
+                    <>
+                      <Redirect to="/" />
+                      <Welcome {...routerProps} />
+                    </>
                   )}
                 />
-                <Route
-                  path="/cameras"
-                  render={routerProps => (
-                    <Cameras {...routerProps} path="/cameras" />
-                  )}
-                />
-                <Route
-                  path="/dashboard"
-                  render={routerProps => <Dashboard {...routerProps} />}
-                />
-                <Route
-                  path="/graph"
-                  render={routerProps => (
-                    <Graph {...routerProps} path="/graph" />
-                  )}
-                />
-                <Route
-                  path="/settings"
-                  render={routerProps => (
-                    <Settings {...routerProps} path="/settings" />
-                  )}
-                />
-                {/* <Route path="*" exact component={The404} /> */}
               </Switch>
-            </DrawerWrapper>
-          ) : (
-            <Switch>
-              <Route
-                path="/register"
-                render={routerProps => <Auth {...routerProps} />}
-              />
-              <Route
-                path="/login"
-                render={routerProps => (
-                  <Auth {...routerProps} onSucces={this.checkLoggedIn} />
-                )}
-              />
-              <Route
-                path="/"
-                render={routerProps => (
-                  <>
-                    <Redirect to="/" />
-                    <Welcome {...routerProps} />
-                  </>
-                )}
-              />
-            </Switch>
-          )}
-        </Router>
+            )}
+          </Router>
+        </Loader>
       </ThemeProvider>
     );
   }

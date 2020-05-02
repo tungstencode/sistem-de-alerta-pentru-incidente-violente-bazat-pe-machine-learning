@@ -19,6 +19,7 @@ import VolumeUpRounded from '@material-ui/icons/VolumeUpRounded';
 import SmsRounded from '@material-ui/icons/SmsRounded';
 import MuiAlert from '@material-ui/lab/Alert';
 import axios from 'axios';
+import Loader from 'components/Loader';
 import LocationSearchInput from '../../components/LocationSearchInput';
 
 const useStyles = makeStyles(theme => ({
@@ -62,6 +63,7 @@ function CustomAlert(severity, text) {
 
 export default function Settings() {
   const classes = useStyles();
+  const [loading, setLoading] = useState(true);
   // const [settings, setSettings] = useState({sound: false, sms: false});
   const [sound, setSound] = useState(false);
   const [sms, setSms] = useState(false);
@@ -88,6 +90,7 @@ export default function Settings() {
       setFullName(data.name);
       setEmail(data.email);
       setLocation(data.location);
+      setLoading(false);
     });
   }, []);
 
@@ -178,126 +181,113 @@ export default function Settings() {
   };
 
   return (
-    <div className={classes.root}>
-      <Grid container spacing={3}>
-        <Grid item xs={6}>
-          <Paper className={classes.paper}>
-            <Typography>Profile</Typography>
-            <TextField
-              autoFocus
-              onChange={event => setFullName(event.target.value || '')}
-              margin="dense"
-              id="fullName"
-              label="Full Name*"
-              type="text"
-              value={fullName}
-              fullWidth
-            />
-            <TextField
-              onChange={event => setEmail(event.target.value || '')}
-              margin="dense"
-              id="email"
-              label="Email*"
-              type="text"
-              value={email}
-              fullWidth
-            />
-            <TextField
-              onChange={event => setPassword(event.target.value || '')}
-              margin="dense"
-              id="newPassword"
-              label="Password"
-              type="password"
-              value={password}
-              fullWidth
-            />
-            <TextField
-              onChange={event => setConfirmPassword(event.target.value || '')}
-              margin="dense"
-              id="newConfirmPassword"
-              label="Confirm Password"
-              type="password"
-              value={confirmPassword}
-              fullWidth
-            />
-            <LocationSearchInput
-              location={location}
-              onChange={handleLocationChange}
-            />
+    <Loader isLoading={loading}>
+      <div className={classes.root}>
+        <Grid container spacing={3}>
+          <Grid item xs={6}>
+            <Paper className={classes.paper}>
+              <Typography>Profile</Typography>
+              <TextField
+                autoFocus
+                onChange={event => setFullName(event.target.value || '')}
+                margin="dense"
+                id="fullName"
+                label="Full Name*"
+                type="text"
+                value={fullName}
+                fullWidth
+              />
+              <TextField
+                onChange={event => setEmail(event.target.value || '')}
+                margin="dense"
+                id="email"
+                label="Email*"
+                type="text"
+                value={email}
+                fullWidth
+              />
+              <TextField
+                onChange={event => setPassword(event.target.value || '')}
+                margin="dense"
+                id="newPassword"
+                label="Password"
+                type="password"
+                value={password}
+                fullWidth
+              />
+              <TextField
+                onChange={event => setConfirmPassword(event.target.value || '')}
+                margin="dense"
+                id="newConfirmPassword"
+                label="Confirm Password"
+                type="password"
+                value={confirmPassword}
+                fullWidth
+              />
+              <LocationSearchInput
+                location={location}
+                onChange={handleLocationChange}
+              />
 
-            <Box className={classes.grow}>
-              <Toolbar>
-                <div className={classes.grow} />
-                <IconButton
-                  onClick={handleSaveProfile}
-                  edge="end"
-                  className={classes.saveButton}>
-                  <SaveRoundedIcon />
-                </IconButton>
-              </Toolbar>
-            </Box>
-          </Paper>
-          {alertProfile.statusText !== ''
-            ? CustomAlert(alertProfile.variant, alertProfile.message)
-            : null}
-        </Grid>
-
-        <Grid item xs={3}>
-          <Paper className={classes.paper}>
-            <Typography>Alert settings</Typography>
-
-            <List className={classes.root}>
-              <ListItem>
-                <ListItemIcon>
-                  <VolumeUpRounded />
-                </ListItemIcon>
-                <ListItemText id="switch-list-label-sound" primary="Sound" />
-                <ListItemSecondaryAction>
-                  <Switch
+              <Box className={classes.grow}>
+                <Toolbar>
+                  <div className={classes.grow} />
+                  <IconButton
+                    onClick={handleSaveProfile}
                     edge="end"
-                    onChange={handleSoundToggle('sound')}
-                    checked={sound}
-                    value="sound"
-                    inputProps={{'aria-labelledby': 'switch-list-label-sound'}}
-                  />
-                </ListItemSecondaryAction>
-              </ListItem>
-              {/* <ListItem>
-                <ListItemIcon>
-                  <SmsRounded />
-                </ListItemIcon>
-                <ListItemText id="switch-list-label-sms" primary="SMS" />
-                <ListItemSecondaryAction>
-                  <Switch
+                    className={classes.saveButton}>
+                    <SaveRoundedIcon />
+                  </IconButton>
+                </Toolbar>
+              </Box>
+            </Paper>
+            {alertProfile.statusText !== ''
+              ? CustomAlert(alertProfile.variant, alertProfile.message)
+              : null}
+          </Grid>
+
+          <Grid item xs={3}>
+            <Paper className={classes.paper}>
+              <Typography>Alert settings</Typography>
+
+              <List className={classes.root}>
+                <ListItem>
+                  <ListItemIcon>
+                    <VolumeUpRounded />
+                  </ListItemIcon>
+                  <ListItemText id="switch-list-label-sound" primary="Sound" />
+                  <ListItemSecondaryAction>
+                    <Switch
+                      edge="end"
+                      onChange={handleSoundToggle('sound')}
+                      checked={sound}
+                      value="sound"
+                      inputProps={{
+                        'aria-labelledby': 'switch-list-label-sound',
+                      }}
+                    />
+                  </ListItemSecondaryAction>
+                </ListItem>
+              </List>
+              <Divider />
+              <Box className={classes.grow}>
+                <Toolbar>
+                  <div className={classes.grow} />
+                  <IconButton
+                    onClick={handleSaveSettings}
                     edge="end"
-                    onChange={handleSMSToggle('sms')}
-                    checked={sms}
-                    value="sms"
-                    inputProps={{
-                      'aria-labelledby': 'switch-list-label-sms',
-                    }}
-                  />
-                </ListItemSecondaryAction>
-              </ListItem> */}
-            </List>
-            <Divider />
-            <Box className={classes.grow}>
-              <Toolbar>
-                <div className={classes.grow} />
-                <IconButton
-                  onClick={handleSaveSettings}
-                  edge="end"
-                  className={classes.saveButton}>
-                  <SaveRoundedIcon />
-                </IconButton>
-              </Toolbar>
-            </Box>
-          </Paper>
-          {alertSettings.statusText !== ''
-            ? CustomAlert(alertSettings.variant, alertSettings.message)
-            : null}
+                    className={classes.saveButton}>
+                    <SaveRoundedIcon />
+                  </IconButton>
+                </Toolbar>
+              </Box>
+            </Paper>
+            {alertSettings.statusText !== ''
+              ? CustomAlert(alertSettings.variant, alertSettings.message)
+              : null}
+          </Grid>
         </Grid>
-      </Grid>
-    </div>
+      </div>
+    </Loader>
   );
 }

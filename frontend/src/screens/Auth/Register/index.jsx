@@ -23,7 +23,7 @@ import Container from '@material-ui/core/Container';
 import axios from 'axios';
 
 import MuiAlert from '@material-ui/lab/Alert';
-import {Face, Fingerprint} from '@material-ui/icons';
+import {Face, Fingerprint, Lock} from '@material-ui/icons';
 import LocationSearchInput from '../../../components/LocationSearchInput';
 // const styles = theme => ({
 //   margin: {
@@ -80,7 +80,8 @@ class Register extends React.Component {
           open: true,
         });
         const {handleRegisterSubmit} = this.props;
-        handleRegisterSubmit();
+        setTimeout(handleRegisterSubmit, 1000);
+        // handleRegisterSubmit();
       }
     } catch (error) {
       this.setState({
@@ -128,68 +129,95 @@ class Register extends React.Component {
             style={{minHeight: '100vh'}}>
             <Grid item xs={3}>
               <Paper className={classes.paper}>
-                <Container component="main" maxWidth="xs">
-                  <div className={classes.paper}>
-                    {/* <Avatar className={classes.avatar}>
-                      <LockOutlinedIcon />
-                    </Avatar> */}
-                    <Grid container>
-                      {/* <Grid item xs={12} className={classes.item}>
-                        <Typography component="h1" variant="h5">
-                          Register
-                        </Typography>
-                      </Grid> */}
-                      <Grid item xs={12} className={classes.item}>
+                <div className={classes.margin}>
+                  <form onSubmit={handleSubmit}>
+                    <Grid
+                      container
+                      spacing={0}
+                      justify="center"
+                      alignItems="flex-end">
+                      <Grid item>
+                        <Lock />
+                      </Grid>
+                      <Grid item xs={12}>
                         <TextField
-                          margin="normal"
                           label="CNP"
                           name="cnp"
+                          fullWidth
+                          margin="dense"
                           autoComplete="CNP"
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          value={values.cnp}
+                          required
                         />
                       </Grid>
-                      <Grid item xs={12} className={classes.item}>
+                      <Grid item xs={12}>
                         <TextField
-                          margin="normal"
+                          fullWidth
                           label="Full Name"
                           name="name"
+                          margin="dense"
                           autoComplete="Full Name"
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          value={values.name}
+                          required
                         />
                       </Grid>
-                      <Grid item xs={12} className={classes.item}>
+                      <Grid item xs={12}>
                         <TextField
-                          margin="normal"
+                          fullWidth
                           label="Email"
                           name="email"
+                          margin="dense"
                           autoComplete="email"
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          value={values.email}
+                          required
                         />
                       </Grid>
-                      <Grid item xs={12} className={classes.item}>
+                      <Grid item xs={12}>
                         <TextField
-                          margin="normal"
+                          fullWidth
                           label="Password"
                           name="password"
                           type="password"
+                          margin="dense"
                           autoComplete="current-password"
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          value={values.password}
+                          required
                         />
                       </Grid>
-                      <Grid item xs={12} className={classes.item}>
+                      <Grid item xs={12}>
                         <LocationSearchInput
                           location={location}
                           onChange={this.handleLocationChange}
                         />
                       </Grid>
-                      <Grid item xs={12} className={classes.item}>
-                        <Button
-                          type="submit"
-                          fullWidth
-                          variant="contained"
-                          color="primary"
-                          className={classes.submit}>
-                          Register
-                        </Button>
+                      <Grid
+                        container
+                        justify="center"
+                        style={{marginTop: '10px'}}>
+                        <Grid item xs={12}>
+                          <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            color="primary"
+                            className={classes.submit}>
+                            Register
+                          </Button>
+                        </Grid>
                       </Grid>
                     </Grid>
-                    <Grid container>
+                    <Grid
+                      container
+                      justify="center"
+                      style={{marginTop: '10px'}}>
                       <Grid item>
                         <NavLink href="#" to="/login">
                           <Button
@@ -203,95 +231,109 @@ class Register extends React.Component {
                         </NavLink>
                       </Grid>
                     </Grid>
-                  </div>
-                </Container>
+                  </form>
+                </div>
               </Paper>
             </Grid>
             {this.state
               ? CustomAlert(this.state.variant, this.state.message)
               : true}
           </Grid>
+          // <Grid
+          //   container
+          //   spacing={0}
+          //   direction="column"
+          //   alignItems="center"
+          //   justify="center"
+          //   style={{minHeight: '100vh'}}>
+          //   <Grid item xs={3}>
+          //     <Paper className={classes.paper}>
+          //       <form onSubmit={handleSubmit}>
+          //         <Container component="main" maxWidth="forfxs">
+          //           <div className={classes.paper}>
+          //             {/* <Avatar className={classes.avatar}>
+          //             <LockOutlinedIcon />
+          //           </Avatar> */}
+          //             <Grid container>
+          //               {/* <Grid item xs={12} >
+          //               <Typography component="h1" variant="h5">
+          //                 Register
+          //               </Typography>
+          //             </Grid> */}
+          //               <Grid item xs={12} >
+          //                 <TextField
+          //                   margin="normal"
+          //                   label="CNP"
+          //                   name="cnp"
+          //                   autoComplete="CNP"
+          //                 />
+          //               </Grid>
+          //               <Grid item xs={12} >
+          //                 <TextField
+          //                   margin="normal"
+          //                   label="Full Name"
+          //                   name="name"
+          //                   autoComplete="Full Name"
+          //                 />
+          //               </Grid>
+          //               <Grid item xs={12} >
+          //                 <TextField
+          //                   margin="normal"
+          //                   label="Email"
+          //                   name="email"
+          //                   autoComplete="email"
+          //                 />
+          //               </Grid>
+          //               <Grid item xs={12} >
+          //                 <TextField
+          //                   margin="normal"
+          //                   label="Password"
+          //                   name="password"
+          //                   type="password"
+          //                   autoComplete="current-password"
+          //                 />
+          //               </Grid>
+          //               <Grid item xs={12} >
+          //                 <LocationSearchInput
+          //                   location={location}
+          //                   onChange={this.handleLocationChange}
+          //                 />
+          //               </Grid>
+          //               <Grid item xs={12} >
+          //                 <Button
+          //                   type="submit"
+          //                   fullWidth
+          //                   variant="contained"
+          //                   color="primary"
+          //                   className={classes.submit}>
+          //                   Register
+          //                 </Button>
+          //               </Grid>
+          //             </Grid>
+          //             <Grid container>
+          //               <Grid item>
+          //                 <Button
+          //                   type="submit"
+          //                   disableFocusRipple
+          //                   disableRipple
+          //                   style={{textTransform: 'none'}}
+          //                   variant="text"
+          //                   color="primary">
+          //                   Already have an account?
+          //                 </Button>
+          //               </Grid>
+          //             </Grid>
+          //           </div>
+          //         </Container>
+          //       </form>
+          //     </Paper>
+          //   </Grid>
+          //   {this.state
+          //     ? CustomAlert(this.state.variant, this.state.message)
+          //     : true}
+          // </Grid>
         )}
       </Formik>
-      //   <Formik
-      //     initialValues={{
-      //       username: '',
-      //       email: '',
-      //       password: '',
-      //       type: '',
-      //     }}
-      //     onSubmit={async (user, {setSubmitting}) => {
-      //       await this.handleSubmit(user);
-      //       setSubmitting(false);
-      //     }}>
-      //     <Form>
-      //       <Container component="main" maxWidth="xs">
-      //         <div className={classes.paper}>
-      //           <Avatar className={classes.avatar}>
-      //             <LockOutlinedIcon />
-      //           </Avatar>
-      //           <Grid container>
-      //             <Grid item xs={12} className={classes.item}>
-      //               <Typography component="h1" variant="h5">
-      //                 Register
-      //               </Typography>
-      //             </Grid>
-      //             <Grid item xs={12} className={classes.item}>
-      //               <TextField
-      //                 margin="normal"
-      //                 label="Username"
-      //                 name="username"
-      //                 autoComplete="username"
-      //               />
-      //             </Grid>
-      //             <Grid item xs={12} className={classes.item}>
-      //               <TextField
-      //                 margin="normal"
-      //                 label="Email"
-      //                 name="email"
-      //                 autoComplete="email"
-      //               />
-      //             </Grid>
-      //             <Grid item xs={12} className={classes.item}>
-      //               <TextField
-      //                 margin="normal"
-      //                 label="Password"
-      //                 name="password"
-      //                 type="password"
-      //                 autoComplete="current-password"
-      //               />
-      //             </Grid>
-      //             {/* <Grid item xs={12} className={classes.item}>
-
-      //             </Grid> */}
-      //             <Grid item xs={12} className={classes.item}>
-      //               <Button
-      //                 type="submit"
-      //                 fullWidth
-      //                 variant="contained"
-      //                 color="primary"
-      //                 className={classes.submit}>
-      //                 Register
-      //               </Button>
-      //             </Grid>
-      //           </Grid>
-      //           <Grid container>
-      //             {/* <Grid item xs>
-      //               <Link href="#" variant="body2">
-      //                 {t('Auth.Forgot')}
-      //               </Link>
-      //             </Grid> */}
-      //             <Grid item>
-      //               <NavLink href="#" to="/login" variant="body2">
-      //                 Already have an account?
-      //               </NavLink>
-      //             </Grid>
-      //           </Grid>
-      //         </div>
-      //         <Box mt={8} />
-      //       </Container>
-      //     </Form>
-      //   </Formik>
     );
   }
 }

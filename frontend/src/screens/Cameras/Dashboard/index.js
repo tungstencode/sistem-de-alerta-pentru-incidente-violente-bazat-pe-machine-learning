@@ -10,6 +10,7 @@ import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 
 import {makeStyles} from '@material-ui/core/styles';
+import Loader from 'components/Loader';
 import CameraWrapper from '../../../components/CameraWrapper';
 import AddCameraDialog from '../../../components/AddCameraDialog';
 
@@ -42,6 +43,7 @@ export default function Cameras(props) {
   const [cameras, setCameras] = useState([]);
   const [sound, setSound] = useState(false);
   const [open, setOpen] = React.useState(false);
+  const [loading, setLoading] = useState(true);
 
   const handleOpen = () => {
     setOpen(true);
@@ -75,6 +77,7 @@ export default function Cameras(props) {
   useEffect(() => {
     axios.get('/cameras/assigned').then(({data}) => {
       setCameras(data);
+      setLoading(false);
     });
     axios.get('/users/settings').then(({data}) => {
       setSound(data.sound);
@@ -82,37 +85,39 @@ export default function Cameras(props) {
   }, []);
 
   return (
-    <div className={classes.root}>
-      <Grid container direction="row" justify="space-between">
-        {cameras ? (
-          cameras.map(camera => (
-            <CameraWrapper
-              key={camera.id}
-              camera={camera}
-              processingP={camera.UserCamera.detect}
-              onDelete={handleDelete}
-              onCameraClick={handleCameraClick}
-              sound={sound}
-            />
-          ))
-        ) : (
-          <Box>
-            <Paper className={classes.paper}>
-              <Typography>Nothing here</Typography>
-            </Paper>
-          </Box>
-        )}
-      </Grid>
+    <Loader isLoading={loading}>
+      <div className={classes.root}>
+        <Grid container direction="row" justify="space-between">
+          {cameras ? (
+            cameras.map(camera => (
+              <CameraWrapper
+                key={camera.id}
+                camera={camera}
+                processingP={camera.UserCamera.detect}
+                onDelete={handleDelete}
+                onCameraClick={handleCameraClick}
+                sound={sound}
+              />
+            ))
+          ) : (
+            <Box>
+              <Paper className={classes.paper}>
+                <Typography>Nothing here</Typography>
+              </Paper>
+            </Box>
+          )}
+        </Grid>
 
-      <AddCameraDialog open={open} onAdd={handleAdd} onClose={handleClose} />
+        <AddCameraDialog open={open} onAdd={handleAdd} onClose={handleClose} />
 
-      <Fab
-        className={classes.fab}
-        color="primary"
-        onClick={handleOpen}
-        aria-label="add">
-        <AddIcon />
-      </Fab>
-    </div>
+        <Fab
+          className={classes.fab}
+          color="primary"
+          onClick={handleOpen}
+          aria-label="add">
+          <AddIcon />
+        </Fab>
+      </div>
+    </Loader>
   );
 }

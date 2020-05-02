@@ -26,6 +26,7 @@ import PlaylistAddCheckIcon from '@material-ui/icons/PlaylistAddCheck';
 import axios from 'axios';
 // import {Folder, Delete} from '@material-ui/icons';
 import CustomListItem from 'components/CustomListItem';
+import Loader from 'components/Loader';
 import CameraMap from '../../components/CameraMap';
 
 const useStyles = makeStyles(theme => ({
@@ -78,6 +79,7 @@ export default function Dashboard() {
   const [inaccurate, setInaccurate] = useState(0);
   const [total, setTotal] = useState(0);
   const [cameras, setCameras] = useState([]);
+  const [loading, setLoading] = useState(true);
   // data.find(x => x.id === '45').foo;
 
   useEffect(() => {
@@ -103,6 +105,7 @@ export default function Dashboard() {
       setAccurate(acc);
       setInaccurate(inac);
       setTotal(tot);
+      setLoading(false);
     });
   }, []);
 
@@ -114,113 +117,117 @@ export default function Dashboard() {
   };
 
   return (
-    <div>
-      <Grid container spacing={3}>
-        <Grid item xs={8}>
-          <Paper className={classes.paper}>
-            <Box>
-              <CameraMap
-                googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places"
-                loadingElement={<div style={{height: `100%`}} />}
-                containerElement={<div style={{height: `80vh`}} />}
-                mapElement={<div style={{height: `100%`}} />}
-              />
-            </Box>
-          </Paper>
-        </Grid>
+    <Loader isLoading={loading}>
+      <div>
+        <Grid container spacing={3}>
+          <Grid item xs={8}>
+            <Paper className={classes.paper}>
+              <Box>
+                <CameraMap
+                  googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places"
+                  loadingElement={<div style={{height: `100%`}} />}
+                  containerElement={<div style={{height: `80vh`}} />}
+                  mapElement={<div style={{height: `100%`}} />}
+                />
+              </Box>
+            </Paper>
+          </Grid>
 
-        <Grid item xs={4}>
-          <Grid container>
-            <Grid item xs={12}>
-              <Paper className={classes.paper}>
-                <Grid container spacing={3}>
-                  <Grid item xs={12} sm={6} lg={4}>
-                    <Paper className={classes.card}>
-                      <Box>
-                        <ListIcon className={classes.icon} />
-                        <Typography color="textSecondary">Total</Typography>
-                        <Divider />
-                        <Typography variant="h5" color="textPrimary">
-                          {total}
-                        </Typography>
-                      </Box>
-                    </Paper>
-                  </Grid>
-                  <Grid item xs={12} sm={6} lg={4}>
-                    <Paper className={classes.card}>
-                      <Box>
-                        <PlaylistAddCheckIcon className={classes.icon} />
-                        <Typography color="textSecondary">Accurate</Typography>
-                        <Divider />
-                        <Typography variant="h5" color="textPrimary">
-                          {accurate}
-                        </Typography>
-                      </Box>
-                    </Paper>
-                  </Grid>
-                  <Grid item xs={12} sm={6} lg={4}>
-                    <Paper className={classes.card}>
-                      <Box>
-                        <CancelIcon className={classes.icon} />
-                        <Typography color="textSecondary">
-                          Inaccurate
-                        </Typography>
-                        <Divider />
-                        <Typography variant="h5" color="textPrimary">
-                          {inaccurate}
-                        </Typography>
-                      </Box>
-                    </Paper>
-                  </Grid>
-                </Grid>
-              </Paper>
-            </Grid>
-            <Grid className={classes.side} item xs={12}>
-              <Paper className={classes.paper}>
-                <AppBar color="secondary" position="static">
-                  <Grid container direction="row" alignItems="center">
-                    <Grid item xs={6}>
-                      <Toolbar>
-                        <Typography>Maximum {limit} logs</Typography>
-                      </Toolbar>
+          <Grid item xs={4}>
+            <Grid container>
+              <Grid item xs={12}>
+                <Paper className={classes.paper}>
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} sm={6} lg={4}>
+                      <Paper className={classes.card}>
+                        <Box>
+                          <ListIcon className={classes.icon} />
+                          <Typography color="textSecondary">Total</Typography>
+                          <Divider />
+                          <Typography variant="h5" color="textPrimary">
+                            {total}
+                          </Typography>
+                        </Box>
+                      </Paper>
                     </Grid>
-                    <Grid item xs={6}>
-                      <Toolbar>
-                        <Select
-                          labelId="limit-select-label"
-                          id="limit-select"
-                          value={limit}
-                          onChange={handleLimitChange}>
-                          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(value => {
-                            return (
-                              <MenuItem value={value * 10}>
-                                <em>{value * 10}</em>
-                              </MenuItem>
-                            );
-                          })}
-                        </Select>
-                      </Toolbar>
+                    <Grid item xs={12} sm={6} lg={4}>
+                      <Paper className={classes.card}>
+                        <Box>
+                          <PlaylistAddCheckIcon className={classes.icon} />
+                          <Typography color="textSecondary">
+                            Accurate
+                          </Typography>
+                          <Divider />
+                          <Typography variant="h5" color="textPrimary">
+                            {accurate}
+                          </Typography>
+                        </Box>
+                      </Paper>
+                    </Grid>
+                    <Grid item xs={12} sm={6} lg={4}>
+                      <Paper className={classes.card}>
+                        <Box>
+                          <CancelIcon className={classes.icon} />
+                          <Typography color="textSecondary">
+                            Inaccurate
+                          </Typography>
+                          <Divider />
+                          <Typography variant="h5" color="textPrimary">
+                            {inaccurate}
+                          </Typography>
+                        </Box>
+                      </Paper>
                     </Grid>
                   </Grid>
-                </AppBar>
-                {cameras ? (
-                  <List className={classes.list}>
-                    {logs.map((log, key) => {
-                      return (
-                        <CustomListItem
-                          key={key}
-                          camera={cameras.find(x => x.id === log.CameraId)}
-                          log={log}
-                        />
-                      );
-                    })}
-                  </List>
-                ) : null}
-              </Paper>
+                </Paper>
+              </Grid>
+              <Grid className={classes.side} item xs={12}>
+                <Paper className={classes.paper}>
+                  <AppBar color="secondary" position="static">
+                    <Grid container direction="row" alignItems="center">
+                      <Grid item xs={6}>
+                        <Toolbar>
+                          <Typography>Maximum {limit} logs</Typography>
+                        </Toolbar>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Toolbar>
+                          <Select
+                            labelId="limit-select-label"
+                            id="limit-select"
+                            value={limit}
+                            onChange={handleLimitChange}>
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(value => {
+                              return (
+                                <MenuItem value={value * 10}>
+                                  <em>{value * 10}</em>
+                                </MenuItem>
+                              );
+                            })}
+                          </Select>
+                        </Toolbar>
+                      </Grid>
+                    </Grid>
+                  </AppBar>
+                  {cameras ? (
+                    <List className={classes.list}>
+                      {logs.map((log, key) => {
+                        return (
+                          <CustomListItem
+                            key={key}
+                            camera={cameras.find(x => x.id === log.CameraId)}
+                            log={log}
+                          />
+                        );
+                      })}
+                    </List>
+                  ) : null}
+                </Paper>
+              </Grid>
             </Grid>
           </Grid>
         </Grid>
-      </Grid>
-    </div>
+      </div>
+    </Loader>
   );
 }

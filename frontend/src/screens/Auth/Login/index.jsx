@@ -46,8 +46,7 @@ class Login extends React.Component {
           message: `${response.statusText}`,
         });
         const {handleLoginSubmit} = this.props;
-
-        handleLoginSubmit();
+        setTimeout(handleLoginSubmit, 1000);
       }
     } catch (error) {
       this.setState({
@@ -92,7 +91,7 @@ class Login extends React.Component {
                 <div className={classes.margin}>
                   <form onSubmit={handleSubmit}>
                     <Grid container spacing={8} alignItems="flex-end">
-                      <Grid item>
+                      <Grid item xs={1}>
                         <Face />
                       </Grid>
                       <Grid item md sm xs>
@@ -110,7 +109,7 @@ class Login extends React.Component {
                       </Grid>
                     </Grid>
                     <Grid container spacing={8} alignItems="flex-end">
-                      <Grid item>
+                      <Grid item xs={1}>
                         <Fingerprint />
                       </Grid>
                       <Grid item md sm xs>
@@ -143,7 +142,7 @@ class Login extends React.Component {
                             style={{textTransform: 'none'}}
                             variant="text"
                             color="primary">
-                            Signup Here
+                            Register
                           </Button>
                         </Link>
                       </Grid>
@@ -152,14 +151,17 @@ class Login extends React.Component {
                       container
                       justify="center"
                       style={{marginTop: '10px'}}>
-                      <Button
-                        disabled={isSubmitting}
-                        type="submit"
-                        variant="outlined"
-                        color="primary"
-                        style={{textTransform: 'none'}}>
-                        Login
-                      </Button>
+                      <Grid item xs={12}>
+                        <Button
+                          disabled={isSubmitting}
+                          type="submit"
+                          variant="contained"
+                          color="primary"
+                          fullWidth
+                          style={{textTransform: 'none'}}>
+                          Login
+                        </Button>
+                      </Grid>
                     </Grid>
                   </form>
                 </div>

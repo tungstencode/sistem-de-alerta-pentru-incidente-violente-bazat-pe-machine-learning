@@ -23,14 +23,21 @@ export default function Welcome(props) {
 
   return (
     <div>
-      welcome
-      <Button
-        variant="contained"
-        color="primary"
-        component={NavLink}
-        to="/login">
-        Login
-      </Button>
+      <Grid
+        container
+        spacing={0}
+        direction="column"
+        alignItems="center"
+        justify="center"
+        style={{minHeight: '100vh'}}>
+        <Button
+          variant="contained"
+          color="primary"
+          component={NavLink}
+          to="/login">
+          Login
+        </Button>
+      </Grid>
     </div>
   );
 }

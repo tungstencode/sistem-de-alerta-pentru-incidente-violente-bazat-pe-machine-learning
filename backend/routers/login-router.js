@@ -1,5 +1,5 @@
 const express = require("express");
-const { User } = require("../config/sequelize");
+const { User, Setting } = require("../config/sequelize");
 const passport = require("../config/passport");
 const isAuthenticated = require("../config/auth");
 
@@ -27,14 +27,15 @@ router.post("/signup", async (req, res) => {
     } else if (!req.body.name) {
       res.status(406).json({ message: "missing name" });
     } else {
-      await User.create(req.body)
-        .then(() => {
-          res.status(201).json({ message: "user created" });
-        })
-        .catch((err) => {
-          res.status(409).json({ message: err }); // just for debugging
-          console.error(err);
-        });
+      const user = await User.create(req.body);
+      const settings = await Setting.create();
+      await user.setSetting(settings);
+      if (user) {
+        res.status(201).json({ message: "user created" });
+      } else {
+        res.status(409).json({ message: err }); // just for debugging
+        console.error(err);
+      }
     }
   } catch (err) {
     console.warn(err);
