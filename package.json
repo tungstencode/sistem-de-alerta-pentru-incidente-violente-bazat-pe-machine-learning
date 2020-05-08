@@ -10,7 +10,7 @@
     "processor": "cd processor && python3.6 server.py",
     "uwsgi": "cd processor && uwsgi --socket 0.0.0.0:5000 --protocol=http -w wsgi --ini server.ini",
     "demo":"cd demo && python3.6 server.py",
-    "start": "concurrently \"npm run backend\" \"npm run frontend\" \"npm run processor\" \"npm run demo\""
+    "start": "concurrently \"npm run backend\" \"npm run frontend\" \"npm run processor\""
   },
   "author": "",
   "license": "ISC",

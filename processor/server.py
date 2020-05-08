@@ -66,10 +66,10 @@ def generateUnprocessedImage(url):
         vcap.start()
         ret, frame = vcap.read()
         vcap.stop()
-        (flag, encodedImage) = cv.imencode(".jpg", frame)
-
-        yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' +
-               bytearray(encodedImage) + b'\r\n')
+        if ret:
+            (flag, encodedImage) = cv.imencode(".jpg", frame)
+            yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' +
+                   bytearray(encodedImage) + b'\r\n')
 
 
 class Processed(Resource):
@@ -91,32 +91,37 @@ def publishFighting(isFighting, id):
 
 def generateProcessedImage(url, id):
     violenceDetector = ViolenceDetector()
-    # videoReader = VideoCaptureThreading(url)
-    videoReader = cv.VideoCapture(url)
+    vcap = VideoCaptureThreading(url)
+    # videoReader = cv.VideoCapture(url)
     # videoReader = Camera(url)
-    start = timeit.default_timer()
-    isCurrentFrameValid, currentImage = videoReader.read()
-    stop = timeit.default_timer()
-    print(stop-start, "frame time")
+    # start = timeit.default_timer()
+    # isCurrentFrameValid, currentImage = videoReader.read()
+    # stop = timeit.default_timer()
+    # print(stop-start, "frame time")
 
     while True:
-        netInput = ImageUtils.ConvertImageFrom_CV_to_NetInput(currentImage)
-        isFighting = violenceDetector.Detect(netInput)
-        targetSize = deploySettings.DISPLAY_IMAGE_SIZE - 2*deploySettings.BORDER_SIZE
-        # currentImage = cv.resize(currentImage, (targetSize, targetSize))
-        currentImage = imutils.resize(currentImage, width=targetSize)
-        if isFighting:
-            publishFighting(isFighting, id)
-            resultImage = cv.copyMakeBorder(currentImage, deploySettings.BORDER_SIZE, deploySettings.BORDER_SIZE,
-                                            deploySettings.BORDER_SIZE, deploySettings.BORDER_SIZE, cv.BORDER_CONSTANT, value=deploySettings.FIGHT_BORDER_COLOR)
-        else:
-            resultImage = cv.copyMakeBorder(currentImage, deploySettings.BORDER_SIZE, deploySettings.BORDER_SIZE, deploySettings.BORDER_SIZE,
-                                            deploySettings.BORDER_SIZE, cv.BORDER_CONSTANT, value=deploySettings.NO_FIGHT_BORDER_COLOR)
+        vcap.start()
+        ret, currentImage = vcap.read()
+        vcap.stop()
+        if ret:
+            netInput = ImageUtils.ConvertImageFrom_CV_to_NetInput(currentImage)
+            isFighting = violenceDetector.Detect(netInput)
+            targetSize = deploySettings.DISPLAY_IMAGE_SIZE - 2*deploySettings.BORDER_SIZE
+            # currentImage = cv.resize(currentImage, (targetSize, targetSize))
+            currentImage = imutils.resize(currentImage, width=targetSize)
+            if isFighting:
+                publishFighting(isFighting, id)
+                resultImage = cv.copyMakeBorder(currentImage, deploySettings.BORDER_SIZE, deploySettings.BORDER_SIZE,
+                                                deploySettings.BORDER_SIZE, deploySettings.BORDER_SIZE, cv.BORDER_CONSTANT, value=deploySettings.FIGHT_BORDER_COLOR)
+            else:
+                resultImage = cv.copyMakeBorder(currentImage, deploySettings.BORDER_SIZE, deploySettings.BORDER_SIZE, deploySettings.BORDER_SIZE,
+                                                deploySettings.BORDER_SIZE, cv.BORDER_CONSTANT, value=deploySettings.NO_FIGHT_BORDER_COLOR)
 
-        isCurrentFrameValid, currentImage = videoReader.read()
-        (flag, encodedImage) = cv.imencode(".jpg", resultImage)
-        yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' +
-               bytearray(encodedImage) + b'\r\n')
+            # isCurrentFrameValid, currentImage = videoReader.read()
+            # if isCurrentFrameValid:
+            (flag, encodedImage) = cv.imencode(".jpg", resultImage)
+            yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' +
+                   bytearray(encodedImage) + b'\r\n')
 
 
 class Detect(Resource):

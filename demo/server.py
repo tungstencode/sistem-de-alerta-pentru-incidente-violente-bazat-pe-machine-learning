@@ -10,11 +10,13 @@ def generate(video):
     ret, frame = vcap.read()
     while True:
         ret, frame = vcap.read()
-        time.sleep(0.05)
-
-        (flag, encodedImage) = cv.imencode(".jpg", frame)
-        yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' +
-               bytearray(encodedImage) + b'\r\n')
+        # time.sleep(0.05)
+        if not ret:
+            vcap.set(cv.CAP_PROP_POS_FRAMES, 0)
+        else:
+            (flag, encodedImage) = cv.imencode(".jpg", frame)
+            yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' +
+                   bytearray(encodedImage) + b'\r\n')
 
 
 @application.route('/demo')

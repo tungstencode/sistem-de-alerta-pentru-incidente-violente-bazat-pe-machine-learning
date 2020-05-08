@@ -10,7 +10,7 @@ module.exports = (sequelize, type) => sequelize.define("Setting", {
     validate: {
       notEmpty: true,
     },
-    defaultValue: true,
+    defaultValue: false,
   },
   sms: {
     type: type.BOOLEAN,
