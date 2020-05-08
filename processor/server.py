@@ -91,8 +91,8 @@ def publishFighting(isFighting, id):
 
 def generateProcessedImage(url, id):
     violenceDetector = ViolenceDetector()
-    vcap = VideoCaptureThreading(url)
-    # videoReader = cv.VideoCapture(url)
+    # vcap = VideoCaptureThreading(url)
+    vcap = cv.VideoCapture(url)
     # videoReader = Camera(url)
     # start = timeit.default_timer()
     # isCurrentFrameValid, currentImage = videoReader.read()
@@ -100,10 +100,13 @@ def generateProcessedImage(url, id):
     # print(stop-start, "frame time")
 
     while True:
-        vcap.start()
+        # vcap.start()
         ret, currentImage = vcap.read()
-        vcap.stop()
-        if ret:
+        # vcap.stop()
+
+        index = vcap.get(cv.CAP_PROP_POS_FRAMES)
+
+        if index % 2:
             netInput = ImageUtils.ConvertImageFrom_CV_to_NetInput(currentImage)
             isFighting = violenceDetector.Detect(netInput)
             targetSize = deploySettings.DISPLAY_IMAGE_SIZE - 2*deploySettings.BORDER_SIZE
