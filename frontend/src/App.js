@@ -17,7 +17,7 @@ import Auth from './screens/Auth';
 import Graph from './screens/Graph';
 import Settings from './screens/Settings';
 
-const theme = createMuiTheme({
+const themeDark = createMuiTheme({
   palette: {
     type: 'dark',
     primary: {
@@ -41,6 +41,34 @@ const theme = createMuiTheme({
     },
     typography: {
       color: '#f2f2fd',
+    },
+  },
+});
+
+const themeLight= createMuiTheme({
+  palette: {
+    type: 'light',
+    primary: {
+      light: '#7274e4',
+      main: '#6164e1',
+      dark: '#4749dc',
+      inactive: '#273e4a',
+    },
+    secondary: {
+      light: '#d5c9f7',
+      main: '#9bbaca',
+      dark: '#33148f',
+    },
+    background: {
+      default: '#bcd1dc',
+      paper: '#ebf1f4',
+    },
+    text: {
+      primary: '#070722',
+      dark: '#f2f2fd',
+    },
+    typography: {
+      color: '#070722',
     },
   },
 });
@@ -106,7 +134,7 @@ export default class App extends React.Component {
   render() {
     const {isAuthenticated = false, isLoading = true} = this.state;
     return (
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={themeLight}>
         <CssBaseline />
         <Loader isLoading={isLoading}>
           <Router>
