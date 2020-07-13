@@ -61,11 +61,11 @@ export default function LocationSearchInput(props) {
               // inline style for demonstration purpose
               const style = suggestion.active
                 ? {
-                    backgroundColor: '#1b2b33',
+                    backgroundColor: '#bcd1dc',
                     cursor: 'pointer',
-                    boxShadow: '1px 3px 1px #1b2b33',
+                    boxShadow: '1px 3px 1px #bcd1dc',
                   }
-                : {backgroundColor: '#253b46', cursor: 'pointer'};
+                : {backgroundColor: '#ebf1f4', cursor: 'pointer'};
               return (
                 <div
                   {...getSuggestionItemProps(suggestion, {

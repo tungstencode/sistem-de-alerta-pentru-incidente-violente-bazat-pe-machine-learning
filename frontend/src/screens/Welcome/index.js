@@ -38,6 +38,7 @@ const useStyles = makeStyles(theme => ({
   },
   heading: {
     padding: theme.spacing(1),
+    color: theme.palette.common.white,
   },
 }));
 
@@ -103,7 +104,7 @@ export default function Welcome(props) {
         <div className={classes.backdrop} />
         <Typography
           className={classes.heading}
-          color="textSecondary"
+          color="textPrimary"
           variant="h2">
           When there are not enough people to watch it all.
         </Typography>
