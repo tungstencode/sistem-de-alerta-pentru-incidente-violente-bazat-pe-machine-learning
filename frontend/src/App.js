@@ -134,7 +134,7 @@ export default class App extends React.Component {
   render() {
     const {isAuthenticated = false, isLoading = true} = this.state;
     return (
-      <ThemeProvider theme={themeLight}>
+      <ThemeProvider theme={themeDark}>
         <CssBaseline />
         <Loader isLoading={isLoading}>
           <Router>
